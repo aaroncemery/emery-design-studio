@@ -23,7 +23,7 @@ const scopeRepoRootTs = (configs) =>
     return {
       ...entry,
       files: ["**/*.{ts,mts,cts}"],
-      ignores: ["frontend/**", "packages/ui/**", ...(entry.ignores ?? [])],
+      ignores: ["apps/frontend/**", "packages/ui/**", ...(entry.ignores ?? [])],
     };
   });
 
@@ -38,7 +38,7 @@ export default [
       "pnpm-lock.yaml",
     ],
   },
-  ...scopeTo(nextJsConfig, ["frontend/**/*.{js,mjs,cjs,ts,tsx}"]),
+  ...scopeTo(nextJsConfig, ["apps/frontend/**/*.{js,mjs,cjs,ts,tsx}"]),
   ...scopeTo(uiConfig, ["packages/ui/**/*.{js,mjs,cjs,ts,tsx}"]),
   ...scopeRepoRootTs(baseConfig),
 ];

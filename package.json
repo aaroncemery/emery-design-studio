@@ -1,33 +1,33 @@
 {
   "name": "emery-design-studio",
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "prepare": "husky",
-    "syncpack:check": "syncpack list-mismatches",
-    "syncpack:fix": "syncpack fix-mismatches"
-  },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@commitlint/types": "^20.5.0",
-    "eslint": "^9.39.1",
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "^9",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.7.4",
     "syncpack": "^14.3.0",
     "tsc-files": "^1.1.4",
     "turbo": "^2.9.6",
-    "typescript": "5.9.2"
+    "typescript": "^5"
   },
-  "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=23.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "dev": "turbo run dev",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint",
+    "prepare": "husky",
+    "syncpack:check": "syncpack list-mismatches",
+    "syncpack:fix": "syncpack fix-mismatches"
   },
   "syncpack": {
     "versionGroups": [
