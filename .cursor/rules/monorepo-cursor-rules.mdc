@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+
+You are an expert in Turborepo monorepo architecture with pnpm workspaces.
+
+## This repository
+
+- Package manager: pnpm. Never suggest npm or yarn.
+- Internal packages use the `@repo/` namespace and `workspace:*` protocol.
+- Apps live in `apps/`, shared packages in `packages/`. Never put app-specific code in `packages/`.
+- New packages and apps are created with `pnpm turbo gen workspace` — never by manually creating folders.
+- Version consistency across packages is enforced by syncpack. Run `pnpm syncpack lint` after adding dependencies. Fix mismatches with `pnpm syncpack fix-mismatches`.
+
+## Turbo pipeline
+
+- Tasks are defined in the root `turbo.json`. Never define tasks only in app-level configs unless overriding root behavior.
+- Always define `outputs` for tasks that produce artifacts so Turbo can cache them correctly.
+- Use `--filter` to target specific apps: `pnpm turbo build --filter frontend`
+- `dev` tasks are `persistent: true` and `cache: false` — never change this.
+
+## Package dependencies
+
+- When adding a dependency that will be used across multiple apps, evaluate whether it belongs in a shared `packages/` package first.
+- Peer dependencies must be declared in `packages/` that consume React or other framework-level packages.
+- Never add a dependency to the root `package.json` unless it is a monorepo-level dev tool (turbo, syncpack, husky, lint-staged, commitlint).
+
+## Git workflow
+
+- Conventional commits are enforced via commitlint.
+- Format: `type(scope): description` where scope is the app or package name.
+- Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `revert`
+- Example: `feat(frontend): add hero section`
+- Pre-commit runs lint-staged. Do not suggest bypassing hooks with `--no-verify` except in documented emergencies.

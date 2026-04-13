@@ -1,0 +1,80 @@
+---
+alwaysApply: false
+---
+
+You are an expert in Tailwind CSS v4 and its integration with React, Next.js, and shadcn/ui.
+
+## This project uses Tailwind v4
+
+- Configuration is CSS-first via `@import "tailwindcss"` in `globals.css`. There is no `tailwind.config.ts` or `tailwind.config.js`.
+- All design tokens are defined in `@theme` blocks in CSS, not in JavaScript.
+- Content detection is automatic — never add a `content` array or `@source` directive unless files are in an unusual location that Tailwind can't detect.
+- Never suggest installing or configuring `@tailwindcss/postcss` as a separate step — it is already configured.
+- The ESLint plugin for Tailwind (`eslint-plugin-tailwindcss`) is NOT compatible with v4. Never suggest installing it.
+
+## Theme and design tokens
+
+- Define all design tokens in `@theme` in `globals.css`:
+
+```css
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-500: oklch(0.62 0.18 252);
+  --font-sans: "Suisse Int'l", sans-serif;
+  --shadow-soft: 0 12px 40px rgb(15 23 42 / 0.14);
+  --breakpoint-3xl: 120rem;
+}
+```
+
+- Tokens defined in `@theme` automatically generate utility classes — `bg-brand-500`, `font-sans`, `shadow-soft`, `3xl:grid-cols-4`.
+- Prefer OKLCH for color values — it produces more vibrant, perceptually uniform colors than hex or RGB.
+- If a value appears more than once as an arbitrary value, promote it to a token in `@theme`.
+- Never define tokens in `:root` alone — use `@theme` so Tailwind generates utilities from them.
+
+## Class authoring
+
+- Never construct class names dynamically with string concatenation — Tailwind's compiler scans for literal class strings. `'bg-' + color + '-500'` will be purged in production.
+- Always use complete literal strings. Use `cn()` or `cva()` for conditional classes:
+
+```tsx
+// correct
+const classes = cn('bg-brand-500', isActive && 'ring-2 ring-brand-300');
+
+// wrong — purged in production
+const classes = `bg-${color}-500`;
+```
+
+- Use `cva` from `class-variance-authority` for component variants. This is the standard pattern with shadcn.
+- Use `cn` from `@/lib/utils` for merging conditional classes — it combines `clsx` and `tailwind-merge`.
+- Class order should follow: layout → sizing → spacing → typography → color → border → effects → state variants. Use `prettier-plugin-tailwindcss` to enforce this automatically.
+
+## Avoid @apply
+
+- `@apply` still works in v4 but is discouraged for component styling. It hides the utility layer and makes debugging harder.
+- Only use `@apply` when styling HTML you don't control (markdown, user-generated content, third-party widgets).
+- Prefer extracting a React component over using `@apply` for repeated class patterns.
+
+## shadcn integration
+
+- shadcn components use CSS variables for theming — these are defined in `globals.css` and mapped to `@theme` tokens.
+- Never modify shadcn component files directly. Extend them by wrapping or composing.
+- Use `cva` for variant-driven components consistent with how shadcn is authored.
+
+## Responsive design
+
+- Mobile-first always. Start with base styles, add responsive prefixes for larger screens.
+- Use container queries (`@container`) for component-level responsiveness rather than viewport breakpoints where appropriate — v4 has first-class container query support.
+- Prefer named breakpoints from `@theme` over arbitrary breakpoints.
+
+## Performance
+
+- Avoid arbitrary value explosion — every unique `shadow-[...]` or `w-[347px]` generates a new CSS rule. Promote repeated arbitrary values to tokens.
+- v4 generates smaller CSS than v3 and eliminates unused styles aggressively — do not add `safelist` unless absolutely necessary.
+- Tailwind v4 has no runtime — it is pure CSS. Never treat it as a runtime styling solution.
+
+## Dark mode
+
+- Dark mode uses the `.dark` class strategy by default with shadcn.
+- Use `dark:` variants for dark mode styles.
+- CSS variables defined in `globals.css` handle theme switching — prefer updating CSS variables over duplicating utility classes with `dark:` where possible.
