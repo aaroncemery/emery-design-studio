@@ -9,10 +9,10 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19",
+    "@types/react-dom": "19",
     "eslint": "^9",
-    "typescript": "^5"
+    "typescript": "5"
   },
   "exports": {
     "./*": "./src/*.tsx"

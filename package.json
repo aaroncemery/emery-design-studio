@@ -12,7 +12,7 @@
     "syncpack": "^14.3.0",
     "tsc-files": "^1.1.4",
     "turbo": "^2.9.6",
-    "typescript": "^5"
+    "typescript": "5"
   },
   "engines": {
     "node": ">=23.0.0"
@@ -26,10 +26,37 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "prepare": "husky",
-    "syncpack:check": "syncpack list-mismatches",
-    "syncpack:fix": "syncpack fix-mismatches"
+    "s:lint": "syncpack lint --dependency-types prod,dev,peer",
+    "s:fix": "syncpack fix --dependency-types prod,dev,peer"
   },
   "syncpack": {
+    "semverGroups": [
+      {
+        "label": "Exact versions for core framework packages",
+        "packages": [
+          "**"
+        ],
+        "dependencies": [
+          "typescript",
+          "react",
+          "react-dom",
+          "@types/react",
+          "@types/react-dom",
+          "next"
+        ],
+        "range": ""
+      },
+      {
+        "label": "Caret range for everything else",
+        "packages": [
+          "**"
+        ],
+        "dependencies": [
+          "**"
+        ],
+        "range": "^"
+      }
+    ],
     "versionGroups": [
       {
         "label": "Use workspace protocol for internal packages",
@@ -41,7 +68,8 @@
         ],
         "dependencyTypes": [
           "dev",
-          "prod"
+          "prod",
+          "peer"
         ],
         "pinVersion": "workspace:*"
       }
