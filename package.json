@@ -42,7 +42,8 @@
           "react-dom",
           "@types/react",
           "@types/react-dom",
-          "next"
+          "next",
+          "sanity"
         ],
         "range": ""
       },
