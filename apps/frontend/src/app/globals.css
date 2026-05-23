@@ -146,6 +146,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+} /* close :root */
 
 @layer theme {
   :root {
@@ -192,4 +193,32 @@
 [data-surface="dark"] {
   --color-meta:       var(--ink-on-dark);
   --color-meta-muted: var(--ink-on-dark-muted);
+}
+
+/* ---------- Studio overrides (unlayered — beat shadcn defaults) ---------- */
+/* --accent must resolve to ink-blue, not shadcn's light gray */
+:root {
+  --accent: oklch(0.355 0.063 249.0);
+  --accent-foreground: oklch(1 0 0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--paper-200); }
+::-webkit-scrollbar-thumb { background: oklch(0.181 0 0 / 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: oklch(0.181 0 0 / 0.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
