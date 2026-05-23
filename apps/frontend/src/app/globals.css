@@ -46,6 +46,37 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ---------- Semantic aliases (what components use) ---------- */
+  --color-paper:     var(--paper);
+  --color-paper-50:  var(--paper-50);
+  --color-paper-100: var(--paper-100);
+  --color-paper-200: var(--paper-200);
+
+  --color-ink:     var(--ink);
+  --color-ink-700: var(--ink-700);
+  --color-ink-500: var(--ink-500);
+  --color-ink-400: var(--ink-400);
+
+  --color-accent:     var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-2:   var(--accent-2);
+
+  --color-oxblood:    var(--oxblood);
+  --color-forest:     var(--forest);
+  --color-cobalt:     var(--cobalt);
+  --color-monochrome: var(--monochrome);
+
+  --color-line:        var(--line);
+  --color-line-strong: var(--line-strong);
+
+  /* ---------- Contextual tokens ---------- */
+  --color-meta:         var(--accent);        /* default: on paper */
+  --color-meta-muted:   var(--ink-500);
+
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans:  "Inter", -apple-system, "Segoe UI", sans-serif;
+  --font-mono:  "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
@@ -81,7 +112,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
 
 .dark {
   --background: oklch(0.145 0 0);
@@ -117,6 +147,35 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+@layer theme {
+  :root {
+    /* ---------- Raw palette ---------- */
+    --paper:      oklch(0.963 0.007 85.0);
+    --paper-50:   oklch(1.000 0     0);
+    --paper-100:  oklch(0.963 0.007 85.0);
+    --paper-200:  oklch(0.925 0.013 85.0);
+
+    --ink:        oklch(0.181 0     0);
+    --ink-700:    oklch(0.286 0     0);
+    --ink-500:    oklch(0.499 0.004 95.0);
+    --ink-400:    oklch(0.659 0.011 90.0);
+    --ink-on-dark:      oklch(0.920 0.008 85.0);
+    --ink-on-dark-muted: oklch(0.780 0.010 85.0);
+
+    --accent:     oklch(0.355 0.063 249.0);
+    --accent-ink: oklch(1.000 0     0);
+    --accent-2:   oklch(0.568 0.137 32.0);
+
+    --oxblood:    oklch(0.380 0.105 25.0);
+    --forest:     oklch(0.400 0.045 150.0);
+    --cobalt:     oklch(0.420 0.162 265.0);
+    --monochrome: oklch(0.181 0     0);
+
+    --line:        oklch(0.181 0 0 / 0.12);
+    --line-strong: oklch(0.181 0 0 / 0.28);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -127,4 +186,10 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ---------- Section overrides for dark hero ---------- */
+[data-surface="dark"] {
+  --color-meta:       var(--ink-on-dark);
+  --color-meta-muted: var(--ink-on-dark-muted);
 }
