@@ -1,38 +1,85 @@
+import Image from "next/image";
 import Link from "next/link";
+import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Placeholder } from "@/components/primitives/placeholder";
 import { Reveal } from "@/components/primitives/reveal";
+import type { StudioIntroSection } from "@/lib/sanity/types";
 
-const stats = [
+const FALLBACK_STATS = [
   { value: "12", label: "Years in practice" },
   { value: "48", label: "Homes completed" },
   { value: "6–8", label: "Projects per year" },
 ];
 
-export function StudioIntro() {
+interface Props {
+  data?: StudioIntroSection;
+}
+
+export function StudioIntro({ data }: Props) {
+  const heading =
+    data?.heading ??
+    "A small atelier on the water in Kirkland, working slowly and close to the hand.";
+  const stats = data?.stats ?? FALLBACK_STATS;
+  const mainImage = data?.images?.[0];
+  const insetImage = data?.images?.[1];
+
   return (
     <Section id="studio" className="bg-[#ece8df]" paddingY="xl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-[120px] items-start">
         {/* Left: stacked images */}
         <Reveal>
           <div className="relative">
-            {/* Main image */}
-            <Placeholder
-              variant="plaster"
-              aspectRatio={0.9}
-              className="w-full"
-            />
+            {mainImage?.asset?.url ? (
+              <div
+                className="relative w-full overflow-hidden"
+                style={{ aspectRatio: 0.9 }}
+              >
+                <Image
+                  src={mainImage.asset.url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  placeholder="blur"
+                  blurDataURL={mainImage.asset.metadata.lqip}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+            ) : (
+              <Placeholder
+                variant="plaster"
+                aspectRatio={0.9}
+                className="w-full"
+              />
+            )}
             {/* Inset offset card */}
             <div
               className="absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
               aria-hidden="true"
             >
-              <Placeholder
-                variant="wood"
-                aspectRatio={1.0}
-                className="w-full"
-              />
+              {insetImage?.asset?.url ? (
+                <div
+                  className="relative w-full overflow-hidden"
+                  style={{ aspectRatio: 1 }}
+                >
+                  <Image
+                    src={insetImage.asset.url}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    placeholder="blur"
+                    blurDataURL={insetImage.asset.metadata.lqip}
+                    sizes="25vw"
+                  />
+                </div>
+              ) : (
+                <Placeholder
+                  variant="wood"
+                  aspectRatio={1.0}
+                  className="w-full"
+                />
+              )}
             </div>
           </div>
         </Reveal>
@@ -50,24 +97,37 @@ export function StudioIntro() {
               className="font-serif text-[#111111] leading-[0.94] tracking-tight mb-8"
               style={{ fontSize: "clamp(34px, 3.8vw, 56px)" }}
             >
-              A small atelier on the water in <em>Kirkland</em>, working slowly
-              and close to the hand.
+              {heading.includes("/") ? (
+                <>
+                  {heading.split("/")[0].trim()}&nbsp;/
+                  <br />
+                  <em>{heading.split("/").slice(1).join("/").trim()}</em>
+                </>
+              ) : (
+                <em>{heading}</em>
+              )}
             </h2>
           </Reveal>
 
           <Reveal delay={0.14}>
-            <div className="space-y-4 mb-10">
-              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed">
-                We work with a small number of clients at a time — never more
-                than eight — so that every project receives the full weight of
-                our attention. Our process is deliberate, unhurried, and
-                collaborative.
-              </p>
-              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed">
-                Founded in 2014 by Aaron Emery, the studio has spent a decade
-                refining a single idea: that the best interiors are the ones
-                that take time to understand, not just to build.
-              </p>
+            <div className="space-y-4 mb-10 font-sans text-[#6b6b66] text-sm leading-relaxed">
+              {data?.body ? (
+                <PortableText value={data.body} />
+              ) : (
+                <>
+                  <p>
+                    We work with a small number of clients at a time — never
+                    more than eight — so that every project receives the full
+                    weight of our attention. Our process is deliberate,
+                    unhurried, and collaborative.
+                  </p>
+                  <p>
+                    Founded in 2014 by Aaron Emery, the studio has spent a
+                    decade refining a single idea: that the best interiors are
+                    the ones that take time to understand, not just to build.
+                  </p>
+                </>
+              )}
             </div>
           </Reveal>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   motion,
   useScroll,
@@ -9,11 +10,38 @@ import {
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { CTA } from "@/components/primitives/cta";
 import { Placeholder } from "@/components/primitives/placeholder";
+import type { HeroSection } from "@/lib/sanity/types";
 
-export function Hero() {
+interface Props {
+  data?: HeroSection;
+}
+
+export function Hero({ data }: Props) {
   const prefersReduced = useReducedMotion();
   const { scrollY } = useScroll();
   const imageY = useTransform(scrollY, [0, 900], ["0%", "25%"]);
+
+  const tagline = data?.tagline ?? "File ℶ24—Resi · Vol. XII · Spec. A";
+
+  // Split on "/" — editor convention: "Headline / italic second line"
+  let headlineLine1 = "Interiors /";
+  let headlineLine2 = "of consequence.";
+  if (data?.headline) {
+    const idx = data.headline.indexOf("/");
+    if (idx !== -1) {
+      headlineLine1 = data.headline.slice(0, idx).trim() + " /";
+      headlineLine2 = data.headline.slice(idx + 1).trim();
+    } else {
+      headlineLine1 = data.headline;
+      headlineLine2 = "";
+    }
+  }
+
+  const subheadline =
+    data?.subheadline ??
+    "Considered residential interiors from a small, slow studio on Lake Washington.";
+
+  const availabilityText = data?.availabilityText ?? null;
 
   return (
     <section
@@ -26,10 +54,23 @@ export function Hero() {
         className="absolute inset-0"
         style={prefersReduced ? { scale: 1.06 } : { y: imageY, scale: 1.06 }}
       >
-        <Placeholder
-          variant="daylight"
-          className="absolute inset-0 w-full h-full"
-        />
+        {data?.backgroundImage?.asset?.url ? (
+          <Image
+            src={data.backgroundImage.asset.url}
+            alt=""
+            fill
+            className="object-cover"
+            priority
+            placeholder="blur"
+            blurDataURL={data.backgroundImage.asset.metadata.lqip}
+            sizes="100vw"
+          />
+        ) : (
+          <Placeholder
+            variant="daylight"
+            className="absolute inset-0 w-full h-full"
+          />
+        )}
       </motion.div>
 
       {/* Vignette */}
@@ -43,9 +84,7 @@ export function Hero() {
         {/* Eyebrow with flanking rules */}
         <div className="flex items-center gap-5 mb-8">
           <div className="w-12 h-px bg-white/35" aria-hidden="true" />
-          <MonoLabel className="text-white/60">
-            File&nbsp;№24—Resi&nbsp;·&nbsp;Vol.&nbsp;XII&nbsp;·&nbsp;Spec.&nbsp;A
-          </MonoLabel>
+          <MonoLabel className="text-white/60">{tagline}</MonoLabel>
           <div className="w-12 h-px bg-white/35" aria-hidden="true" />
         </div>
 
@@ -54,14 +93,15 @@ export function Hero() {
           className="font-serif text-white leading-[0.92] tracking-tight mb-7"
           style={{ fontSize: "clamp(56px, 8vw, 132px)" }}
         >
-          <span className="block">Interiors&nbsp;/</span>
-          <span className="block italic">of consequence.</span>
+          <span className="block">{headlineLine1}</span>
+          {headlineLine2 && (
+            <span className="block italic">{headlineLine2}</span>
+          )}
         </h1>
 
         {/* Subhead */}
         <p className="font-sans text-white/75 text-base leading-relaxed max-w-sm mb-10">
-          Considered residential interiors from a small, slow studio on Lake
-          Washington.
+          {subheadline}
         </p>
 
         {/* CTAs */}
@@ -111,12 +151,20 @@ export function Hero() {
           <MonoLabel className="text-white/45 block mb-1.5">
             Currently
           </MonoLabel>
-          <p className="font-sans text-white text-sm leading-tight">
-            Two commissions for 2026
-          </p>
-          <MonoLabel className="text-white/35 mt-1.5 block text-[9px]">
-            2&nbsp;of&nbsp;6–8&nbsp;slots&nbsp;open
-          </MonoLabel>
+          {availabilityText ? (
+            <p className="font-sans text-white text-sm leading-tight">
+              {availabilityText}
+            </p>
+          ) : (
+            <>
+              <p className="font-sans text-white text-sm leading-tight">
+                Two commissions for 2026
+              </p>
+              <MonoLabel className="text-white/35 mt-1.5 block text-[9px]">
+                2&nbsp;of&nbsp;6–8&nbsp;slots&nbsp;open
+              </MonoLabel>
+            </>
+          )}
         </div>
       </div>
     </section>

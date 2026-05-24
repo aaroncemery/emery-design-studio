@@ -1,3 +1,8 @@
-import studio from '@sanity/eslint-config-studio'
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 
-export default [...studio]
+export default [
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  { ignores: ["dist/**"] },
+];

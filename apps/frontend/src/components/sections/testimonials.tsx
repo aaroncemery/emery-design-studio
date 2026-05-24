@@ -4,52 +4,66 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
+import type { Testimonial, PressItem } from "@/lib/sanity/types";
 
-interface Testimonial {
-  quote: string;
-  name: string;
-  context: string;
-}
-
-const testimonials: Testimonial[] = [
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
+    _id: "fallback-1",
+    _type: "testimonial",
     quote:
       "Working with Emery felt like hiring a trusted collaborator rather than a contractor. The result exceeded everything we imagined for the space.",
-    name: "Claire & Thomas B.",
-    context: "Madison Park Residence, 2025",
+    authorName: "Claire & Thomas B.",
+    authorContext: "Madison Park Residence, 2025",
   },
   {
+    _id: "fallback-2",
+    _type: "testimonial",
     quote:
       "Their restraint is the point. Every choice is deliberate, nothing is decorative for its own sake, and the spaces feel like they always belonged.",
-    name: "Sarah M.",
-    context: "Yarrow Point House, 2025",
+    authorName: "Sarah M.",
+    authorContext: "Yarrow Point House, 2025",
   },
   {
+    _id: "fallback-3",
+    _type: "testimonial",
     quote:
       "We've done three projects now. The studio's process is meticulous and the outcome is always more than we thought was possible in the space.",
-    name: "David K.",
-    context: "Hunts Point Retreat, 2024",
+    authorName: "David K.",
+    authorContext: "Hunts Point Retreat, 2024",
   },
 ];
 
-const publications = [
-  "Architectural Digest",
-  "Dwell",
-  "Remodelista",
-  "Kinfolk",
-  "The Gentlewoman",
-  "Cabana",
+const FALLBACK_PRESS: PressItem[] = [
+  { _id: "p1", _type: "pressItem", publicationName: "Architectural Digest" },
+  { _id: "p2", _type: "pressItem", publicationName: "Dwell" },
+  { _id: "p3", _type: "pressItem", publicationName: "Remodelista" },
+  { _id: "p4", _type: "pressItem", publicationName: "Kinfolk" },
+  { _id: "p5", _type: "pressItem", publicationName: "The Gentlewoman" },
+  { _id: "p6", _type: "pressItem", publicationName: "Cabana" },
 ];
 
-export function Testimonials() {
+interface Props {
+  testimonials?: Testimonial[];
+  pressItems?: PressItem[];
+}
+
+export function Testimonials({ testimonials, pressItems }: Props) {
+  const displayTestimonials =
+    testimonials && testimonials.length > 0
+      ? testimonials
+      : FALLBACK_TESTIMONIALS;
+  const displayPress =
+    pressItems && pressItems.length > 0 ? pressItems : FALLBACK_PRESS;
+
   const [active, setActive] = useState(0);
+  const safeActive = Math.min(active, displayTestimonials.length - 1);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActive((prev) => (prev + 1) % testimonials.length);
+      setActive((prev) => (prev + 1) % displayTestimonials.length);
     }, 7000);
     return () => clearInterval(timer);
-  }, []);
+  }, [displayTestimonials]);
 
   return (
     <Section id="testimonials" className="bg-[#111111]" paddingY="xl">
@@ -64,21 +78,21 @@ export function Testimonials() {
             role="tablist"
             aria-label="Client testimonials"
           >
-            {testimonials.map((t, i) => (
+            {displayTestimonials.map((t, i) => (
               <button
-                key={i}
+                key={t._id}
                 role="tab"
-                aria-selected={active === i}
+                aria-selected={safeActive === i}
                 aria-controls="testimonial-panel"
                 onClick={() => setActive(i)}
                 className="flex items-center gap-4 py-4 text-left group"
               >
                 <div
-                  className="w-8 h-px flex-shrink-0 transition-all duration-300"
+                  className="flex-shrink-0 h-px transition-all duration-300"
                   style={{
                     backgroundColor:
-                      active === i ? "#c8553d" : "rgba(246,244,239,0.2)",
-                    width: active === i ? "32px" : "16px",
+                      safeActive === i ? "#c8553d" : "rgba(246,244,239,0.2)",
+                    width: safeActive === i ? "32px" : "16px",
                   }}
                   aria-hidden="true"
                 />
@@ -86,12 +100,12 @@ export function Testimonials() {
                   className="transition-colors duration-300"
                   style={{
                     color:
-                      active === i
+                      safeActive === i
                         ? "rgba(246,244,239,0.9)"
                         : "rgba(246,244,239,0.35)",
                   }}
                 >
-                  {t.name}
+                  {t.authorName}
                 </MonoLabel>
               </button>
             ))}
@@ -108,7 +122,7 @@ export function Testimonials() {
         >
           <AnimatePresence mode="wait">
             <motion.div
-              key={active}
+              key={safeActive}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -128,11 +142,11 @@ export function Testimonials() {
                   className="font-serif italic text-[#f6f4ef] leading-[1.15] tracking-tight mb-8"
                   style={{ fontSize: "clamp(28px, 3.4vw, 52px)" }}
                 >
-                  {testimonials[active].quote}
+                  {displayTestimonials[safeActive]?.quote}
                 </p>
                 <footer>
                   <span className="font-serif text-[#f6f4ef]/80 text-base">
-                    — {testimonials[active].name}
+                    — {displayTestimonials[safeActive]?.authorName}
                   </span>
                   <div className="flex items-center gap-4 mt-3">
                     <div
@@ -140,7 +154,7 @@ export function Testimonials() {
                       aria-hidden="true"
                     />
                     <MonoLabel className="text-[#f6f4ef]/40 text-[9px]">
-                      {testimonials[active].context}
+                      {displayTestimonials[safeActive]?.authorContext}
                     </MonoLabel>
                   </div>
                 </footer>
@@ -156,12 +170,12 @@ export function Testimonials() {
           As featured in
         </MonoLabel>
         <div className="flex flex-wrap gap-x-10 gap-y-4">
-          {publications.map((pub) => (
+          {displayPress.map((item) => (
             <span
-              key={pub}
+              key={item._id}
               className="font-serif italic text-[#f6f4ef]/30 text-[22px] leading-none"
             >
-              {pub}
+              {item.publicationName}
             </span>
           ))}
         </div>
