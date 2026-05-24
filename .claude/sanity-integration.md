@@ -182,25 +182,25 @@ All section types are usable in both `homePage` and `page`.
 - [x] Env vars confirmed in `apps/frontend/.env.local` (all tokens present)
 - [x] Update `apps/frontend/src/app/actions/inquiry.ts` to write to Sanity + send Resend email
 
-### Session 3 — Frontend Component Wiring ⬜ NOT STARTED
+### Session 3 — Frontend Component Wiring ✅ COMPLETE (2026-05-23)
 
-- [ ] Update `apps/frontend/src/app/page.tsx` to fetch homePage from Sanity + render page builder
-- [ ] Update `hero.tsx` to accept Sanity data props
-- [ ] Update `featured-projects.tsx` to accept Sanity data props
-- [ ] Update `studio-intro.tsx` to accept Sanity data props
-- [ ] Update `services.tsx` to accept Sanity data props
-- [ ] Update `testimonials.tsx` to accept Sanity data props
-- [ ] Update `inquiry.tsx` to accept Sanity data props (scope/budget options)
-- [ ] Update `apps/frontend/src/app/work/page.tsx` (archive — fetch all projects)
-- [ ] Create `apps/frontend/src/app/work/[slug]/page.tsx` (individual project, fixed format)
-- [ ] Update `apps/frontend/src/app/journal/page.tsx` (archive — fetch all posts)
-- [ ] Create `apps/frontend/src/app/journal/[slug]/page.tsx` (individual post, fixed format)
-- [ ] Update `apps/frontend/src/app/services/page.tsx` to fetch services from Sanity
+- [x] Update `apps/frontend/src/app/page.tsx` to fetch homePage from Sanity + render page builder
+- [x] Update `hero.tsx` to accept Sanity data props
+- [x] Update `featured-projects.tsx` to accept Sanity data props
+- [x] Update `studio-intro.tsx` to accept Sanity data props
+- [x] Update `services.tsx` to accept Sanity data props
+- [x] Update `testimonials.tsx` to accept Sanity data props
+- [x] Update `inquiry.tsx` to accept Sanity data props (scope/budget options)
+- [x] Update `apps/frontend/src/app/work/page.tsx` (archive — fetch all projects)
+- [x] Create `apps/frontend/src/app/work/[slug]/page.tsx` (individual project, fixed format)
+- [x] Update `apps/frontend/src/app/journal/page.tsx` (archive — fetch all posts)
+- [x] Create `apps/frontend/src/app/journal/[slug]/page.tsx` (individual post, fixed format)
+- [x] Update `apps/frontend/src/app/services/page.tsx` to fetch services from Sanity
 
 ---
 
 ## Current Status
 
-**Next step:** Start Session 3 — Frontend Component Wiring
+**Next step:** Enter content in Sanity Studio, then verify the live frontend at localhost:3000
 
 **Note:** Studio version skew exists (local 5.20.0, runtime 5.26.0) — not blocking, but worth upgrading before deploy.

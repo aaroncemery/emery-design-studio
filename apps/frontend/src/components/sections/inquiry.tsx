@@ -6,8 +6,9 @@ import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
 import { Reveal } from "@/components/primitives/reveal";
 import { submitInquiry } from "@/app/actions/inquiry";
+import type { InquirySection } from "@/lib/sanity/types";
 
-const scopeOptions = [
+const FALLBACK_SCOPE_OPTIONS = [
   "Full Renovation",
   "Interior Architecture",
   "Styling & Furnishing",
@@ -15,7 +16,7 @@ const scopeOptions = [
   "Not yet sure",
 ];
 
-const budgetOptions = [
+const FALLBACK_BUDGET_OPTIONS = [
   "Under $500k",
   "$500k — $1M",
   "$1M — $3M",
@@ -43,7 +44,20 @@ function FieldLabel({
 const inputBase =
   "w-full bg-transparent border-0 border-b border-[rgba(17,17,17,0.2)] pb-3 font-sans text-[14px] text-[#111111] placeholder:text-[#9a968d] focus:outline-none focus:border-[#1b3a5b] transition-colors duration-300 resize-none";
 
-export function Inquiry() {
+interface Props {
+  data?: InquirySection;
+}
+
+export function Inquiry({ data }: Props) {
+  const scopeOptions =
+    data?.scopeOptions && data.scopeOptions.length > 0
+      ? data.scopeOptions
+      : FALLBACK_SCOPE_OPTIONS;
+  const budgetOptions =
+    data?.budgetOptions && data.budgetOptions.length > 0
+      ? data.budgetOptions
+      : FALLBACK_BUDGET_OPTIONS;
+
   const [budget, setBudget] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -80,16 +94,21 @@ export function Inquiry() {
               className="font-serif text-[#111111] leading-[0.94] tracking-tight mb-8"
               style={{ fontSize: "clamp(34px, 3.8vw, 56px)" }}
             >
-              We&rsquo;d be glad&nbsp;/
-              <br />
-              to <em>hear</em> from you.
+              {data?.heading ? (
+                data.heading
+              ) : (
+                <>
+                  We&rsquo;d be glad&nbsp;/
+                  <br />
+                  to <em>hear</em> from you.
+                </>
+              )}
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
             <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-10">
-              We take on six to eight projects per year and give each one our
-              full attention. If you&rsquo;re thinking about a project — even
-              one that&rsquo;s still forming — we&rsquo;d love to hear about it.
+              {data?.subheading ??
+                "We take on six to eight projects per year and give each one our full attention. If you’re thinking about a project — even one that’s still forming — we’d love to hear about it."}
             </p>
           </Reveal>
           <Reveal delay={0.18}>
