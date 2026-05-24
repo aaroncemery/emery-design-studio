@@ -303,17 +303,17 @@ Content (existing, unchanged)
 - [x] Create `apps/studio/src/schemaTypes/documents/footer.ts` (copyrightText, socialLinks, legalLinks)
 - [x] Create `apps/studio/src/schemaTypes/documents/legalPage.ts` (title, slug, body portable text)
 
-**4C — Update existing document types with groups + SEO**
+**4C — Update existing document types with groups + SEO** ✅ COMPLETE (2026-05-24)
 
-- [ ] Update `homePage.ts` — add fieldGroups (content, seo) + assign fields + add seo field
-- [ ] Update `page.ts` — add fieldGroups (content, seo) + assign fields + add seo field
-- [ ] Update `journalPost.ts` — add fieldGroups (content, media, seo) + assign fields + add seo field
-- [ ] Update `project.ts` — add fieldGroups (content, details, media, seo) + assign fields + add seo field
+- [x] Update `homePage.ts` — add fieldGroups (content, seo) + assign fields + add seo field
+- [x] Update `page.ts` — add fieldGroups (content, seo) + assign fields + add seo field
+- [x] Update `journalPost.ts` — add fieldGroups (content, media, seo) + assign fields + add seo field
+- [x] Update `project.ts` — add fieldGroups (content, details, media, seo) + assign fields + add seo field
 
-**4D — Wire schemas + structure builder**
+**4D — Wire schemas + structure builder** ✅ COMPLETE (2026-05-24)
 
-- [ ] Update `apps/studio/src/schemaTypes/index.ts` — add all new types
-- [ ] Update `apps/studio/sanity.config.ts` — add Admin section with 4 singletons/lists, keep existing Content items
+- [x] Update `apps/studio/src/schemaTypes/index.ts` — add all new types
+- [x] Update `apps/studio/sanity.config.ts` — add Admin section with 4 singletons/lists, keep existing Content items
 
 ### Session 5 — SEO + Admin: Frontend Wiring
 
