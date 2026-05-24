@@ -28,10 +28,25 @@ export const studioIntroSection = defineType({
       ],
     }),
     defineField({
+      name: "imageLayout",
+      title: "Image Layout",
+      type: "string",
+      options: {
+        list: [
+          { title: "Main with Inset", value: "mainWithInset" },
+          { title: "Side by Side", value: "sideBySide" },
+          { title: "Single Full", value: "singleFull" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "mainWithInset",
+    }),
+    defineField({
       name: "images",
       type: "array",
       of: [defineArrayMember({ type: "image", options: { hotspot: true } })],
-      description: "First image is the main image; second is the inset",
+      description:
+        "mainWithInset: first is main, second is inset. sideBySide: first two shown equal width. singleFull: first image only.",
     }),
   ],
   preview: {

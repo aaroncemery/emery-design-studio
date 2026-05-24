@@ -3,22 +3,67 @@
 import Link from "next/link";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
+import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
+import type { Navigation, Footer } from "@/lib/sanity/types";
 
-const studioLinks = [
-  { label: "Work", href: "/work" },
-  { label: "Studio", href: "/studio" },
-  { label: "Services", href: "/services" },
-  { label: "Journal", href: "/journal" },
-  { label: "Inquiry", href: "/#contact" },
+const FALLBACK_STUDIO_LINKS = [
+  { key: "/work", label: "Work", href: "/work" },
+  { key: "/studio", label: "Studio", href: "/studio" },
+  { key: "/services", label: "Services", href: "/services" },
+  { key: "/journal", label: "Journal", href: "/journal" },
+  { key: "/#contact", label: "Inquiry", href: "/#contact" },
 ];
 
-const elsewhereLinks = [
-  { label: "Instagram", href: "#" },
-  { label: "Pinterest", href: "#" },
-  { label: "Houzz", href: "#" },
+const FALLBACK_SOCIAL_LINKS = [
+  { key: "instagram", label: "Instagram", href: "#" },
+  { key: "pinterest", label: "Pinterest", href: "#" },
+  { key: "houzz", label: "Houzz", href: "#" },
 ];
 
-export function SiteFooter() {
+const FALLBACK_LEGAL_LINKS = [
+  { key: "/legal/terms", label: "Terms", href: "/legal/terms" },
+  { key: "/legal/privacy", label: "Privacy", href: "/legal/privacy" },
+];
+
+const PLATFORM_LABELS: Record<string, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  houzz: "Houzz",
+  youtube: "YouTube",
+};
+
+interface SiteFooterProps {
+  navigation?: Navigation | null;
+  footer?: Footer | null;
+}
+
+export function SiteFooter({ navigation, footer }: SiteFooterProps) {
+  const studioLinks = navigation?.items?.length
+    ? navigation.items.map((item) => ({
+        key: item._key,
+        label: resolveNavLabel(item),
+        href: resolveNavHref(item),
+      }))
+    : FALLBACK_STUDIO_LINKS;
+
+  const socialLinks = footer?.socialLinks?.length
+    ? footer.socialLinks.map((link) => ({
+        key: link._key,
+        label: PLATFORM_LABELS[link.platform] ?? link.platform,
+        href: link.url,
+      }))
+    : FALLBACK_SOCIAL_LINKS;
+
+  const legalLinks = footer?.legalLinks?.length
+    ? footer.legalLinks.map((item) => ({
+        key: item._key,
+        label: resolveNavLabel(item),
+        href: resolveNavHref(item),
+      }))
+    : FALLBACK_LEGAL_LINKS;
+
+  const copyrightText = footer?.copyrightText ?? "© MMXXVI Emery Design Studio";
+
   return (
     <footer className="bg-[#f6f4ef]" id="footer">
       {/* Massive display wordmark */}
@@ -76,7 +121,7 @@ export function SiteFooter() {
             <nav aria-label="Footer studio navigation">
               <ul className="space-y-3">
                 {studioLinks.map((link) => (
-                  <li key={link.href}>
+                  <li key={link.key}>
                     <Link
                       href={link.href}
                       className="font-sans text-[#6b6b66] text-sm hover:text-[#111111] transition-colors duration-300"
@@ -121,8 +166,8 @@ export function SiteFooter() {
             </MonoLabel>
             <nav aria-label="Footer social links">
               <ul className="space-y-3">
-                {elsewhereLinks.map((link) => (
-                  <li key={link.label}>
+                {socialLinks.map((link) => (
+                  <li key={link.key}>
                     <a
                       href={link.href}
                       target="_blank"
@@ -149,24 +194,21 @@ export function SiteFooter() {
       <Rule className="mx-6 md:mx-10 lg:mx-14" />
       <div className="mx-auto w-full max-w-370 px-6 md:px-10 lg:px-14 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <MonoLabel className="text-[#9a968d] text-[9px]">
-          © MMXXVI Emery Design Studio
+          {copyrightText}
         </MonoLabel>
         <div className="flex items-center gap-6">
           <MonoLabel className="text-[#9a968d] text-[9px]">
             Photography: Various artists
           </MonoLabel>
-          <Link
-            href="/terms"
-            className="font-mono text-[9px] tracking-[0.16em] uppercase text-[#9a968d] hover:text-[#111111] transition-colors duration-300"
-          >
-            Terms
-          </Link>
-          <Link
-            href="/privacy"
-            className="font-mono text-[9px] tracking-[0.16em] uppercase text-[#9a968d] hover:text-[#111111] transition-colors duration-300"
-          >
-            Privacy
-          </Link>
+          {legalLinks.map((link) => (
+            <Link
+              key={link.key}
+              href={link.href}
+              className="font-mono text-[9px] tracking-[0.16em] uppercase text-[#9a968d] hover:text-[#111111] transition-colors duration-300"
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
       </div>
     </footer>

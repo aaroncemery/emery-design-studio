@@ -1,13 +1,14 @@
-import { SiteNav } from "@/components/nav/site-nav";
+import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
 import { StudioIntro } from "@/components/sections/studio-intro";
 import { Services } from "@/components/sections/services";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Inquiry } from "@/components/sections/inquiry";
-import { SiteFooter } from "@/components/sections/site-footer";
 import { sanityFetch } from "@/lib/sanity/client";
-import { HOME_PAGE_QUERY } from "@/lib/sanity/queries";
+import { HOME_PAGE_QUERY, SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import type { SiteSettings } from "@/lib/sanity/types";
 import type {
   HomePage,
   HeroSection,
@@ -21,6 +22,23 @@ import type {
 } from "@/lib/sanity/types";
 
 export const revalidate = false;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [homePage, siteSettings] = await Promise.all([
+    sanityFetch<HomePage>({ query: HOME_PAGE_QUERY, tags: ["homePage"] }),
+    sanityFetch<SiteSettings | null>({
+      query: SITE_SETTINGS_QUERY,
+      tags: ["siteSettings"],
+    }),
+  ]);
+
+  return buildMetadata({
+    pageSeo: homePage?.seo,
+    siteSettings,
+    fallbackDescription:
+      "Considered residential interiors from a small, slow studio on Lake Washington.",
+  });
+}
 
 export default async function Home() {
   const homePage = await sanityFetch<HomePage>({
@@ -58,22 +76,18 @@ export default async function Home() {
   );
 
   return (
-    <>
-      <SiteNav />
-      <main id="main">
-        <Hero data={heroData} />
-        <FeaturedProjects
-          projects={projectsSection?.items as Project[] | undefined}
-        />
-        <StudioIntro data={studioIntroData} />
-        <Services services={servicesSection?.items as Service[] | undefined} />
-        <Testimonials
-          testimonials={testimonialsSection?.items as Testimonial[] | undefined}
-          pressItems={pressSection?.items as PressItem[] | undefined}
-        />
-        <Inquiry data={inquiryData} />
-      </main>
-      <SiteFooter />
-    </>
+    <main id="main">
+      <Hero data={heroData} />
+      <FeaturedProjects
+        projects={projectsSection?.items as Project[] | undefined}
+      />
+      <StudioIntro data={studioIntroData} />
+      <Services services={servicesSection?.items as Service[] | undefined} />
+      <Testimonials
+        testimonials={testimonialsSection?.items as Testimonial[] | undefined}
+        pressItems={pressSection?.items as PressItem[] | undefined}
+      />
+      <Inquiry data={inquiryData} />
+    </main>
   );
 }
