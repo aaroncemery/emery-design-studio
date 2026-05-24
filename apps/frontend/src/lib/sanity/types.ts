@@ -148,6 +148,7 @@ export interface StudioIntroSection {
   heading?: string;
   body?: PortableTextContent;
   stats?: Array<{ label: string; value: string }>;
+  imageLayout?: "mainWithInset" | "sideBySide" | "singleFull";
   images?: SanityImage[];
 }
 
