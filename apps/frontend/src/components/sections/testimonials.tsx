@@ -66,7 +66,7 @@ export function Testimonials() {
           >
             {testimonials.map((t, i) => (
               <button
-                key={i}
+                key={t.name}
                 role="tab"
                 aria-selected={active === i}
                 aria-controls="testimonial-panel"

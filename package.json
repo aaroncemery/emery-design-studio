@@ -1,18 +1,18 @@
 {
   "name": "emery-design-studio",
   "devDependencies": {
-    "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^20.5.0",
-    "@commitlint/types": "^20.5.0",
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
+    "@commitlint/types": "^21.0.1",
     "@repo/eslint-config": "workspace:*",
-    "eslint": "^9",
+    "eslint": "^10.4.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "prettier": "^3.7.4",
-    "syncpack": "^14.3.0",
+    "lint-staged": "^17.0.5",
+    "prettier": "^3.8.3",
+    "syncpack": "^15.3.1",
     "tsc-files": "^1.1.4",
-    "turbo": "^2.9.6",
-    "typescript": "5"
+    "turbo": "^2.9.14",
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=23.0.0"
