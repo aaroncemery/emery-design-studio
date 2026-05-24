@@ -4,16 +4,28 @@ import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/client";
-import { ALL_JOURNAL_POSTS_QUERY } from "@/lib/sanity/queries";
-import type { JournalPost } from "@/lib/sanity/types";
+import {
+  ALL_JOURNAL_POSTS_QUERY,
+  SITE_SETTINGS_QUERY,
+} from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import type { JournalPost, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
 
-export const metadata: Metadata = {
-  title: "Journal — Emery Design Studio",
-  description:
-    "Writing and notes from Emery Design Studio on interiors, materials, and process.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await sanityFetch<SiteSettings | null>({
+    query: SITE_SETTINGS_QUERY,
+    tags: ["siteSettings"],
+  });
+
+  return buildMetadata({
+    siteSettings,
+    fallbackTitle: "Journal",
+    fallbackDescription:
+      "Writing and notes from Emery Design Studio on interiors, materials, and process.",
+  });
+}
 
 export default async function JournalPage() {
   const posts = await sanityFetch<JournalPost[]>({

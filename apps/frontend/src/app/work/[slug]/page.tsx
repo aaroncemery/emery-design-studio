@@ -6,8 +6,12 @@ import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { client, sanityFetch } from "@/lib/sanity/client";
-import { PROJECT_BY_SLUG_QUERY } from "@/lib/sanity/queries";
-import type { Project } from "@/lib/sanity/types";
+import {
+  PROJECT_BY_SLUG_QUERY,
+  SITE_SETTINGS_QUERY,
+} from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import type { Project, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
 export const dynamicParams = true;
@@ -25,18 +29,26 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await sanityFetch<Project>({
-    query: PROJECT_BY_SLUG_QUERY,
-    params: { slug },
-    tags: [`project:${slug}`],
-  });
+  const [project, siteSettings] = await Promise.all([
+    sanityFetch<Project>({
+      query: PROJECT_BY_SLUG_QUERY,
+      params: { slug },
+      tags: [`project:${slug}`],
+    }),
+    sanityFetch<SiteSettings | null>({
+      query: SITE_SETTINGS_QUERY,
+      tags: ["siteSettings"],
+    }),
+  ]);
 
   if (!project) return {};
 
-  return {
-    title: `${project.title} — Emery Design Studio`,
-    description: project.excerpt,
-  };
+  return buildMetadata({
+    pageSeo: project.seo,
+    siteSettings,
+    fallbackTitle: project.title,
+    fallbackDescription: project.excerpt,
+  });
 }
 
 export default async function ProjectPage({

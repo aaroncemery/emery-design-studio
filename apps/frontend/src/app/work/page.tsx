@@ -4,16 +4,25 @@ import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/client";
-import { ALL_PROJECTS_QUERY } from "@/lib/sanity/queries";
-import type { Project } from "@/lib/sanity/types";
+import { ALL_PROJECTS_QUERY, SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import type { Project, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
 
-export const metadata: Metadata = {
-  title: "Work — Emery Design Studio",
-  description:
-    "Selected residential interior projects by Emery Design Studio, Kirkland WA.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await sanityFetch<SiteSettings | null>({
+    query: SITE_SETTINGS_QUERY,
+    tags: ["siteSettings"],
+  });
+
+  return buildMetadata({
+    siteSettings,
+    fallbackTitle: "Work",
+    fallbackDescription:
+      "Selected residential interior projects by Emery Design Studio, Kirkland WA.",
+  });
+}
 
 export default async function WorkPage() {
   const projects = await sanityFetch<Project[]>({

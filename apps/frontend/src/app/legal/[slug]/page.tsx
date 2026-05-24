@@ -5,8 +5,12 @@ import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { client, sanityFetch } from "@/lib/sanity/client";
-import { LEGAL_PAGE_BY_SLUG_QUERY } from "@/lib/sanity/queries";
-import type { LegalPage } from "@/lib/sanity/types";
+import {
+  LEGAL_PAGE_BY_SLUG_QUERY,
+  SITE_SETTINGS_QUERY,
+} from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import type { LegalPage, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
 export const dynamicParams = true;
@@ -24,18 +28,25 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const page = await sanityFetch<LegalPage>({
-    query: LEGAL_PAGE_BY_SLUG_QUERY,
-    params: { slug },
-    tags: [`legalPage:${slug}`],
-  });
+  const [page, siteSettings] = await Promise.all([
+    sanityFetch<LegalPage>({
+      query: LEGAL_PAGE_BY_SLUG_QUERY,
+      params: { slug },
+      tags: [`legalPage:${slug}`],
+    }),
+    sanityFetch<SiteSettings | null>({
+      query: SITE_SETTINGS_QUERY,
+      tags: ["siteSettings"],
+    }),
+  ]);
 
   if (!page) return {};
 
-  return {
-    title: `${page.title} — Emery Design Studio`,
-    description: page.seo?.description,
-  };
+  return buildMetadata({
+    pageSeo: page.seo,
+    siteSettings,
+    fallbackTitle: page.title,
+  });
 }
 
 export default async function LegalPage({

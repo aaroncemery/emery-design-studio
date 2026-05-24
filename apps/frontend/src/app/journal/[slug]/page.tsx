@@ -6,8 +6,12 @@ import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { client, sanityFetch } from "@/lib/sanity/client";
-import { JOURNAL_POST_BY_SLUG_QUERY } from "@/lib/sanity/queries";
-import type { JournalPost } from "@/lib/sanity/types";
+import {
+  JOURNAL_POST_BY_SLUG_QUERY,
+  SITE_SETTINGS_QUERY,
+} from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import type { JournalPost, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
 export const dynamicParams = true;
@@ -25,17 +29,25 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await sanityFetch<JournalPost>({
-    query: JOURNAL_POST_BY_SLUG_QUERY,
-    params: { slug },
-    tags: [`journalPost:${slug}`],
-  });
+  const [post, siteSettings] = await Promise.all([
+    sanityFetch<JournalPost>({
+      query: JOURNAL_POST_BY_SLUG_QUERY,
+      params: { slug },
+      tags: [`journalPost:${slug}`],
+    }),
+    sanityFetch<SiteSettings | null>({
+      query: SITE_SETTINGS_QUERY,
+      tags: ["siteSettings"],
+    }),
+  ]);
 
   if (!post) return {};
 
-  return {
-    title: `${post.title} — Emery Design Studio`,
-  };
+  return buildMetadata({
+    pageSeo: post.seo,
+    siteSettings,
+    fallbackTitle: post.title,
+  });
 }
 
 export default async function JournalPostPage({
