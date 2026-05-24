@@ -199,8 +199,29 @@ All section types are usable in both `homePage` and `page`.
 
 ---
 
+## Housekeeping Done (2026-05-23)
+
+- All Sanity packages confirmed at latest: `sanity@5.26.0`, `next-sanity@13.0.3`, `@sanity/image-url@2.1.1`, `@sanity/vision@5.26.0`
+- All other monorepo packages confirmed up to date (pnpm outdated --recursive: nothing to report)
+- `.nvmrc` added to repo root (`lts/*`) — run `nvm use` on entry to silence the Node engine warning
+- Version skew note from Session 1 is resolved — studio is on 5.26.0
+
+---
+
 ## Current Status
 
-**Next step:** Enter content in Sanity Studio, then verify the live frontend at localhost:3000
+**Next step: Enter content in Sanity Studio and verify the live frontend**
 
-**Note:** Studio version skew exists (local 5.20.0, runtime 5.26.0) — not blocking, but worth upgrading before deploy.
+1. Start the studio: `pnpm dev --filter studio` → http://localhost:3333
+2. Create a **Home Page** document and add sections (heroSection, studioIntroSection, collectionSections for projects/services/testimonials/press, inquirySection)
+3. Create at least one **Project** (mark it featured=true), one **Service**, one **Testimonial**, one **Press Item**
+4. Publish everything
+5. Start the frontend: `pnpm dev --filter frontend` → http://localhost:3000
+6. Verify homepage renders Sanity content (not fallbacks), /work shows the project grid, /work/[slug] renders the project page, /services renders from CMS
+7. Submit a test inquiry and confirm it appears in Sanity under Submissions and an email arrives at amanda@emerydesign.studio
+
+**After content is verified**, the integration is production-ready. Remaining pre-deploy items:
+
+- Add `noreply@emerydesign.studio` as a verified sender in the Resend dashboard (currently used as the from address in inquiry.ts)
+- Set env vars on the production host (Vercel / wherever) — same vars as .env.local
+- Deploy studio: `pnpm deploy --filter studio`
