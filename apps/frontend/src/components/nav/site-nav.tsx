@@ -5,21 +5,35 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
+import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
+import type { Navigation } from "@/lib/sanity/types";
 
-const navLinks = [
-  { label: "Work", href: "/work" },
-  { label: "Studio", href: "/studio" },
-  { label: "Services", href: "/services" },
-  { label: "Journal", href: "/journal" },
+const FALLBACK_NAV_LINKS = [
+  { key: "/work", label: "Work", href: "/work" },
+  { key: "/studio", label: "Studio", href: "/studio" },
+  { key: "/services", label: "Services", href: "/services" },
+  { key: "/journal", label: "Journal", href: "/journal" },
 ];
 
-export function SiteNav() {
+interface SiteNavProps {
+  navigation?: Navigation | null;
+}
+
+export function SiteNav({ navigation }: SiteNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 60);
   });
+
+  const resolvedLinks = navigation?.items?.length
+    ? navigation.items.map((item) => ({
+        key: item._key,
+        label: resolveNavLabel(item),
+        href: resolveNavHref(item),
+      }))
+    : FALLBACK_NAV_LINKS;
 
   const labelClass = cn(
     "transition-colors duration-500",
@@ -86,9 +100,9 @@ export function SiteNav() {
 
           <div className={dividerClass} />
 
-          {navLinks.map((link) => (
+          {resolvedLinks.map((link) => (
             <Link
-              key={link.href}
+              key={link.key}
               href={link.href}
               className={cn(
                 "font-mono text-[10px] tracking-[0.16em] uppercase px-3 py-1 transition-colors duration-500 hover:opacity-70",

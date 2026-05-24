@@ -1,11 +1,9 @@
-import { SiteNav } from "@/components/nav/site-nav";
 import { Hero } from "@/components/sections/hero";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
 import { StudioIntro } from "@/components/sections/studio-intro";
 import { Services } from "@/components/sections/services";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Inquiry } from "@/components/sections/inquiry";
-import { SiteFooter } from "@/components/sections/site-footer";
 import { sanityFetch } from "@/lib/sanity/client";
 import { HOME_PAGE_QUERY } from "@/lib/sanity/queries";
 import type {
@@ -58,22 +56,18 @@ export default async function Home() {
   );
 
   return (
-    <>
-      <SiteNav />
-      <main id="main">
-        <Hero data={heroData} />
-        <FeaturedProjects
-          projects={projectsSection?.items as Project[] | undefined}
-        />
-        <StudioIntro data={studioIntroData} />
-        <Services services={servicesSection?.items as Service[] | undefined} />
-        <Testimonials
-          testimonials={testimonialsSection?.items as Testimonial[] | undefined}
-          pressItems={pressSection?.items as PressItem[] | undefined}
-        />
-        <Inquiry data={inquiryData} />
-      </main>
-      <SiteFooter />
-    </>
+    <main id="main">
+      <Hero data={heroData} />
+      <FeaturedProjects
+        projects={projectsSection?.items as Project[] | undefined}
+      />
+      <StudioIntro data={studioIntroData} />
+      <Services services={servicesSection?.items as Service[] | undefined} />
+      <Testimonials
+        testimonials={testimonialsSection?.items as Testimonial[] | undefined}
+        pressItems={pressSection?.items as PressItem[] | undefined}
+      />
+      <Inquiry data={inquiryData} />
+    </main>
   );
 }
