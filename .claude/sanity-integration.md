@@ -172,15 +172,15 @@ All section types are usable in both `homePage` and `page`.
 - [x] Configure structure builder in `apps/studio/sanity.config.ts` (singletons, submission queue)
 - [x] Verified Studio runs, TypeScript clean, HTTP 200 at localhost:3333
 
-### Session 2 — Frontend Client + Queries ⬜ NOT STARTED
+### Session 2 — Frontend Client + Queries ✅ COMPLETE (2026-05-23)
 
-- [ ] Install `next-sanity` in `apps/frontend`
-- [ ] Install `resend` in `apps/frontend`
-- [ ] Create `apps/frontend/src/lib/sanity/client.ts` (createClient, sanityFetch, urlFor)
-- [ ] Create `apps/frontend/src/lib/sanity/queries.ts` (GROQ per content type + page builder)
-- [ ] Create `apps/frontend/src/lib/sanity/types.ts` (TypeScript interfaces)
-- [ ] Add env vars to `apps/frontend/.env.local` (tokens as placeholders if not yet generated)
-- [ ] Update `apps/frontend/src/app/actions/inquiry.ts` to write to Sanity + send Resend email
+- [x] Install `next-sanity` in `apps/frontend`
+- [x] Install `resend` in `apps/frontend`
+- [x] Create `apps/frontend/src/lib/sanity/client.ts` (createClient, sanityFetch, urlFor)
+- [x] Create `apps/frontend/src/lib/sanity/queries.ts` (GROQ per content type + page builder)
+- [x] Create `apps/frontend/src/lib/sanity/types.ts` (TypeScript interfaces)
+- [x] Env vars confirmed in `apps/frontend/.env.local` (all tokens present)
+- [x] Update `apps/frontend/src/app/actions/inquiry.ts` to write to Sanity + send Resend email
 
 ### Session 3 — Frontend Component Wiring ⬜ NOT STARTED
 
@@ -201,6 +201,6 @@ All section types are usable in both `homePage` and `page`.
 
 ## Current Status
 
-**Next step:** Start Session 2 — Frontend Client + Queries
+**Next step:** Start Session 3 — Frontend Component Wiring
 
 **Note:** Studio version skew exists (local 5.20.0, runtime 5.26.0) — not blocking, but worth upgrading before deploy.
