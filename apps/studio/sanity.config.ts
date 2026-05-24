@@ -7,7 +7,7 @@ const SINGLETON_HOME_PAGE_ID = "singleton-homePage";
 
 export default defineConfig({
   name: "default",
-  title: "Aligned Interior",
+  title: "Emery Design Studio",
 
   projectId: "qehxawm7",
   dataset: "edc-prod",
