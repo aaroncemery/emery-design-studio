@@ -22,9 +22,29 @@ const bodyFields = `
   }
 `;
 
+const seoFields = `
+  title,
+  description,
+  "ogImage": ogImage { ${imageFields} },
+  keywords,
+  noIndex,
+  noFollow,
+  robots,
+  canonicalUrl
+`;
+
+const navItemFields = `
+  _key,
+  linkType,
+  label,
+  url,
+  "page": page-> { title, "slug": slug.current, _type }
+`;
+
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
     title,
+    "seo": seo { ${seoFields} },
     sections[] {
       _type,
       _key,
@@ -109,7 +129,8 @@ export const PROJECT_BY_SLUG_QUERY = `
     featured,
     "coverImage": coverImage { ${imageFields} },
     gallery[] { ${imageFields} },
-    body[] { ${bodyFields} }
+    body[] { ${bodyFields} },
+    "seo": seo { ${seoFields} }
   }
 `;
 
@@ -161,6 +182,105 @@ export const JOURNAL_POST_BY_SLUG_QUERY = `
     author,
     publishedAt,
     "coverImage": coverImage { ${imageFields} },
-    body[] { ${bodyFields} }
+    body[] { ${bodyFields} },
+    "seo": seo { ${seoFields} }
+  }
+`;
+
+export const PAGE_BY_SLUG_QUERY = `
+  *[_type == "page" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    sections[] {
+      _type,
+      _key,
+      headline,
+      subheadline,
+      availabilityText,
+      tagline,
+      "backgroundImage": backgroundImage { ${imageFields} },
+      heading,
+      body[] { ${bodyFields} },
+      stats[] { label, value },
+      "images": images[] { ${imageFields} },
+      subheading,
+      displayAs,
+      "items": items[]-> {
+        _type,
+        _id,
+        title,
+        "slug": slug.current,
+        location,
+        year,
+        season,
+        category,
+        excerpt,
+        featured,
+        "coverImage": coverImage { ${imageFields} },
+        number,
+        description,
+        tags,
+        quote,
+        authorName,
+        authorContext,
+        publicationName,
+        url,
+        "logo": logo { ${imageFields} }
+      },
+      scopeOptions,
+      budgetOptions
+    },
+    "seo": seo { ${seoFields} }
+  }
+`;
+
+export const SITE_SETTINGS_QUERY = `
+  *[_type == "siteSettings"][0] {
+    siteName,
+    siteDescription,
+    "defaultOgImage": defaultOgImage { ${imageFields} },
+    "logo": logo { ${imageFields} },
+    "favicon": favicon { ${imageFields} }
+  }
+`;
+
+export const NAVIGATION_QUERY = `
+  *[_type == "navigation"][0] {
+    items[] {
+      ${navItemFields}
+    }
+  }
+`;
+
+export const FOOTER_QUERY = `
+  *[_type == "footer"][0] {
+    copyrightText,
+    socialLinks[] {
+      _key,
+      platform,
+      url
+    },
+    legalLinks[] {
+      ${navItemFields}
+    }
+  }
+`;
+
+export const ALL_LEGAL_PAGES_QUERY = `
+  *[_type == "legalPage"] | order(title asc) {
+    _id,
+    title,
+    "slug": slug.current
+  }
+`;
+
+export const LEGAL_PAGE_BY_SLUG_QUERY = `
+  *[_type == "legalPage" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    body[] { ${bodyFields} },
+    "seo": seo { ${seoFields} }
   }
 `;
