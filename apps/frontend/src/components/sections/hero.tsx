@@ -115,8 +115,8 @@ export function Hero({ data }: Props) {
         </div>
       </div>
 
-      {/* Bottom credit rail */}
-      <div className="absolute bottom-7 inset-x-0 px-8 lg:px-14 flex items-end justify-between z-10">
+      {/* Bottom credit rail — hidden on mobile */}
+      <div className="hidden md:flex absolute bottom-7 inset-x-0 px-8 lg:px-14 items-end justify-between z-10">
         {/* Left: featured project */}
         <div>
           <MonoLabel className="text-white/45 block mb-1.5">Featured</MonoLabel>
