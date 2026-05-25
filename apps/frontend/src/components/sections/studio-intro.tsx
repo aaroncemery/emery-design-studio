@@ -30,7 +30,7 @@ export function StudioIntro({ data }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-[120px] items-start">
         {/* Left: stacked images */}
         <Reveal>
-          <div className="relative">
+          <div className="relative lg:pb-8">
             {mainImage?.asset?.url ? (
               <div
                 className="relative w-full overflow-hidden"
@@ -53,9 +53,9 @@ export function StudioIntro({ data }: Props) {
                 className="w-full"
               />
             )}
-            {/* Inset offset card */}
+            {/* Inset offset card — desktop only (bleeds off-screen on mobile) */}
             <div
-              className="absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
+              className="hidden lg:block absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
               aria-hidden="true"
             >
               {insetImage?.asset?.url ? (
@@ -133,7 +133,7 @@ export function StudioIntro({ data }: Props) {
 
           {/* Stats */}
           <Reveal delay={0.2}>
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-[rgba(17,17,17,0.12)]">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-8 border-t border-[rgba(17,17,17,0.12)]">
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <span
@@ -142,7 +142,7 @@ export function StudioIntro({ data }: Props) {
                   >
                     {stat.value}
                   </span>
-                  <MonoLabel className="text-[#9a968d] mt-2 block text-[9px] leading-snug">
+                  <MonoLabel className="text-[#9a968d] mt-2 block text-[11px] md:text-[9px] leading-snug">
                     {stat.label}
                   </MonoLabel>
                 </div>
