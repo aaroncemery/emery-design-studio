@@ -81,61 +81,66 @@ export function Testimonials({ testimonials, pressItems }: Props) {
         §&nbsp;05&nbsp;—&nbsp;Clients
       </MonoLabel>
 
-      {/* Quote — grid-stacked so container height stays at tallest quote */}
+      {/* Quote panel */}
       <div
         id="testimonial-panel"
         role="tabpanel"
         aria-live="polite"
         aria-label="Current testimonial"
-        className="mb-14 grid"
+        className="mb-14"
       >
-        {displayTestimonials.map((t, i) => {
-          const isVisible = safeActive === i;
-          return (
-            <motion.div
-              key={t._id}
-              style={{ gridArea: "1 / 1" }}
-              initial={false}
-              animate={{
-                opacity: isVisible ? 1 : 0,
-                y: isVisible ? 0 : 10,
-              }}
-              transition={{ duration: 0.55, ease: [0.2, 0.7, 0.2, 1] }}
-              aria-hidden={!isVisible}
-            >
-              <span
-                className="font-serif text-[#c8553d] leading-none select-none block mb-2"
-                style={{ fontSize: "120px", opacity: 0.7, lineHeight: 0.8 }}
-                aria-hidden="true"
-              >
-                &ldquo;
-              </span>
+        {/* Static quote mark — sits above the animated content, never moves */}
+        <span
+          className="font-serif text-[#c8553d] leading-none select-none block mb-2"
+          style={{ fontSize: "120px", opacity: 0.7, lineHeight: 0.8 }}
+          aria-hidden="true"
+        >
+          &ldquo;
+        </span>
 
-              <blockquote>
-                <p
-                  className="font-serif italic text-[#f6f4ef] leading-[1.15] tracking-tight mb-8 max-w-4xl"
-                  style={{ fontSize: "clamp(28px, 3.4vw, 52px)" }}
-                >
-                  {t.quote}
-                </p>
-                <footer>
-                  <span className="font-serif text-[#f6f4ef]/80 text-base">
-                    — {t.authorName}
-                  </span>
-                  <div className="flex items-center gap-4 mt-3">
-                    <div
-                      className="w-10 h-px bg-[rgba(246,244,239,0.2)]"
-                      aria-hidden="true"
-                    />
-                    <MonoLabel className="text-[#f6f4ef]/40 text-[9px]">
-                      {t.authorContext}
-                    </MonoLabel>
-                  </div>
-                </footer>
-              </blockquote>
-            </motion.div>
-          );
-        })}
+        {/* Directional slide — grid-stacked so container height never changes */}
+        <div className="grid overflow-x-hidden">
+          {displayTestimonials.map((t, i) => {
+            const isVisible = safeActive === i;
+            const xOffset = Math.sign(i - safeActive) * 40;
+            return (
+              <motion.div
+                key={t._id}
+                style={{ gridArea: "1 / 1" }}
+                initial={false}
+                animate={{
+                  opacity: isVisible ? 1 : 0,
+                  x: isVisible ? 0 : xOffset,
+                }}
+                transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
+                aria-hidden={!isVisible}
+              >
+                <blockquote>
+                  <p
+                    className="font-serif italic text-[#f6f4ef] leading-[1.15] tracking-tight mb-8 max-w-4xl"
+                    style={{ fontSize: "clamp(28px, 3.4vw, 52px)" }}
+                  >
+                    {t.quote}
+                  </p>
+                  <footer>
+                    <span className="font-serif text-[#f6f4ef]/80 text-base">
+                      — {t.authorName}
+                    </span>
+                    <div className="flex items-center gap-4 mt-3">
+                      <div
+                        className="w-10 h-px bg-[rgba(246,244,239,0.2)]"
+                        aria-hidden="true"
+                      />
+                      <MonoLabel className="text-[#f6f4ef]/40 text-[9px]">
+                        {t.authorContext}
+                      </MonoLabel>
+                    </div>
+                  </footer>
+                </blockquote>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Tab row — equal-width thirds with progress bar */}
