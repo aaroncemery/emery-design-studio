@@ -12,28 +12,39 @@ import type { Project } from "@/lib/sanity/types";
 
 interface LayoutConfig {
   colClass: string;
+  paddingClass: string;
   aspectRatio: number;
-  paddingTop?: string;
   placeholder: PlaceholderVariant;
 }
 
 const LAYOUT_CONFIGS: LayoutConfig[] = [
-  { colClass: "col-span-7", aspectRatio: 0.72, placeholder: "daylight" },
   {
-    colClass: "col-span-5",
+    colClass: "col-span-12 md:col-span-7",
+    paddingClass: "",
+    aspectRatio: 0.72,
+    placeholder: "daylight",
+  },
+  {
+    colClass: "col-span-12 md:col-span-5",
+    paddingClass: "md:pt-[12%]",
     aspectRatio: 1.18,
-    paddingTop: "12%",
     placeholder: "stone",
   },
   {
-    colClass: "col-span-4",
+    colClass: "col-span-12 md:col-span-4",
+    paddingClass: "md:pt-[8%]",
     aspectRatio: 1.18,
-    paddingTop: "8%",
     placeholder: "dusk",
   },
-  { colClass: "col-span-8", aspectRatio: 0.58, placeholder: "plaster" },
   {
-    colClass: "col-start-4 col-span-6",
+    colClass: "col-span-12 md:col-span-8",
+    paddingClass: "",
+    aspectRatio: 0.58,
+    placeholder: "plaster",
+  },
+  {
+    colClass: "col-span-12 md:col-start-4 md:col-span-6",
+    paddingClass: "",
     aspectRatio: 0.58,
     placeholder: "garden",
   },
@@ -49,7 +60,7 @@ function ProjectCard({
   index: number;
 }) {
   return (
-    <article className="group" style={{ paddingTop: layout.paddingTop }}>
+    <article className={`group ${layout.paddingClass}`}>
       <Link href={`/work/${project.slug}`} aria-label={`View ${project.title}`}>
         <div
           className="relative overflow-hidden"
@@ -102,7 +113,7 @@ function ProjectCard({
           <h3 className="font-serif italic text-[#111111] text-[26px] leading-tight">
             {project.title}
           </h3>
-          <MonoLabel className="text-[#6b6b66] mt-1.5 block text-[9px]">
+          <MonoLabel className="text-[#6b6b66] mt-1.5 block text-[11px] md:text-[9px]">
             {[project.category, project.location, project.year]
               .filter(Boolean)
               .join(" · ")}
@@ -124,7 +135,7 @@ export function FeaturedProjects({ projects }: Props) {
     <Section id="projects" className="bg-[#f6f4ef]" paddingY="xl">
       {/* Section header */}
       <Reveal>
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 md:mb-20">
           <div className="max-w-lg">
             <MonoLabel className="text-[#1b3a5b] block mb-4">
               §&nbsp;02&nbsp;—&nbsp;Selected&nbsp;Work
@@ -152,7 +163,7 @@ export function FeaturedProjects({ projects }: Props) {
 
       {/* 12-column staggered grid */}
       {hasProjects ? (
-        <div className="grid grid-cols-12 gap-x-8" style={{ rowGap: "96px" }}>
+        <div className="grid grid-cols-12 gap-x-8 gap-y-12 md:gap-y-24">
           {projects.slice(0, 5).map((project, i) => {
             const layout = LAYOUT_CONFIGS[i % LAYOUT_CONFIGS.length];
             return (

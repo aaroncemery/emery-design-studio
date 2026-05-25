@@ -55,7 +55,32 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
     <Reveal delay={index * 0.06}>
       <Link href="/services" className="group block" aria-label={service.title}>
         <Rule />
-        <div className="grid grid-cols-[80px_1fr_2fr_1fr_auto] gap-x-8 py-7 items-center transition-colors duration-300 hover:bg-white px-4 -mx-4">
+
+        {/* Mobile layout: always-expanded, full-width */}
+        <div className="flex flex-col gap-2 py-5 md:hidden">
+          <div className="flex items-center justify-between gap-4">
+            <h3
+              className="font-serif text-[#111111] leading-tight"
+              style={{ fontSize: "clamp(22px, 6vw, 30px)" }}
+            >
+              {service.title}
+            </h3>
+            <span
+              aria-hidden="true"
+              className="text-[#9a968d] text-lg flex-shrink-0 transition-transform duration-300 group-hover:translate-x-1"
+            >
+              →
+            </span>
+          </div>
+          {service.description && (
+            <p className="font-sans text-[#6b6b66] text-[13px] leading-relaxed">
+              {service.description}
+            </p>
+          )}
+        </div>
+
+        {/* Desktop layout: 5-column grid */}
+        <div className="hidden md:grid grid-cols-[80px_1fr_2fr_1fr_auto] gap-x-8 py-7 items-center transition-colors duration-300 hover:bg-white px-4 -mx-4">
           {/* Number */}
           <span
             className="font-serif italic text-[#9a968d] group-hover:text-[#1b3a5b] transition-colors duration-300"
@@ -75,7 +100,7 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
 
           {/* Description */}
           {service.description && (
-            <p className="font-sans text-[#6b6b66] text-[13px] leading-relaxed hidden md:block">
+            <p className="font-sans text-[#6b6b66] text-[13px] leading-relaxed">
               {service.description}
             </p>
           )}

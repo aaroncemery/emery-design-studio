@@ -67,7 +67,7 @@ export function StudioIntro({ data }: Props) {
   const imagePanel = (
     <Reveal>
       {layout === "mainWithInset" && (
-        <div className="relative">
+        <div className="relative lg:pb-8">
           <ImageBlock
             image={mainImage}
             placeholder="plaster"
@@ -75,7 +75,7 @@ export function StudioIntro({ data }: Props) {
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
           <div
-            className="absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
+            className="hidden lg:block absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
             aria-hidden="true"
           >
             <ImageBlock
@@ -171,7 +171,7 @@ export function StudioIntro({ data }: Props) {
 
           {/* Stats */}
           <Reveal delay={0.2}>
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-[rgba(17,17,17,0.12)]">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-8 border-t border-[rgba(17,17,17,0.12)]">
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <span
@@ -180,7 +180,7 @@ export function StudioIntro({ data }: Props) {
                   >
                     {stat.value}
                   </span>
-                  <MonoLabel className="text-[#9a968d] mt-2 block text-[9px] leading-snug">
+                  <MonoLabel className="text-[#9a968d] mt-2 block text-[11px] md:text-[9px] leading-snug">
                     {stat.label}
                   </MonoLabel>
                 </div>

@@ -34,7 +34,7 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="font-mono text-[9px] tracking-[0.18em] uppercase text-[#9a968d] block mb-2"
+      className="font-mono text-[11px] md:text-[9px] tracking-[0.18em] uppercase text-[#9a968d] block mb-2"
     >
       {children}
     </label>
@@ -222,7 +222,7 @@ export function Inquiry({ data }: Props) {
                       type="button"
                       onClick={() => setBudget(opt === budget ? "" : opt)}
                       aria-pressed={budget === opt}
-                      className="font-mono text-[9px] tracking-[0.14em] uppercase px-4 py-2 border transition-all duration-300"
+                      className="font-mono text-[11px] md:text-[9px] tracking-[0.14em] uppercase px-4 py-3 md:py-2 border transition-all duration-300"
                       style={{
                         borderColor:
                           budget === opt ? "#1b3a5b" : "rgba(17,17,17,0.2)",
