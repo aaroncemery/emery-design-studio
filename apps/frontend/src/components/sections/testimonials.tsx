@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import type { Testimonial, PressItem } from "@/lib/sanity/types";
@@ -81,54 +81,61 @@ export function Testimonials({ testimonials, pressItems }: Props) {
         §&nbsp;05&nbsp;—&nbsp;Clients
       </MonoLabel>
 
-      {/* Quote — full width */}
+      {/* Quote — grid-stacked so container height stays at tallest quote */}
       <div
         id="testimonial-panel"
         role="tabpanel"
         aria-live="polite"
         aria-label="Current testimonial"
-        className="mb-14"
+        className="mb-14 grid"
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={safeActive}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.55, ease: [0.2, 0.7, 0.2, 1] }}
-          >
-            <span
-              className="font-serif text-[#c8553d] leading-none select-none block mb-2"
-              style={{ fontSize: "120px", opacity: 0.7, lineHeight: 0.8 }}
-              aria-hidden="true"
+        {displayTestimonials.map((t, i) => {
+          const isVisible = safeActive === i;
+          return (
+            <motion.div
+              key={t._id}
+              style={{ gridArea: "1 / 1" }}
+              initial={false}
+              animate={{
+                opacity: isVisible ? 1 : 0,
+                y: isVisible ? 0 : 10,
+              }}
+              transition={{ duration: 0.55, ease: [0.2, 0.7, 0.2, 1] }}
+              aria-hidden={!isVisible}
             >
-              &ldquo;
-            </span>
-
-            <blockquote>
-              <p
-                className="font-serif italic text-[#f6f4ef] leading-[1.15] tracking-tight mb-8 max-w-4xl"
-                style={{ fontSize: "clamp(28px, 3.4vw, 52px)" }}
+              <span
+                className="font-serif text-[#c8553d] leading-none select-none block mb-2"
+                style={{ fontSize: "120px", opacity: 0.7, lineHeight: 0.8 }}
+                aria-hidden="true"
               >
-                {displayTestimonials[safeActive]?.quote}
-              </p>
-              <footer>
-                <span className="font-serif text-[#f6f4ef]/80 text-base">
-                  — {displayTestimonials[safeActive]?.authorName}
-                </span>
-                <div className="flex items-center gap-4 mt-3">
-                  <div
-                    className="w-10 h-px bg-[rgba(246,244,239,0.2)]"
-                    aria-hidden="true"
-                  />
-                  <MonoLabel className="text-[#f6f4ef]/40 text-[9px]">
-                    {displayTestimonials[safeActive]?.authorContext}
-                  </MonoLabel>
-                </div>
-              </footer>
-            </blockquote>
-          </motion.div>
-        </AnimatePresence>
+                &ldquo;
+              </span>
+
+              <blockquote>
+                <p
+                  className="font-serif italic text-[#f6f4ef] leading-[1.15] tracking-tight mb-8 max-w-4xl"
+                  style={{ fontSize: "clamp(28px, 3.4vw, 52px)" }}
+                >
+                  {t.quote}
+                </p>
+                <footer>
+                  <span className="font-serif text-[#f6f4ef]/80 text-base">
+                    — {t.authorName}
+                  </span>
+                  <div className="flex items-center gap-4 mt-3">
+                    <div
+                      className="w-10 h-px bg-[rgba(246,244,239,0.2)]"
+                      aria-hidden="true"
+                    />
+                    <MonoLabel className="text-[#f6f4ef]/40 text-[9px]">
+                      {t.authorContext}
+                    </MonoLabel>
+                  </div>
+                </footer>
+              </blockquote>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Tab row — equal-width thirds with progress bar */}
