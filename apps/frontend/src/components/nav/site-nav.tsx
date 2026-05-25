@@ -1,7 +1,7 @@
 "use client";
 
 import { useScroll, useMotionValueEvent } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
@@ -17,9 +17,14 @@ export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const scrolledRef = useRef(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setScrolled(latest > 60);
+    const next = latest > 60;
+    if (next !== scrolledRef.current) {
+      scrolledRef.current = next;
+      setScrolled(next);
+    }
   });
 
   const labelClass = cn(
