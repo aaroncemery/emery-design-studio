@@ -18,7 +18,7 @@ const paddingMap: Record<PaddingY, string> = {
   sm: "py-16",
   md: "py-24",
   lg: "py-32",
-  xl: "py-40 md:py-48",
+  xl: "py-20 md:py-32 lg:py-48",
 };
 
 export function Section({
