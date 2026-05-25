@@ -33,14 +33,14 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-const FALLBACK_PRESS: PressItem[] = [
-  { _id: "p1", _type: "pressItem", publicationName: "Architectural Digest" },
-  { _id: "p2", _type: "pressItem", publicationName: "Dwell" },
-  { _id: "p3", _type: "pressItem", publicationName: "Remodelista" },
-  { _id: "p4", _type: "pressItem", publicationName: "Kinfolk" },
-  { _id: "p5", _type: "pressItem", publicationName: "The Gentlewoman" },
-  { _id: "p6", _type: "pressItem", publicationName: "Cabana" },
-];
+// const FALLBACK_PRESS: PressItem[] = [
+//   { _id: 'p1', _type: 'pressItem', publicationName: 'Architectural Digest' },
+//   { _id: 'p2', _type: 'pressItem', publicationName: 'Dwell' },
+//   { _id: 'p3', _type: 'pressItem', publicationName: 'Remodelista' },
+//   { _id: 'p4', _type: 'pressItem', publicationName: 'Kinfolk' },
+//   { _id: 'p5', _type: 'pressItem', publicationName: 'The Gentlewoman' },
+//   { _id: 'p6', _type: 'pressItem', publicationName: 'Cabana' },
+// ];
 
 const AUTO_ROTATE_DURATION = 7000;
 
@@ -55,7 +55,9 @@ export function Testimonials({ testimonials, pressItems }: Props) {
       ? testimonials
       : FALLBACK_TESTIMONIALS;
   const displayPress =
-    pressItems && pressItems.length > 0 ? pressItems : FALLBACK_PRESS;
+    pressItems && pressItems.length > 0
+      ? pressItems
+      : (undefined as PressItem[] | undefined);
 
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -197,21 +199,23 @@ export function Testimonials({ testimonials, pressItems }: Props) {
       </div>
 
       {/* Press bar */}
-      <div className="mt-16 pt-12 border-t border-[rgba(246,244,239,0.1)]">
-        <MonoLabel className="text-[#f6f4ef]/30 block mb-8 text-[9px]">
-          As featured in
-        </MonoLabel>
-        <div className="flex flex-wrap gap-x-10 gap-y-4">
-          {displayPress.map((item) => (
-            <span
-              key={item._id}
-              className="font-serif italic text-[#f6f4ef]/30 text-[22px] leading-none"
-            >
-              {item.publicationName}
-            </span>
-          ))}
+      {displayPress && (
+        <div className="mt-16">
+          <MonoLabel className="text-[#f6f4ef]/30 block mb-8 text-[9px]">
+            As featured in
+          </MonoLabel>
+          <div className="flex flex-wrap gap-x-10 gap-y-4">
+            {displayPress.map((item) => (
+              <span
+                key={item._id}
+                className="font-serif italic text-[#f6f4ef]/30 text-[22px] leading-none"
+              >
+                {item.publicationName}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </Section>
   );
 }
