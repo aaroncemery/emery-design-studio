@@ -152,6 +152,97 @@ All section types are usable in both `homePage` and `page`.
 
 ---
 
+## Schema: SEO + Admin Types (resolved via grill-me, 2026-05-24)
+
+### Decisions
+
+- Three Admin singletons: `siteSettings`, `navigation`, `footer` — each a separate document
+- One Admin document list: `legalPage` (title, slug, portable text body)
+- `seo` object type: reuse user's existing shape (title, description, ogImage, keywords, noIndex, noFollow, robots, canonicalUrl)
+- `navItem` object type: `linkType` select (`page` | `url`), `page` reference → `page` doc, `url` string, `label` string (optional override)
+- `socialLink` object type: `platform` select (Instagram | Facebook | Houzz | YouTube), `url` string
+- SEO group added to: `homePage`, `page`, `journalPost`, `project` — not service/testimonial/pressItem
+- Simple docs (`service`, `testimonial`, `pressItem`, `inquirySubmission`) stay ungrouped
+
+### `siteSettings` (singleton, Admin)
+
+| Field           | Type   | Notes                                |
+| --------------- | ------ | ------------------------------------ | -------------------- |
+| siteName        | string | Used as title suffix — "             | Emery Design Studio" |
+| siteDescription | text   | Default meta description fallback    |
+| defaultOgImage  | image  | Fallback OG image when page has none |
+| logo            | image  | Site logo for nav/header             |
+| favicon         | image  | Browser tab icon                     |
+
+### `navigation` (singleton, Admin)
+
+| Field | Type      | Notes                     |
+| ----- | --------- | ------------------------- |
+| items | navItem[] | Ordered list of nav links |
+
+### `footer` (singleton, Admin)
+
+| Field         | Type         | Notes                                           |
+| ------------- | ------------ | ----------------------------------------------- |
+| copyrightText | string       | e.g. "© 2025 Emery Design Studio"               |
+| socialLinks   | socialLink[] | Platform select + URL                           |
+| legalLinks    | navItem[]    | Flat link list — references legalPage documents |
+
+### `legalPage` (document list, Admin)
+
+| Field | Type          | Notes           |
+| ----- | ------------- | --------------- |
+| title | string        | required        |
+| slug  | slug          | auto from title |
+| body  | portable text | legal content   |
+
+### Groups added to existing documents
+
+| Document      | Groups                       |
+| ------------- | ---------------------------- |
+| `homePage`    | Content, SEO                 |
+| `page`        | Content, SEO                 |
+| `journalPost` | Content, Media, SEO          |
+| `project`     | Content, Details, Media, SEO |
+
+**project group assignments:**
+
+- Content: title, slug, excerpt, body, featured
+- Details: location, year, season, category
+- Media: coverImage, gallery
+- SEO: seo
+
+**journalPost group assignments:**
+
+- Content: title, slug, author, publishedAt, body
+- Media: coverImage
+- SEO: seo
+
+### Updated Studio Structure (Admin section added)
+
+```
+Admin
+  ├── Site Settings (singleton)
+  ├── Navigation (singleton)
+  ├── Footer (singleton)
+  └── Legal Pages (document list)
+
+Content (existing, unchanged)
+  ├── Home Page (singleton)
+  ├── ─────────────────────
+  ├── Projects
+  ├── Services
+  ├── Testimonials
+  ├── Press Items
+  ├── Journal Posts
+  ├── ─────────────────────
+  ├── Pages
+  ├── ─────────────────────
+  └── Inquiry Submissions
+```
+
+---
+
 ## Implementation Checklist
 
 ### Session 1 — Sanity Studio Schemas ✅ COMPLETE (2026-05-23)
@@ -197,6 +288,83 @@ All section types are usable in both `homePage` and `page`.
 - [x] Create `apps/frontend/src/app/journal/[slug]/page.tsx` (individual post, fixed format)
 - [x] Update `apps/frontend/src/app/services/page.tsx` to fetch services from Sanity
 
+### Session 4 — SEO + Admin: Studio Schemas
+
+**4A — New object types** ✅ COMPLETE (2026-05-24)
+
+- [x] Create `apps/studio/src/schemaTypes/objects/seo.ts` (user's existing SeoType shape)
+- [x] Create `apps/studio/src/schemaTypes/objects/navItem.ts` (linkType select, page ref, url string, label override)
+- [x] Create `apps/studio/src/schemaTypes/objects/socialLink.ts` (platform select: Instagram/Facebook/Houzz/YouTube + url)
+
+**4B — New Admin document types** ✅ COMPLETE (2026-05-24)
+
+- [x] Create `apps/studio/src/schemaTypes/documents/siteSettings.ts` (siteName, siteDescription, defaultOgImage, logo, favicon)
+- [x] Create `apps/studio/src/schemaTypes/documents/navigation.ts` (items: navItem[])
+- [x] Create `apps/studio/src/schemaTypes/documents/footer.ts` (copyrightText, socialLinks, legalLinks)
+- [x] Create `apps/studio/src/schemaTypes/documents/legalPage.ts` (title, slug, body portable text)
+
+**4C — Update existing document types with groups + SEO** ✅ COMPLETE (2026-05-24)
+
+- [x] Update `homePage.ts` — add fieldGroups (content, seo) + assign fields + add seo field
+- [x] Update `page.ts` — add fieldGroups (content, seo) + assign fields + add seo field
+- [x] Update `journalPost.ts` — add fieldGroups (content, media, seo) + assign fields + add seo field
+- [x] Update `project.ts` — add fieldGroups (content, details, media, seo) + assign fields + add seo field
+
+**4D — Wire schemas + structure builder** ✅ COMPLETE (2026-05-24)
+
+- [x] Update `apps/studio/src/schemaTypes/index.ts` — add all new types
+- [x] Update `apps/studio/sanity.config.ts` — add Admin section with 4 singletons/lists, keep existing Content items
+
+### Session 5 — SEO + Admin: Frontend Wiring
+
+**5A — GROQ queries**
+
+- [ ] Add `siteSettingsQuery` to `queries.ts`
+- [ ] Add `navigationQuery` to `queries.ts`
+- [ ] Add `footerQuery` to `queries.ts`
+- [ ] Add `legalPageQuery` + `legalPageBySlugQuery` to `queries.ts`
+- [ ] Update page/homePage/journalPost/project queries to include `seo` field
+
+**5B — TypeScript types**
+
+- [ ] Add `Seo`, `NavItem`, `SocialLink` interfaces to `types.ts`
+- [ ] Add `SiteSettings`, `Navigation`, `Footer`, `LegalPage` interfaces to `types.ts`
+- [ ] Update existing page/post/project types to include optional `seo` field
+
+**5C — Layout + nav/footer wiring**
+
+- [ ] Update root layout (`apps/frontend/src/app/layout.tsx`) to fetch siteSettings, navigation, footer
+- [ ] Update nav component to render from Sanity `navigation` document
+- [ ] Update footer component to render from Sanity `footer` document (copyright, socials, legal links)
+
+**5D — Per-page SEO metadata**
+
+- [ ] Create shared `buildMetadata()` helper that merges page seo + siteSettings fallbacks
+- [ ] Update `app/page.tsx` (home) `generateMetadata` to use Sanity seo
+- [ ] Update `app/work/page.tsx` `generateMetadata`
+- [ ] Update `app/work/[slug]/page.tsx` `generateMetadata`
+- [ ] Update `app/journal/page.tsx` `generateMetadata`
+- [ ] Update `app/journal/[slug]/page.tsx` `generateMetadata`
+- [ ] Create `app/legal/[slug]/page.tsx` — fetch and render `legalPage` doc
+
+### Session 6 — Image Layout Control: studioIntroSection
+
+**Scope:** `studioIntroSection` only. Project grid and individual project card sizing are frontend/CSS concerns — no schema change needed there.
+
+**Decision:** Section-level `imageLayout` select (not per-image). Three presets:
+
+- `mainWithInset` — large portrait main + small square overlapping (current hardcoded default)
+- `sideBySide` — two equal images side by side
+- `singleFull` — one full-width image, no inset
+
+**6A — Studio schema**
+
+- [ ] Update `studioIntroSection.ts` — add `imageLayout` select field with three options, `initialValue: 'mainWithInset'`
+
+**6B — Frontend**
+
+- [ ] Update the `StudioIntroSection` component to read `imageLayout` and apply the corresponding CSS class/variant
+
 ---
 
 ## Housekeeping Done (2026-05-23)
@@ -210,7 +378,13 @@ All section types are usable in both `homePage` and `page`.
 
 ## Current Status
 
-**Next step: Enter content in Sanity Studio and verify the live frontend**
+**Sessions 1–3 complete. Next up: Session 4A — new object types.**
+
+Sessions 4 and 5 are the SEO + Admin pass (resolved via grill-me, 2026-05-24). Work in order: 4A → 4B → 4C → 4D → 5A → 5B → 5C → 5D.
+
+---
+
+**After Sessions 1–3: Enter content in Sanity Studio and verify the live frontend**
 
 1. Start the studio: `pnpm dev --filter studio` → http://localhost:3333
 2. Create a **Home Page** document and add sections (heroSection, studioIntroSection, collectionSections for projects/services/testimonials/press, inquirySection)

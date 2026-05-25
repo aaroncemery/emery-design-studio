@@ -3,9 +3,12 @@ import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { Placeholder } from "@/components/primitives/placeholder";
+import {
+  Placeholder,
+  type PlaceholderVariant,
+} from "@/components/primitives/placeholder";
 import { Reveal } from "@/components/primitives/reveal";
-import type { StudioIntroSection } from "@/lib/sanity/types";
+import type { SanityImage, StudioIntroSection } from "@/lib/sanity/types";
 
 const FALLBACK_STATS = [
   { value: "12", label: "Years in practice" },
@@ -17,72 +20,107 @@ interface Props {
   data?: StudioIntroSection;
 }
 
+function ImageBlock({
+  image,
+  placeholder,
+  aspectRatio,
+  sizes,
+}: {
+  image?: SanityImage;
+  placeholder: PlaceholderVariant;
+  aspectRatio: number;
+  sizes: string;
+}) {
+  if (image?.asset?.url) {
+    return (
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio }}>
+        <Image
+          src={image.asset.url}
+          alt=""
+          fill
+          className="object-cover"
+          placeholder="blur"
+          blurDataURL={image.asset.metadata.lqip}
+          sizes={sizes}
+        />
+      </div>
+    );
+  }
+  return (
+    <Placeholder
+      variant={placeholder}
+      aspectRatio={aspectRatio}
+      className="w-full"
+    />
+  );
+}
+
 export function StudioIntro({ data }: Props) {
   const heading =
     data?.heading ??
     "A small atelier on the water in Kirkland, working slowly and close to the hand.";
   const stats = data?.stats ?? FALLBACK_STATS;
+  const layout = data?.imageLayout ?? "mainWithInset";
   const mainImage = data?.images?.[0];
   const insetImage = data?.images?.[1];
+
+  const imagePanel = (
+    <Reveal>
+      {layout === "mainWithInset" && (
+        <div className="relative lg:pb-8">
+          <ImageBlock
+            image={mainImage}
+            placeholder="plaster"
+            aspectRatio={0.9}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+          <div
+            className="hidden lg:block absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
+            aria-hidden="true"
+          >
+            <ImageBlock
+              image={insetImage}
+              placeholder="wood"
+              aspectRatio={1.0}
+              sizes="25vw"
+            />
+          </div>
+        </div>
+      )}
+
+      {layout === "sideBySide" && (
+        <div className="grid grid-cols-2 gap-3">
+          <ImageBlock
+            image={mainImage}
+            placeholder="plaster"
+            aspectRatio={0.75}
+            sizes="(max-width: 1024px) 50vw, 25vw"
+          />
+          <ImageBlock
+            image={insetImage}
+            placeholder="wood"
+            aspectRatio={0.75}
+            sizes="(max-width: 1024px) 50vw, 25vw"
+          />
+        </div>
+      )}
+
+      {layout === "singleFull" && (
+        <ImageBlock
+          image={mainImage}
+          placeholder="plaster"
+          aspectRatio={1.2}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+        />
+      )}
+    </Reveal>
+  );
 
   return (
     <Section id="studio" className="bg-[#ece8df]" paddingY="xl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-[120px] items-start">
-        {/* Left: stacked images */}
-        <Reveal>
-          <div className="relative lg:pb-8">
-            {mainImage?.asset?.url ? (
-              <div
-                className="relative w-full overflow-hidden"
-                style={{ aspectRatio: 0.9 }}
-              >
-                <Image
-                  src={mainImage.asset.url}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  placeholder="blur"
-                  blurDataURL={mainImage.asset.metadata.lqip}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-            ) : (
-              <Placeholder
-                variant="plaster"
-                aspectRatio={0.9}
-                className="w-full"
-              />
-            )}
-            {/* Inset offset card — desktop only (bleeds off-screen on mobile) */}
-            <div
-              className="hidden lg:block absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
-              aria-hidden="true"
-            >
-              {insetImage?.asset?.url ? (
-                <div
-                  className="relative w-full overflow-hidden"
-                  style={{ aspectRatio: 1 }}
-                >
-                  <Image
-                    src={insetImage.asset.url}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    placeholder="blur"
-                    blurDataURL={insetImage.asset.metadata.lqip}
-                    sizes="25vw"
-                  />
-                </div>
-              ) : (
-                <Placeholder
-                  variant="wood"
-                  aspectRatio={1.0}
-                  className="w-full"
-                />
-              )}
-            </div>
-          </div>
-        </Reveal>
+        {/* Left: images */}
+        {imagePanel}
 
         {/* Right: copy + stats */}
         <div className="pt-0 lg:pt-12">

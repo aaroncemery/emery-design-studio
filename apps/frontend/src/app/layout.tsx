@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { NavWrapper } from "@/components/nav/nav-wrapper";
+import { FooterWrapper } from "@/components/sections/footer-wrapper";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-serif",
@@ -47,7 +49,9 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <NavWrapper />
         {children}
+        <FooterWrapper />
       </body>
     </html>
   );

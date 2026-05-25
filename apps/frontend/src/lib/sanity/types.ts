@@ -1,3 +1,55 @@
+export interface Seo {
+  title?: string;
+  description?: string;
+  ogImage?: SanityImage;
+  keywords?: string[];
+  noIndex?: boolean;
+  noFollow?: boolean;
+  robots?: string;
+  canonicalUrl?: string;
+}
+
+export interface NavItem {
+  _key: string;
+  linkType: "page" | "url";
+  label?: string;
+  url?: string;
+  page?: { title: string; slug: string; _type: string };
+}
+
+export interface SocialLink {
+  _key: string;
+  platform: "instagram" | "facebook" | "houzz" | "youtube";
+  url: string;
+}
+
+export interface SiteSettings {
+  siteName?: string;
+  siteDescription?: string;
+  defaultOgImage?: SanityImage;
+  logo?: SanityImage;
+  favicon?: SanityImage;
+}
+
+export interface Navigation {
+  items?: NavItem[];
+}
+
+export interface Footer {
+  copyrightText?: string;
+  socialLinks?: SocialLink[];
+  legalLinks?: NavItem[];
+}
+
+export interface LegalPage {
+  _id: string;
+  _type: "legalPage";
+  title: string;
+  slug: string;
+  body?: PortableTextContent;
+  seo?: Seo;
+}
+
 export interface SanityImageAsset {
   _id: string;
   url: string;
@@ -37,6 +89,7 @@ export interface Project {
   coverImage?: SanityImage;
   gallery?: SanityImage[];
   body?: PortableTextContent;
+  seo?: Seo;
 }
 
 export interface Service {
@@ -74,6 +127,7 @@ export interface JournalPost {
   publishedAt?: string;
   coverImage?: SanityImage;
   body?: PortableTextContent;
+  seo?: Seo;
 }
 
 export type CollectionItem = Project | Service | Testimonial | PressItem;
@@ -94,6 +148,7 @@ export interface StudioIntroSection {
   heading?: string;
   body?: PortableTextContent;
   stats?: Array<{ label: string; value: string }>;
+  imageLayout?: "mainWithInset" | "sideBySide" | "singleFull";
   images?: SanityImage[];
 }
 
@@ -128,4 +183,14 @@ export type PageSection =
 export interface HomePage {
   title?: string;
   sections?: PageSection[];
+  seo?: Seo;
+}
+
+export interface Page {
+  _id: string;
+  _type: "page";
+  title: string;
+  slug: string;
+  sections?: PageSection[];
+  seo?: Seo;
 }
