@@ -2,6 +2,21 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./src/schemaTypes";
+import {
+  Settings2Icon,
+  CompassIcon,
+  FootprintsIcon,
+  UserStarIcon,
+  ScaleIcon,
+  HouseIcon,
+  DrillIcon,
+  HandPlatterIcon,
+  MessageSquareIcon,
+  NewspaperIcon,
+  NotebookPenIcon,
+  StickyNotePlusIcon,
+  SpeechIcon,
+} from "lucide-react";
 
 const SINGLETON_HOME_PAGE_ID = "singleton-homePage";
 const SINGLETON_SITE_SETTINGS_ID = "singleton-siteSettings";
@@ -25,6 +40,7 @@ export default defineConfig({
             S.listItem()
               .title("Admin")
               .id("admin")
+              .icon(UserStarIcon)
               .child(
                 S.list()
                   .title("Admin")
@@ -32,6 +48,7 @@ export default defineConfig({
                     S.listItem()
                       .title("Site Settings")
                       .id("siteSettings")
+                      .icon(Settings2Icon)
                       .child(
                         S.document()
                           .schemaType("siteSettings")
@@ -41,6 +58,7 @@ export default defineConfig({
                     S.listItem()
                       .title("Navigation")
                       .id("navigation")
+                      .icon(CompassIcon)
                       .child(
                         S.document()
                           .schemaType("navigation")
@@ -50,6 +68,7 @@ export default defineConfig({
                     S.listItem()
                       .title("Footer")
                       .id("footer")
+                      .icon(FootprintsIcon)
                       .child(
                         S.document()
                           .schemaType("footer")
@@ -60,6 +79,7 @@ export default defineConfig({
 
                     S.listItem()
                       .title("Legal Pages")
+                      .icon(ScaleIcon)
                       .schemaType("legalPage")
                       .child(
                         S.documentTypeList("legalPage").title("Legal Pages"),
@@ -73,6 +93,7 @@ export default defineConfig({
             S.listItem()
               .title("Home Page")
               .id("homePage")
+              .icon(HouseIcon)
               .child(
                 S.document()
                   .schemaType("homePage")
@@ -83,26 +104,31 @@ export default defineConfig({
 
             S.listItem()
               .title("Projects")
+              .icon(DrillIcon)
               .schemaType("project")
               .child(S.documentTypeList("project").title("Projects")),
 
             S.listItem()
               .title("Services")
+              .icon(HandPlatterIcon)
               .schemaType("service")
               .child(S.documentTypeList("service").title("Services")),
 
             S.listItem()
               .title("Testimonials")
+              .icon(MessageSquareIcon)
               .schemaType("testimonial")
               .child(S.documentTypeList("testimonial").title("Testimonials")),
 
             S.listItem()
               .title("Press Items")
+              .icon(NewspaperIcon)
               .schemaType("pressItem")
               .child(S.documentTypeList("pressItem").title("Press Items")),
 
             S.listItem()
               .title("Journal Posts")
+              .icon(NotebookPenIcon)
               .schemaType("journalPost")
               .child(S.documentTypeList("journalPost").title("Journal Posts")),
 
@@ -110,6 +136,7 @@ export default defineConfig({
 
             S.listItem()
               .title("Pages")
+              .icon(StickyNotePlusIcon)
               .schemaType("page")
               .child(S.documentTypeList("page").title("Pages")),
 
@@ -117,6 +144,7 @@ export default defineConfig({
 
             S.listItem()
               .title("Inquiry Submissions")
+              .icon(SpeechIcon)
               .schemaType("inquirySubmission")
               .child(
                 S.documentTypeList("inquirySubmission").title(
