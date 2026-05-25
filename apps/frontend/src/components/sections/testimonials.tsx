@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import type { Testimonial, PressItem } from "@/lib/sanity/types";
@@ -57,13 +57,15 @@ export function Testimonials({ testimonials, pressItems }: Props) {
 
   const [active, setActive] = useState(0);
   const safeActive = Math.min(active, displayTestimonials.length - 1);
+  const prefersReduced = useReducedMotion();
 
   useEffect(() => {
+    if (prefersReduced) return;
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % displayTestimonials.length);
     }, 7000);
     return () => clearInterval(timer);
-  }, [displayTestimonials]);
+  }, [displayTestimonials, prefersReduced]);
 
   return (
     <Section id="testimonials" className="bg-[#111111]" paddingY="xl">
