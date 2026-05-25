@@ -45,7 +45,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:z-[9999] focus:px-5 focus:py-2.5 focus:bg-[#1b3a5b] focus:text-white focus:text-[10px] focus:font-mono focus:tracking-widest focus:uppercase focus:rounded-full focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:z-9999 focus:px-5 focus:py-2.5 focus:bg-[#1b3a5b] focus:text-white focus:text-[10px] focus:font-mono focus:tracking-widest focus:uppercase focus:rounded-full focus:outline-none"
         >
           Skip to main content
         </a>
