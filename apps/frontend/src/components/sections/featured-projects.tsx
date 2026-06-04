@@ -126,9 +126,11 @@ function ProjectCard({
 
 interface Props {
   projects?: Project[];
+  heading?: string;
+  subheading?: string;
 }
 
-export function FeaturedProjects({ projects }: Props) {
+export function FeaturedProjects({ projects, heading, subheading }: Props) {
   const hasProjects = projects && projects.length > 0;
 
   return (
@@ -144,16 +146,27 @@ export function FeaturedProjects({ projects }: Props) {
               className="font-serif text-[#111111] leading-[0.92] tracking-tight"
               style={{ fontSize: "clamp(40px, 5vw, 72px)" }}
             >
-              Rooms we&rsquo;ve&nbsp;/
-              <br />
-              <em>quietly</em> built.
+              {heading ?? (
+                <>
+                  Rooms we&rsquo;ve&nbsp;/
+                  <br />
+                  <em>quietly</em> built.
+                </>
+              )}
             </h2>
           </div>
           <div className="max-w-xs">
-            <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-6">
-              A small selection of completed projects. Each one takes two to
-              three years and leaves us changed by it.
-            </p>
+            {subheading && (
+              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-6">
+                {subheading}
+              </p>
+            )}
+            {!subheading && (
+              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-6">
+                A small selection of completed projects. Each one takes two to
+                three years and leaves us changed by it.
+              </p>
+            )}
             <CTA href="/work" variant="solid">
               The full archive
             </CTA>
