@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { client, sanityFetch } from "@/lib/sanity/client";
+import { client } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import {
   LEGAL_PAGE_BY_SLUG_QUERY,
   SITE_SETTINGS_QUERY,
@@ -28,17 +29,19 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const [page, siteSettings] = await Promise.all([
-    sanityFetch<LegalPage>({
+  const [{ data: pageData }, { data: siteSettingsData }] = await Promise.all([
+    sanityFetch({
       query: LEGAL_PAGE_BY_SLUG_QUERY,
       params: { slug },
       tags: [`legalPage:${slug}`],
     }),
-    sanityFetch<SiteSettings | null>({
+    sanityFetch({
       query: SITE_SETTINGS_QUERY,
       tags: ["siteSettings"],
     }),
   ]);
+  const page = pageData as LegalPage | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
 
   if (!page) return {};
 
@@ -55,11 +58,12 @@ export default async function LegalPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const page = await sanityFetch<LegalPage>({
+  const { data } = await sanityFetch({
     query: LEGAL_PAGE_BY_SLUG_QUERY,
     params: { slug },
     tags: [`legalPage:${slug}`],
   });
+  const page = data as LegalPage | null;
 
   if (!page) notFound();
 

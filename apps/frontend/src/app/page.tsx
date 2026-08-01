@@ -5,7 +5,7 @@ import { StudioIntro } from "@/components/sections/studio-intro";
 import { Services } from "@/components/sections/services";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Inquiry } from "@/components/sections/inquiry";
-import { sanityFetch } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import { HOME_PAGE_QUERY, SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
 import { buildMetadata } from "@/lib/sanity/build-metadata";
 import type { SiteSettings } from "@/lib/sanity/types";
@@ -24,13 +24,16 @@ import type {
 export const revalidate = false;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [homePage, siteSettings] = await Promise.all([
-    sanityFetch<HomePage>({ query: HOME_PAGE_QUERY, tags: ["homePage"] }),
-    sanityFetch<SiteSettings | null>({
-      query: SITE_SETTINGS_QUERY,
-      tags: ["siteSettings"],
-    }),
-  ]);
+  const [{ data: homePageData }, { data: siteSettingsData }] =
+    await Promise.all([
+      sanityFetch({ query: HOME_PAGE_QUERY, tags: ["homePage"] }),
+      sanityFetch({
+        query: SITE_SETTINGS_QUERY,
+        tags: ["siteSettings"],
+      }),
+    ]);
+  const homePage = homePageData as HomePage | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
 
   return buildMetadata({
     pageSeo: homePage?.seo,
@@ -41,10 +44,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const homePage = await sanityFetch<HomePage>({
+  const { data } = await sanityFetch({
     query: HOME_PAGE_QUERY,
     tags: ["homePage"],
   });
+  const homePage = data as HomePage | null;
 
   const sections = homePage?.sections ?? [];
 
