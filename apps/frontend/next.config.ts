@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "frame-ancestors 'self' https://emery-design.sanity.studio http://localhost:3333",
+              "frame-ancestors 'self' https://www.sanity.io https://emery-design.sanity.studio http://localhost:3333",
           },
         ],
       },
