@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -18,8 +19,12 @@ interface Props {
 
 export function Hero({ data }: Props) {
   const prefersReduced = useReducedMotion();
-  const { scrollY } = useScroll();
-  const imageY = useTransform(scrollY, [0, 900], ["0%", "25%"]);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
 
   const tagline = data?.tagline ?? "File ℶ24—Resi · Vol. XII · Spec. A";
 
@@ -45,6 +50,7 @@ export function Hero({ data }: Props) {
 
   return (
     <section
+      ref={sectionRef}
       className="relative overflow-hidden"
       style={{ height: "100vh", minHeight: "720px" }}
       aria-label="Homepage hero"
@@ -133,8 +139,9 @@ export function Hero({ data }: Props) {
           <MonoLabel className="text-white/35 text-[9px]">Scroll</MonoLabel>
           <div className="relative w-px h-14 bg-white/20 overflow-hidden rounded-full">
             <motion.div
-              className="absolute top-0 left-0 w-full bg-white rounded-full"
+              className="absolute left-0 w-full bg-white rounded-full"
               style={{ height: "45%" }}
+              initial={{ top: "-50%" }}
               animate={{ top: ["-50%", "120%"] }}
               transition={{
                 duration: 1.6,
