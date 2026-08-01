@@ -1,12 +1,10 @@
-import {
-  BlockElementIcon,
-  ComposeIcon,
-  ImageIcon,
-  InlineElementIcon,
-  InsertAboveIcon,
-  SearchIcon,
-  TagIcon,
-} from "@sanity/icons";
+import { BlockElementIcon } from "@sanity/icons/BlockElement";
+import { ComposeIcon } from "@sanity/icons/Compose";
+import { ImageIcon } from "@sanity/icons/Image";
+import { InlineElementIcon } from "@sanity/icons/InlineElement";
+import { InsertAboveIcon } from "@sanity/icons/InsertAbove";
+import { SearchIcon } from "@sanity/icons/Search";
+import { TagIcon } from "@sanity/icons/Tag";
 import type { FieldGroupDefinition } from "sanity";
 
 export const GROUP = {
