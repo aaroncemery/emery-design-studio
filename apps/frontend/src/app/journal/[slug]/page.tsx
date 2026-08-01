@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { client, sanityFetch } from "@/lib/sanity/client";
+import { client } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import {
   JOURNAL_POST_BY_SLUG_QUERY,
   SITE_SETTINGS_QUERY,
@@ -29,17 +30,19 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const [post, siteSettings] = await Promise.all([
-    sanityFetch<JournalPost>({
+  const [{ data: postData }, { data: siteSettingsData }] = await Promise.all([
+    sanityFetch({
       query: JOURNAL_POST_BY_SLUG_QUERY,
       params: { slug },
       tags: [`journalPost:${slug}`],
     }),
-    sanityFetch<SiteSettings | null>({
+    sanityFetch({
       query: SITE_SETTINGS_QUERY,
       tags: ["siteSettings"],
     }),
   ]);
+  const post = postData as JournalPost | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
 
   if (!post) return {};
 
@@ -56,11 +59,12 @@ export default async function JournalPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await sanityFetch<JournalPost>({
+  const { data } = await sanityFetch({
     query: JOURNAL_POST_BY_SLUG_QUERY,
     params: { slug },
     tags: [`journalPost:${slug}`],
   });
+  const post = data as JournalPost | null;
 
   if (!post) notFound();
 

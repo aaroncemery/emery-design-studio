@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
 import "./globals.css";
 import { NavWrapper } from "@/components/nav/nav-wrapper";
 import { FooterWrapper } from "@/components/sections/footer-wrapper";
+import { SanityLive } from "@/lib/sanity/live";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-serif",
@@ -32,11 +35,13 @@ export const metadata: Metadata = {
     "Considered residential interiors from a small, slow studio on Lake Washington.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { isEnabled: isDraftMode } = await draftMode();
+
   return (
     <html
       lang="en"
@@ -52,6 +57,8 @@ export default function RootLayout({
         <NavWrapper />
         {children}
         <FooterWrapper />
+        <SanityLive />
+        {isDraftMode && <VisualEditing />}
       </body>
     </html>
   );

@@ -11,6 +11,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value:
+              "frame-ancestors 'self' https://emery-design.sanity.studio http://localhost:3333",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

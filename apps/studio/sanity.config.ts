@@ -1,6 +1,11 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
+import {
+  presentationTool,
+  defineDocuments,
+  defineLocations,
+} from "sanity/presentation";
 import { schemaTypes } from "./src/schemaTypes";
 import {
   Settings2Icon,
@@ -22,6 +27,88 @@ const SINGLETON_HOME_PAGE_ID = "singleton-homePage";
 const SINGLETON_SITE_SETTINGS_ID = "singleton-siteSettings";
 const SINGLETON_NAVIGATION_ID = "singleton-navigation";
 const SINGLETON_FOOTER_ID = "singleton-footer";
+
+const PRODUCTION_PREVIEW_URL = "https://www.emerydesign.studio";
+
+const mainDocuments = defineDocuments([
+  {
+    route: "/work/:slug",
+    filter: `_type == "project" && slug.current == $slug`,
+  },
+  {
+    route: "/journal/:slug",
+    filter: `_type == "journalPost" && slug.current == $slug`,
+  },
+  {
+    route: "/legal/:slug",
+    filter: `_type == "legalPage" && slug.current == $slug`,
+  },
+  { route: "/", filter: `_type == "homePage"` },
+]);
+
+const locations = {
+  project: defineLocations({
+    select: { title: "title", slug: "slug.current" },
+    resolve: (doc) => ({
+      locations: [
+        { title: doc?.title || "Untitled", href: `/work/${doc?.slug}` },
+        { title: "All projects", href: "/work" },
+      ],
+    }),
+  }),
+  journalPost: defineLocations({
+    select: { title: "title", slug: "slug.current" },
+    resolve: (doc) => ({
+      locations: [
+        { title: doc?.title || "Untitled", href: `/journal/${doc?.slug}` },
+        { title: "All journal posts", href: "/journal" },
+      ],
+    }),
+  }),
+  legalPage: defineLocations({
+    select: { title: "title", slug: "slug.current" },
+    resolve: (doc) => ({
+      locations: [
+        { title: doc?.title || "Untitled", href: `/legal/${doc?.slug}` },
+      ],
+    }),
+  }),
+  homePage: defineLocations({
+    select: {},
+    resolve: () => ({
+      locations: [{ title: "Home", href: "/" }],
+    }),
+  }),
+  service: defineLocations({
+    select: { title: "title" },
+    resolve: (doc) => ({
+      locations: [
+        { title: doc?.title || "Untitled", href: "/" },
+        { title: "Services", href: "/services" },
+      ],
+    }),
+  }),
+  testimonial: defineLocations({
+    message: "Used on the home page if included in a collection section",
+    tone: "caution",
+  }),
+  pressItem: defineLocations({
+    message: "Used on the home page if included in a collection section",
+    tone: "caution",
+  }),
+  siteSettings: defineLocations({
+    message: "Used on every page",
+    tone: "caution",
+  }),
+  navigation: defineLocations({
+    message: "Used on every page",
+    tone: "caution",
+  }),
+  footer: defineLocations({
+    message: "Used on every page",
+    tone: "caution",
+  }),
+};
 
 export default defineConfig({
   name: "default",
@@ -152,6 +239,21 @@ export default defineConfig({
                 ),
               ),
           ]),
+    }),
+    presentationTool({
+      previewUrl: {
+        initial:
+          process.env.SANITY_STUDIO_PREVIEW_URL || PRODUCTION_PREVIEW_URL,
+        previewMode: {
+          enable: "/api/draft-mode/enable",
+          disable: "/api/draft-mode/disable",
+        },
+      },
+      allowOrigins: [PRODUCTION_PREVIEW_URL, "http://localhost:3000"],
+      resolve: {
+        mainDocuments,
+        locations,
+      },
     }),
     visionTool(),
   ],

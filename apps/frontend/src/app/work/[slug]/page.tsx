@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { client, sanityFetch } from "@/lib/sanity/client";
+import { client } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import {
   PROJECT_BY_SLUG_QUERY,
   SITE_SETTINGS_QUERY,
@@ -29,17 +30,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const [project, siteSettings] = await Promise.all([
-    sanityFetch<Project>({
-      query: PROJECT_BY_SLUG_QUERY,
-      params: { slug },
-      tags: [`project:${slug}`],
-    }),
-    sanityFetch<SiteSettings | null>({
-      query: SITE_SETTINGS_QUERY,
-      tags: ["siteSettings"],
-    }),
-  ]);
+  const [{ data: projectData }, { data: siteSettingsData }] = await Promise.all(
+    [
+      sanityFetch({
+        query: PROJECT_BY_SLUG_QUERY,
+        params: { slug },
+        tags: [`project:${slug}`],
+      }),
+      sanityFetch({
+        query: SITE_SETTINGS_QUERY,
+        tags: ["siteSettings"],
+      }),
+    ],
+  );
+  const project = projectData as Project | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
 
   if (!project) return {};
 
@@ -57,11 +62,12 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = await sanityFetch<Project>({
+  const { data } = await sanityFetch({
     query: PROJECT_BY_SLUG_QUERY,
     params: { slug },
     tags: [`project:${slug}`],
   });
+  const project = data as Project | null;
 
   if (!project) notFound();
 

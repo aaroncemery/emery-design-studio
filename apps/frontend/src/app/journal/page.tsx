@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { sanityFetch } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import {
   ALL_JOURNAL_POSTS_QUERY,
   SITE_SETTINGS_QUERY,
@@ -14,10 +14,11 @@ import type { JournalPost, SiteSettings } from "@/lib/sanity/types";
 export const revalidate = false;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const siteSettings = await sanityFetch<SiteSettings | null>({
+  const { data } = await sanityFetch({
     query: SITE_SETTINGS_QUERY,
     tags: ["siteSettings"],
   });
+  const siteSettings = data as SiteSettings | null;
 
   return buildMetadata({
     siteSettings,
@@ -28,10 +29,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function JournalPage() {
-  const posts = await sanityFetch<JournalPost[]>({
+  const { data } = await sanityFetch({
     query: ALL_JOURNAL_POSTS_QUERY,
     tags: ["journalPost"],
   });
+  const posts = data as JournalPost[];
 
   return (
     <main id="main">

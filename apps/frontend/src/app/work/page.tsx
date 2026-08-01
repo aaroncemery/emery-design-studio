@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { sanityFetch } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import { ALL_PROJECTS_QUERY, SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
 import { buildMetadata } from "@/lib/sanity/build-metadata";
 import type { Project, SiteSettings } from "@/lib/sanity/types";
@@ -11,10 +11,11 @@ import type { Project, SiteSettings } from "@/lib/sanity/types";
 export const revalidate = false;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const siteSettings = await sanityFetch<SiteSettings | null>({
+  const { data } = await sanityFetch({
     query: SITE_SETTINGS_QUERY,
     tags: ["siteSettings"],
   });
+  const siteSettings = data as SiteSettings | null;
 
   return buildMetadata({
     siteSettings,
@@ -25,10 +26,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function WorkPage() {
-  const projects = await sanityFetch<Project[]>({
+  const { data } = await sanityFetch({
     query: ALL_PROJECTS_QUERY,
     tags: ["project"],
   });
+  const projects = data as Project[];
 
   return (
     <main id="main">

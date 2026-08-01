@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
-import { sanityFetch } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/live";
 import { ALL_SERVICES_QUERY } from "@/lib/sanity/queries";
 import type { Service } from "@/lib/sanity/types";
 
@@ -15,10 +15,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const services = await sanityFetch<Service[]>({
+  const { data } = await sanityFetch({
     query: ALL_SERVICES_QUERY,
     tags: ["service"],
   });
+  const services = data as Service[];
 
   return (
     <main id="main">
