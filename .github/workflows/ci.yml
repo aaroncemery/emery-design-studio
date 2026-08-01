@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  SCHEMA_VALIDATION_REPORT: schema-report.txt
+
+jobs:
+  check-types:
+    name: Check types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check-types
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+
+  validate-schema:
+    name: Validate Sanity schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+
+      - name: Validate schema
+        id: validate
+        working-directory: apps/studio
+        run: |
+          pnpm exec sanity schema validate >> "${SCHEMA_VALIDATION_REPORT}" 2>&1
+          exit_code=$?
+          {
+            echo "## Schema Validation Results"
+            echo '```'
+            cat "${SCHEMA_VALIDATION_REPORT}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $exit_code
+
+      - name: Post schema validation report
+        if: failure() && steps.validate.outcome == 'failure' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('apps/studio/${{ env.SCHEMA_VALIDATION_REPORT }}', 'utf8');
+            const body = [
+              '### ❌ Sanity schema validation failed',
+              '',
+              '```',
+              report,
+              '```',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
