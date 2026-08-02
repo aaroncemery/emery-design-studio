@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -75,10 +75,100 @@ const canela = localFont({
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const suisse = localFont({
+  src: [
+    {
+      path: "../fonts/suisse/suisse-hairline.woff2",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-hairline-italic.woff2",
+      weight: "100",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-thin.woff2",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-thin-italic.woff2",
+      weight: "200",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-light-italic.woff2",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-regular-italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-book.woff2",
+      weight: "450",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-book-italic.woff2",
+      weight: "450",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-medium-italic.woff2",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-semibold-italic.woff2",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-bold-italic.woff2",
+      weight: "700",
+      style: "italic",
+    },
+    {
+      path: "../fonts/suisse/suisse-black.woff2",
+      weight: "900",
+      style: "normal",
+    },
+    {
+      path: "../fonts/suisse/suisse-black-italic.woff2",
+      weight: "900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-sans-local",
   display: "swap",
 });
 
@@ -122,7 +212,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${canela.variable} ${inter.variable} ${jetbrainsMono.variable} ${naancy.variable} h-full antialiased`}
+      className={`${canela.variable} ${suisse.variable} ${jetbrainsMono.variable} ${naancy.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <a

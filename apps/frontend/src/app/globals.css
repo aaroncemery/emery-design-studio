@@ -75,7 +75,7 @@
   --color-meta-muted: var(--ink-500);
 
   --font-serif: var(--font-serif-local), Georgia, serif;
-  --font-sans: "Inter", -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-sans-local), -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
   --font-naancy: var(--font-naancy-local), serif;
 }

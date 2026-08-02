@@ -16,10 +16,10 @@ export function MonoLabel({
   return (
     <Tag
       className={cn(
-        "font-mono text-[10px] tracking-[0.18em] uppercase leading-none",
+        "font-mono text-[10px] tracking-[0.18em] uppercase",
         className,
       )}
-      style={style}
+      style={{ lineHeight: 1, ...style }}
     >
       {children}
     </Tag>
