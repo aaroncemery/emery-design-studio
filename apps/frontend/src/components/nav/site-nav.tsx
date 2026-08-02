@@ -82,72 +82,76 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
         className="fixed inset-x-0 top-0 z-50 pointer-events-none"
         role="banner"
       >
-        {/* Corner labels — desktop only */}
-        <div className="hidden md:block absolute left-5 top-5 pointer-events-auto">
-          <Link href="/" className={cn(wordmarkClass, labelClass, "block")}>
-            {brandLabel}
-          </Link>
-          <MonoLabel
-            className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
+        {/* Desktop header row — a 3-column grid gives the center nav true
+            centering (the corner content widths differ, so flex
+            justify-between can't center it) and aligns all three groups on
+            a shared text baseline instead of matched box offsets. */}
+        <div className="hidden md:grid absolute inset-x-0 top-5 grid-cols-[1fr_auto_1fr] items-baseline px-5 pointer-events-none">
+          <div className="justify-self-start pointer-events-auto">
+            <Link href="/" className={cn(wordmarkClass, labelClass, "block")}>
+              {brandLabel}
+            </Link>
+            <MonoLabel
+              className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
+            >
+              {locationLabel}
+            </MonoLabel>
+          </div>
+
+          <nav
+            aria-label="Main navigation"
+            className="justify-self-center pointer-events-auto"
           >
-            {locationLabel}
-          </MonoLabel>
-        </div>
-
-        <div className="hidden md:block absolute right-5 top-5 text-right pointer-events-auto">
-          <MonoLabel className={cn(labelClass, "block text-[9px]")}>
-            {establishedLabel}
-          </MonoLabel>
-          <MonoLabel
-            className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
-          >
-            {indexLabel}
-          </MonoLabel>
-        </div>
-
-        {/* Desktop full pill nav */}
-        <nav
-          aria-label="Main navigation"
-          className="hidden md:flex absolute inset-x-0 top-4 justify-center pointer-events-auto"
-        >
-          <div
-            className={cn(
-              "flex items-center px-5 py-2.5 rounded-full transition-all duration-500",
-              scrolled
-                ? "bg-[rgba(246,244,239,0.88)] backdrop-blur-[18px] shadow-[0_2px_24px_rgba(17,17,17,0.08)] border border-[rgba(17,17,17,0.06)]"
-                : "bg-transparent",
-            )}
-          >
-            {resolvedLinks.map((link) => (
-              <Link
-                key={link.key}
-                href={link.href}
-                className={cn(
-                  "font-mono text-[10px] tracking-[0.16em] uppercase px-3 py-1 transition-colors duration-500 hover:opacity-70",
-                  scrolled
-                    ? "text-[#111111]"
-                    : "text-white mix-blend-difference",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            <div className={dividerClass} />
-
-            <Link
-              href="/#contact"
+            <div
               className={cn(
-                "font-mono text-[10px] tracking-[0.16em] uppercase px-4 py-1.5 rounded-full border transition-all duration-500",
+                "flex items-center px-5 py-2.5 rounded-full transition-all duration-500",
                 scrolled
-                  ? "text-[#1b3a5b] border-[#1b3a5b] hover:bg-[#1b3a5b] hover:text-white"
-                  : "text-white border-white/70 hover:bg-white/10 mix-blend-difference",
+                  ? "bg-[rgba(246,244,239,0.88)] backdrop-blur-[18px] shadow-[0_2px_24px_rgba(17,17,17,0.08)] border border-[rgba(17,17,17,0.06)]"
+                  : "bg-transparent",
               )}
             >
-              Inquire&nbsp;→
-            </Link>
+              {resolvedLinks.map((link) => (
+                <Link
+                  key={link.key}
+                  href={link.href}
+                  className={cn(
+                    "font-mono text-[10px] tracking-[0.16em] uppercase px-3 py-1 transition-colors duration-500 hover:opacity-70",
+                    scrolled
+                      ? "text-[#111111]"
+                      : "text-white mix-blend-difference",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              <div className={dividerClass} />
+
+              <Link
+                href="/#contact"
+                className={cn(
+                  "font-mono text-[10px] tracking-[0.16em] uppercase px-4 py-1.5 rounded-full border transition-all duration-500",
+                  scrolled
+                    ? "text-[#1b3a5b] border-[#1b3a5b] hover:bg-[#1b3a5b] hover:text-white"
+                    : "text-white border-white/70 hover:bg-white/10 mix-blend-difference",
+                )}
+              >
+                Inquire&nbsp;→
+              </Link>
+            </div>
+          </nav>
+
+          <div className="justify-self-end text-right pointer-events-auto">
+            <MonoLabel className={cn(labelClass, "block text-[9px]")}>
+              {establishedLabel}
+            </MonoLabel>
+            <MonoLabel
+              className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
+            >
+              {indexLabel}
+            </MonoLabel>
           </div>
-        </nav>
+        </div>
 
         {/* Mobile collapsed pill */}
         <div className="md:hidden absolute inset-x-0 top-4 flex justify-center pointer-events-auto">
