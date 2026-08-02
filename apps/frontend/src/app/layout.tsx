@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -8,11 +8,70 @@ import { NavWrapper } from "@/components/nav/nav-wrapper";
 import { FooterWrapper } from "@/components/sections/footer-wrapper";
 import { SanityLive } from "@/lib/sanity/live";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+const canela = localFont({
+  src: [
+    {
+      path: "../fonts/canela/canela-thin.woff2",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../fonts/canela/canela-thin-italic.woff2",
+      weight: "100",
+      style: "italic",
+    },
+    {
+      path: "../fonts/canela/canela-light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../fonts/canela/canela-light-italic.woff2",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../fonts/canela/canela-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/canela/canela-regular-italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../fonts/canela/canela-medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../fonts/canela/canela-medium-italic.woff2",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../fonts/canela/canela-bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../fonts/canela/canela-bold-italic.woff2",
+      weight: "700",
+      style: "italic",
+    },
+    {
+      path: "../fonts/canela/canela-black.woff2",
+      weight: "900",
+      style: "normal",
+    },
+    {
+      path: "../fonts/canela/canela-black-italic.woff2",
+      weight: "900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-serif-local",
   display: "swap",
 });
 
@@ -63,7 +122,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} ${naancy.variable} h-full antialiased`}
+      className={`${canela.variable} ${inter.variable} ${jetbrainsMono.variable} ${naancy.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <a
