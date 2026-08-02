@@ -197,16 +197,18 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
 
           <motion.div
             layout
+            transition={revealTransition}
             className="justify-self-center pointer-events-auto"
           >
             <motion.div
               layout
+              transition={revealTransition}
               className={cn(
-                "flex items-center px-5 py-2.5 rounded-full transition-colors duration-500",
+                "relative flex items-center px-5 py-2.5 rounded-full transition-colors duration-500",
                 pillBg,
               )}
             >
-              <AnimatePresence initial={false}>
+              <AnimatePresence initial={false} mode="popLayout">
                 {active && (
                   <motion.div
                     key="emery-compact"
@@ -245,6 +247,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
 
               <motion.button
                 layout
+                transition={revealTransition}
                 type="button"
                 onClick={() => setMenuOpen((o) => !o)}
                 aria-label={menuOpen ? "Close menu" : "Open menu"}
