@@ -22,8 +22,7 @@ interface SiteNavProps {
 }
 
 export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
-  const brandLabel =
-    stegaClean(siteSettings?.headerBrandLabel) || "Emery Design Studio";
+  const brandLabel = stegaClean(siteSettings?.headerBrandLabel) || "EMERY";
   const locationLabel =
     stegaClean(siteSettings?.headerLocationLabel) ||
     "Puget Sound · Pacific Northwest";
@@ -62,6 +61,11 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
     scrolled ? "bg-[rgba(17,17,17,0.28)]" : "bg-white/40",
   );
 
+  const wordmarkClass =
+    "font-naancy font-bold text-[48px] leading-none tracking-[-0.05em] uppercase";
+  const wordmarkClassCompact =
+    "font-naancy font-bold text-[20px] leading-none tracking-[-0.05em] uppercase";
+
   const pillBg =
     scrolled || menuOpen
       ? "bg-[rgba(246,244,239,0.88)] backdrop-blur-[18px] shadow-[0_2px_24px_rgba(17,17,17,0.08)] border border-[rgba(17,17,17,0.06)]"
@@ -80,9 +84,9 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
       >
         {/* Corner labels — desktop only */}
         <div className="hidden md:block absolute left-5 top-5 pointer-events-auto">
-          <MonoLabel className={cn(labelClass, "block text-[9px]")}>
+          <Link href="/" className={cn(wordmarkClass, labelClass, "block")}>
             {brandLabel}
-          </MonoLabel>
+          </Link>
           <MonoLabel
             className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
           >
@@ -114,18 +118,6 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                 : "bg-transparent",
             )}
           >
-            <Link
-              href="/"
-              className={cn(
-                "font-mono text-[10px] tracking-[0.2em] uppercase font-medium transition-colors duration-500",
-                scrolled ? "text-[#111111]" : "text-white mix-blend-difference",
-              )}
-            >
-              EMERY
-            </Link>
-
-            <div className={dividerClass} />
-
             {resolvedLinks.map((link) => (
               <Link
                 key={link.key}
@@ -165,14 +157,8 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
               pillBg,
             )}
           >
-            <Link
-              href="/"
-              className={cn(
-                "font-mono text-[10px] tracking-[0.2em] uppercase font-medium transition-colors duration-500",
-                pillTextClass,
-              )}
-            >
-              EMERY
+            <Link href="/" className={cn(wordmarkClassCompact, pillTextClass)}>
+              {brandLabel}
             </Link>
 
             <div className={dividerClass} />

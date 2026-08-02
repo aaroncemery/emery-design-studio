@@ -69,7 +69,7 @@ export const siteSettings = defineType({
       group: GROUP.MICROCOPY,
       fieldset: "header",
       description:
-        'Top-left brandmark text, e.g. "Emery Design Studio". Rendered in the Nancy display font.',
+        'The site logotype, e.g. "EMERY". Rendered large in the Naancy display font as the clickable home link — keep it short.',
     }),
     defineField({
       name: "headerLocationLabel",

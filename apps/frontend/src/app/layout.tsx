@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import "./globals.css";
@@ -29,6 +30,23 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const naancy = localFont({
+  src: [
+    {
+      path: "../fonts/naancy/naancy-grade-1.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/naancy/naancy-grade-2.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-naancy-local",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Emery Design Studio — Kirkland, WA",
   description:
@@ -45,7 +63,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} ${naancy.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <a
