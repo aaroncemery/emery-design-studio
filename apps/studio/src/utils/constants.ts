@@ -1,5 +1,6 @@
 import { BlockElementIcon } from "@sanity/icons/BlockElement";
 import { ComposeIcon } from "@sanity/icons/Compose";
+import { EditIcon } from "@sanity/icons/Edit";
 import { ImageIcon } from "@sanity/icons/Image";
 import { InlineElementIcon } from "@sanity/icons/InlineElement";
 import { InsertAboveIcon } from "@sanity/icons/InsertAbove";
@@ -15,6 +16,7 @@ export const GROUP = {
   OG: "og",
   CARD: "card",
   RELATED: "related",
+  MICROCOPY: "microcopy",
 } as const;
 
 export const GROUPS = {
@@ -53,5 +55,10 @@ export const GROUPS = {
     name: GROUP.RELATED,
     icon: InlineElementIcon,
     title: "Related",
+  } satisfies FieldGroupDefinition,
+  microcopy: {
+    name: GROUP.MICROCOPY,
+    icon: EditIcon,
+    title: "Microcopy",
   } satisfies FieldGroupDefinition,
 };

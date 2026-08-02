@@ -3,10 +3,11 @@
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { useState, useRef } from "react";
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
-import type { Navigation } from "@/lib/sanity/types";
+import type { Navigation, SiteSettings } from "@/lib/sanity/types";
 
 const FALLBACK_NAV_LINKS = [
   { key: "/work", label: "Work", href: "/work" },
@@ -17,9 +18,19 @@ const FALLBACK_NAV_LINKS = [
 
 interface SiteNavProps {
   navigation?: Navigation | null;
+  siteSettings?: SiteSettings | null;
 }
 
-export function SiteNav({ navigation }: SiteNavProps) {
+export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
+  const brandLabel =
+    stegaClean(siteSettings?.headerBrandLabel) || "Emery Design Studio";
+  const locationLabel =
+    stegaClean(siteSettings?.headerLocationLabel) ||
+    "Puget Sound · Pacific Northwest";
+  const establishedLabel =
+    stegaClean(siteSettings?.headerEstablishedLabel) || "Established MMXIV";
+  const indexLabel =
+    stegaClean(siteSettings?.headerIndexLabel) || "Index №01 — Home";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -70,23 +81,23 @@ export function SiteNav({ navigation }: SiteNavProps) {
         {/* Corner labels — desktop only */}
         <div className="hidden md:block absolute left-5 top-5 pointer-events-auto">
           <MonoLabel className={cn(labelClass, "block text-[9px]")}>
-            Emery Design Studio
+            {brandLabel}
           </MonoLabel>
           <MonoLabel
             className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
           >
-            N&nbsp;47.68°&nbsp;·&nbsp;W&nbsp;122.20°&nbsp;—&nbsp;Kirkland
+            {locationLabel}
           </MonoLabel>
         </div>
 
         <div className="hidden md:block absolute right-5 top-5 text-right pointer-events-auto">
           <MonoLabel className={cn(labelClass, "block text-[9px]")}>
-            Established MMXIV
+            {establishedLabel}
           </MonoLabel>
           <MonoLabel
             className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
           >
-            Index&nbsp;№01&nbsp;—&nbsp;Home
+            {indexLabel}
           </MonoLabel>
         </div>
 
@@ -221,10 +232,10 @@ export function SiteNav({ navigation }: SiteNavProps) {
 
           <div className="absolute bottom-8 left-8">
             <MonoLabel className="text-[#9a968d] text-[9px] block">
-              Emery Design Studio
+              {brandLabel}
             </MonoLabel>
             <MonoLabel className="text-[#9a968d] text-[9px] block mt-1 opacity-60">
-              Kirkland,&nbsp;WA&nbsp;·&nbsp;Est.&nbsp;MMXIV
+              {locationLabel}
             </MonoLabel>
           </div>
         </div>

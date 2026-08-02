@@ -243,7 +243,11 @@ export const SITE_SETTINGS_QUERY = `
     siteDescription,
     "defaultOgImage": defaultOgImage { ${imageFields} },
     "logo": logo { ${imageFields} },
-    "favicon": favicon { ${imageFields} }
+    "favicon": favicon { ${imageFields} },
+    headerBrandLabel,
+    headerLocationLabel,
+    headerEstablishedLabel,
+    headerIndexLabel
   }
 `;
 
