@@ -236,11 +236,15 @@ html {
 }
 
 /* Custom cursor — hides the system cursor in favor of the ring/dot
-   rendered by CustomCursor, but leaves text-entry fields alone since
-   the custom cursor doesn't represent typing affordance. */
+   rendered by CustomCursor. Links carry their own UA-stylesheet
+   `cursor: pointer`, which beats an inherited value regardless of
+   specificity, so this has to target every element directly (not just
+   body) to actually win. Text-entry fields are the one exception,
+   since the custom cursor doesn't represent typing affordance. */
 @media (pointer: fine) {
-  body.custom-cursor-active {
-    cursor: none;
+  body.custom-cursor-active,
+  body.custom-cursor-active * {
+    cursor: none !important;
   }
   body.custom-cursor-active
     input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not(
@@ -248,6 +252,6 @@ html {
     ),
   body.custom-cursor-active textarea,
   body.custom-cursor-active [contenteditable="true"] {
-    cursor: text;
+    cursor: text !important;
   }
 }

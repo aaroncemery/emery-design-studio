@@ -32,6 +32,7 @@ export function CustomCursor() {
   );
   const [isInteractive, setIsInteractive] = useState(false);
   const [isTextField, setIsTextField] = useState(false);
+  const [isWindowActive, setIsWindowActive] = useState(true);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const springX = useSpring(cursorX, {
@@ -57,15 +58,27 @@ export function CustomCursor() {
       setIsTextField(Boolean(target.closest(TEXT_FIELD_SELECTOR)));
       setIsInteractive(Boolean(target.closest(INTERACTIVE_SELECTOR)));
     };
+    const handleWindowLeave = () => setIsWindowActive(false);
+    const handleWindowEnter = () => setIsWindowActive(true);
 
     document.body.classList.add("custom-cursor-active");
     window.addEventListener("mousemove", handleMove);
     document.addEventListener("mouseover", handleOver);
+    document.documentElement.addEventListener("mouseleave", handleWindowLeave);
+    document.documentElement.addEventListener("mouseenter", handleWindowEnter);
 
     return () => {
       document.body.classList.remove("custom-cursor-active");
       window.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseover", handleOver);
+      document.documentElement.removeEventListener(
+        "mouseleave",
+        handleWindowLeave,
+      );
+      document.documentElement.removeEventListener(
+        "mouseenter",
+        handleWindowEnter,
+      );
     };
   }, [enabled, cursorX, cursorY]);
 
@@ -74,13 +87,18 @@ export function CustomCursor() {
   return (
     <motion.div
       aria-hidden
-      className="fixed top-0 left-0 z-9999 pointer-events-none mix-blend-difference"
-      style={{ x: springX, y: springY }}
-      animate={{ opacity: isTextField ? 0 : 1 }}
+      className="fixed top-0 left-0 z-9999 pointer-events-none"
+      style={{
+        x: springX,
+        y: springY,
+        filter:
+          "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
+      }}
+      animate={{ opacity: isTextField || !isWindowActive ? 0 : 1 }}
       transition={{ duration: 0.2 }}
     >
       <div
-        className="absolute rounded-full border border-paper"
+        className="absolute rounded-full border border-ink"
         style={{
           width: RING_SIZE,
           height: RING_SIZE,
@@ -89,7 +107,7 @@ export function CustomCursor() {
         }}
       />
       <motion.div
-        className="absolute rounded-full bg-paper"
+        className="absolute rounded-full bg-ink"
         style={{
           width: DOT_SIZE,
           height: DOT_SIZE,
