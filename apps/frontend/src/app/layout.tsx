@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import "./globals.css";
+import { CustomCursor } from "@/components/cursor/custom-cursor";
 import { NavWrapper } from "@/components/nav/nav-wrapper";
 import { FooterWrapper } from "@/components/sections/footer-wrapper";
 import { SanityLive } from "@/lib/sanity/live";
@@ -226,6 +227,7 @@ export default async function RootLayout({
         <FooterWrapper />
         <SanityLive />
         {isDraftMode && <VisualEditing />}
+        <CustomCursor />
       </body>
     </html>
   );
