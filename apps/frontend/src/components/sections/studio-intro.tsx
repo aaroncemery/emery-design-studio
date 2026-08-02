@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
@@ -60,7 +61,7 @@ export function StudioIntro({ data }: Props) {
     data?.heading ??
     "A small atelier on the water in Kirkland, working slowly and close to the hand.";
   const stats = data?.stats ?? FALLBACK_STATS;
-  const layout = data?.imageLayout ?? "mainWithInset";
+  const layout = stegaClean(data?.imageLayout) ?? "mainWithInset";
   const mainImage = data?.images?.[0];
   const insetImage = data?.images?.[1];
 
@@ -89,19 +90,23 @@ export function StudioIntro({ data }: Props) {
       )}
 
       {layout === "sideBySide" && (
-        <div className="grid grid-cols-2 gap-3">
-          <ImageBlock
-            image={mainImage}
-            placeholder="plaster"
-            aspectRatio={0.75}
-            sizes="(max-width: 1024px) 50vw, 25vw"
-          />
-          <ImageBlock
-            image={insetImage}
-            placeholder="wood"
-            aspectRatio={0.75}
-            sizes="(max-width: 1024px) 50vw, 25vw"
-          />
+        <div className="relative lg:pb-16">
+          <div className="w-full lg:w-[68%]">
+            <ImageBlock
+              image={mainImage}
+              placeholder="plaster"
+              aspectRatio={0.85}
+              sizes="(max-width: 1024px) 100vw, 34vw"
+            />
+          </div>
+          <div className="hidden lg:block lg:absolute lg:-bottom-12 lg:-right-8 lg:w-[52%] lg:border-4 lg:border-[#ece8df]">
+            <ImageBlock
+              image={insetImage}
+              placeholder="wood"
+              aspectRatio={0.85}
+              sizes="(max-width: 1024px) 100vw, 26vw"
+            />
+          </div>
         </div>
       )}
 
@@ -109,7 +114,7 @@ export function StudioIntro({ data }: Props) {
         <ImageBlock
           image={mainImage}
           placeholder="plaster"
-          aspectRatio={1.2}
+          aspectRatio={0.9}
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
       )}

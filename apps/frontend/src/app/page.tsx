@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
 import { Hero } from "@/components/sections/hero";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
 import { StudioIntro } from "@/components/sections/studio-intro";
@@ -67,16 +68,16 @@ export default async function Home() {
   );
 
   const projectsSection = collectionSections.find(
-    (s) => s.displayAs === "projectGrid",
+    (s) => stegaClean(s.displayAs) === "projectGrid",
   );
   const servicesSection = collectionSections.find(
-    (s) => s.displayAs === "serviceRows",
+    (s) => stegaClean(s.displayAs) === "serviceRows",
   );
   const testimonialsSection = collectionSections.find(
-    (s) => s.displayAs === "testimonialRotator",
+    (s) => stegaClean(s.displayAs) === "testimonialRotator",
   );
   const pressSection = collectionSections.find(
-    (s) => s.displayAs === "pressMentions",
+    (s) => stegaClean(s.displayAs) === "pressMentions",
   );
 
   return (
