@@ -263,7 +263,6 @@ export function Inquiry({ data }: Props) {
                 <button
                   type="submit"
                   disabled={isPending}
-                  data-cursor-invert="true"
                   className="inline-flex items-center gap-3 px-6 py-3 font-mono text-[10px] tracking-[0.16em] uppercase border border-[#1b3a5b] bg-[#1b3a5b] text-white transition-all duration-[360ms] ease-[cubic-bezier(.2,.7,.2,1)] hover:bg-[#152e4a] hover:border-[#152e4a] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPending ? "Sending…" : "Send inquiry"}

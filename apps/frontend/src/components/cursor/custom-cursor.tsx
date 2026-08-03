@@ -1,13 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const RING_SIZE = 56;
@@ -17,64 +11,15 @@ const RING_BORDER = 2;
 const INTERACTIVE_SELECTOR = "a, button, [role='button'], select, label";
 const TEXT_FIELD_SELECTOR =
   "input:not([type='submit']):not([type='button']):not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true']";
-const INVERT_SELECTOR = "[data-cursor-invert]";
-
-// Renders a second cream ring+dot, positioned via the same values as the
-// base cursor but re-based to a fixed-rect container's own coordinate
-// space, so the container's overflow:hidden clips it to exactly the hovered
-// element's box. Offsets are plain arithmetic on existing motion values —
-// no extra per-frame work beyond what the base cursor already does.
-function InvertCursor({
-  posX,
-  posY,
-  originX,
-  originY,
-  isInteractive,
-  reduceMotion,
-}: {
-  posX: MotionValue<number>;
-  posY: MotionValue<number>;
-  originX: number;
-  originY: number;
-  isInteractive: boolean;
-  reduceMotion: boolean;
-}) {
-  const localX = useTransform(posX, (v) => v - originX);
-  const localY = useTransform(posY, (v) => v - originY);
-
-  return (
-    <motion.div
-      className="absolute top-0 left-0"
-      style={{ x: localX, y: localY }}
-    >
-      <div
-        className="absolute rounded-full border-paper"
-        style={{
-          width: RING_SIZE,
-          height: RING_SIZE,
-          left: -RING_SIZE / 2,
-          top: -RING_SIZE / 2,
-          borderWidth: RING_BORDER,
-        }}
-      />
-      <motion.div
-        className="absolute rounded-full bg-paper"
-        style={{
-          width: DOT_SIZE,
-          height: DOT_SIZE,
-          left: -DOT_SIZE / 2,
-          top: -DOT_SIZE / 2,
-        }}
-        animate={{ scale: isInteractive ? RING_SIZE / DOT_SIZE : 1 }}
-        transition={
-          reduceMotion
-            ? { duration: 0 }
-            : { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
-        }
-      />
-    </motion.div>
-  );
-}
+// Opt-in for elements with substantial body text a user lingers on to read
+// (currently just the homepage service rows): the dot switches to cream +
+// mix-blend-difference instead of a flat opaque fill, so blend-mode
+// inverts rather than averages and text underneath stays legible. Every
+// other interactive element keeps the plain solid ink fill — deliberately
+// not the default, since the same treatment washes out on small,
+// text-dense buttons where letters dominate the circle's area instead of
+// being a small detail within it.
+const LENS_SELECTOR = "[data-cursor-lens]";
 
 function subscribeFinePointer(onChange: () => void) {
   const mql = window.matchMedia("(pointer: fine)");
@@ -139,10 +84,9 @@ export function CustomCursor() {
   );
   const enabled = isFinePointer && !forcedColorsActive;
   const [isInteractive, setIsInteractive] = useState(false);
+  const [isLensTarget, setIsLensTarget] = useState(false);
   const [isTextField, setIsTextField] = useState(false);
   const [isWindowActive, setIsWindowActive] = useState(true);
-  const [invertRect, setInvertRect] = useState<DOMRect | null>(null);
-  const invertTargetRef = useRef<Element | null>(null);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const springX = useSpring(cursorX, {
@@ -180,14 +124,7 @@ export function CustomCursor() {
       const target = e.target as HTMLElement;
       setIsTextField(Boolean(target.closest(TEXT_FIELD_SELECTOR)));
       setIsInteractive(Boolean(target.closest(INTERACTIVE_SELECTOR)));
-
-      const invertTarget = target.closest(INVERT_SELECTOR);
-      if (invertTarget !== invertTargetRef.current) {
-        invertTargetRef.current = invertTarget;
-        setInvertRect(
-          invertTarget ? invertTarget.getBoundingClientRect() : null,
-        );
-      }
+      setIsLensTarget(Boolean(target.closest(LENS_SELECTOR)));
     };
     // mouseleave on documentElement is the "obvious" way to catch this but
     // is unreliable across browsers right at the viewport edge. relatedTarget
@@ -201,11 +138,6 @@ export function CustomCursor() {
     };
     const handleWindowBlur = () => setIsWindowActive(false);
     const handleWindowFocus = () => setIsWindowActive(true);
-    const handleScrollOrResize = () => {
-      if (invertTargetRef.current) {
-        setInvertRect(invertTargetRef.current.getBoundingClientRect());
-      }
-    };
 
     document.body.classList.add("custom-cursor-active");
     window.addEventListener("mousemove", handleMove);
@@ -213,8 +145,6 @@ export function CustomCursor() {
     document.addEventListener("mouseout", handleOut);
     window.addEventListener("blur", handleWindowBlur);
     window.addEventListener("focus", handleWindowFocus);
-    window.addEventListener("scroll", handleScrollOrResize, { passive: true });
-    window.addEventListener("resize", handleScrollOrResize);
 
     return () => {
       document.body.classList.remove("custom-cursor-active");
@@ -223,92 +153,55 @@ export function CustomCursor() {
       document.removeEventListener("mouseout", handleOut);
       window.removeEventListener("blur", handleWindowBlur);
       window.removeEventListener("focus", handleWindowFocus);
-      window.removeEventListener("scroll", handleScrollOrResize);
-      window.removeEventListener("resize", handleScrollOrResize);
     };
   }, [enabled, cursorX, cursorY]);
 
   if (!enabled) return null;
 
   return (
-    <>
-      {/* Hovering anything interactive swaps the whole cursor from solid ink
-          to a cream mix-blend-difference "lens": blend-mode inverts rather
-          than averages, so contrast survives everywhere the dot travels —
-          text underneath stays legible (just recolored) instead of being
-          blocked by an opaque disc or muddied by a flat opacity fade. */}
-      <motion.div
-        aria-hidden
+    <motion.div
+      aria-hidden
+      className={cn(
+        "fixed top-0 left-0 z-9999 pointer-events-none",
+        isLensTarget && "mix-blend-difference",
+      )}
+      style={{
+        x: posX,
+        y: posY,
+        filter: isLensTarget
+          ? undefined
+          : "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
+      }}
+      animate={{ opacity: isTextField || !isWindowActive ? 0 : 1 }}
+      transition={fadeTransition}
+    >
+      <div
         className={cn(
-          "fixed top-0 left-0 z-9999 pointer-events-none",
-          isInteractive && "mix-blend-difference",
+          "absolute rounded-full",
+          isLensTarget ? "border-paper" : "border-ink",
         )}
         style={{
-          x: posX,
-          y: posY,
-          filter: isInteractive
-            ? undefined
-            : "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
+          width: RING_SIZE,
+          height: RING_SIZE,
+          left: -RING_SIZE / 2,
+          top: -RING_SIZE / 2,
+          borderWidth: RING_BORDER,
         }}
-        animate={{ opacity: isTextField || !isWindowActive ? 0 : 1 }}
-        transition={fadeTransition}
-      >
-        <div
-          className={cn(
-            "absolute rounded-full",
-            isInteractive ? "border-paper" : "border-ink",
-          )}
-          style={{
-            width: RING_SIZE,
-            height: RING_SIZE,
-            left: -RING_SIZE / 2,
-            top: -RING_SIZE / 2,
-            borderWidth: RING_BORDER,
-          }}
-        />
-        <motion.div
-          className={cn(
-            "absolute rounded-full",
-            isInteractive ? "bg-paper" : "bg-ink",
-          )}
-          style={{
-            width: DOT_SIZE,
-            height: DOT_SIZE,
-            left: -DOT_SIZE / 2,
-            top: -DOT_SIZE / 2,
-          }}
-          animate={{ scale: isInteractive ? RING_SIZE / DOT_SIZE : 1 }}
-          transition={scaleTransition}
-        />
-      </motion.div>
-
-      {/* data-cursor-invert buttons get this dedicated overlay on top of
-          the lens above: clipped to the hovered element's own rect
-          (recomputed on hover-enter/scroll/resize, never per-frame) rather
-          than the dot's circular mask, so the invert reads as "this whole
-          block flips" instead of a roving spot — a cleaner match for a
-          small, well-bounded button than the free-roaming lens. */}
-      {invertRect && !isTextField && isWindowActive && (
-        <div
-          aria-hidden
-          className="fixed z-9999 pointer-events-none overflow-hidden mix-blend-difference"
-          style={{
-            top: invertRect.top,
-            left: invertRect.left,
-            width: invertRect.width,
-            height: invertRect.height,
-          }}
-        >
-          <InvertCursor
-            posX={posX}
-            posY={posY}
-            originX={invertRect.left}
-            originY={invertRect.top}
-            isInteractive={isInteractive}
-            reduceMotion={reduceMotion}
-          />
-        </div>
-      )}
-    </>
+      />
+      <motion.div
+        className={cn(
+          "absolute rounded-full",
+          isLensTarget ? "bg-paper" : "bg-ink",
+        )}
+        style={{
+          width: DOT_SIZE,
+          height: DOT_SIZE,
+          left: -DOT_SIZE / 2,
+          top: -DOT_SIZE / 2,
+        }}
+        animate={{ scale: isInteractive ? RING_SIZE / DOT_SIZE : 1 }}
+        transition={scaleTransition}
+      />
+    </motion.div>
   );
 }

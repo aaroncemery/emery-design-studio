@@ -139,7 +139,6 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
 
               <Link
                 href="/#contact"
-                data-cursor-invert={scrolled ? "true" : undefined}
                 className={cn(
                   "font-mono text-[10px] tracking-[0.16em] uppercase px-4 py-1.5 rounded-full border transition-all duration-500",
                   scrolled

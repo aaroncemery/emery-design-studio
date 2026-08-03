@@ -25,10 +25,6 @@ const variants: Record<CTAVariant, string> = {
     "border border-white/80 text-white hover:bg-[#f6f4ef] hover:text-[#111111] hover:border-[#f6f4ef]",
 };
 
-// solid/accent fill dark on hover (or at rest) — worth the cursor-invert
-// treatment. ghost/onImage fill cream instead, a different effect.
-const DARK_FILL_VARIANTS: CTAVariant[] = ["solid", "accent"];
-
 export function CTA({
   href,
   children,
@@ -43,9 +39,6 @@ export function CTA({
     variants[variant],
     className,
   );
-  const dataCursorInvert = DARK_FILL_VARIANTS.includes(variant)
-    ? "true"
-    : undefined;
 
   const content = (
     <>
@@ -67,7 +60,6 @@ export function CTA({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        data-cursor-invert={dataCursorInvert}
         className={baseClass}
       >
         {content}
@@ -76,11 +68,7 @@ export function CTA({
   }
 
   return (
-    <Link
-      href={href}
-      data-cursor-invert={dataCursorInvert}
-      className={baseClass}
-    >
+    <Link href={href} className={baseClass}>
       {content}
     </Link>
   );
