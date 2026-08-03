@@ -5,6 +5,12 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const RING_SIZE = 56;
+// On interactive hover the ring shrinks to meet the dot instead of the dot
+// simply filling the ring's resting footprint — the pair converges on a
+// smaller shared size, so hovering a clickable item covers less of it
+// while the shape-change (thin ring -> smaller solid disc) still reads as
+// an unmistakable "you're on something" signal.
+const RING_SIZE_ACTIVE = 40;
 const DOT_SIZE = 14;
 const RING_BORDER = 2;
 
@@ -175,7 +181,7 @@ export function CustomCursor() {
       animate={{ opacity: isTextField || !isWindowActive ? 0 : 1 }}
       transition={fadeTransition}
     >
-      <div
+      <motion.div
         className={cn(
           "absolute rounded-full",
           isLensTarget ? "border-paper" : "border-ink",
@@ -187,6 +193,8 @@ export function CustomCursor() {
           top: -RING_SIZE / 2,
           borderWidth: RING_BORDER,
         }}
+        animate={{ scale: isInteractive ? RING_SIZE_ACTIVE / RING_SIZE : 1 }}
+        transition={scaleTransition}
       />
       <motion.div
         className={cn(
@@ -199,7 +207,7 @@ export function CustomCursor() {
           left: -DOT_SIZE / 2,
           top: -DOT_SIZE / 2,
         }}
-        animate={{ scale: isInteractive ? RING_SIZE / DOT_SIZE : 1 }}
+        animate={{ scale: isInteractive ? RING_SIZE_ACTIVE / DOT_SIZE : 1 }}
         transition={scaleTransition}
       />
     </motion.div>
