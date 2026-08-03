@@ -8,6 +8,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const RING_SIZE = 56;
 const DOT_SIZE = 14;
@@ -24,6 +25,13 @@ const INVERT_SELECTOR = "[data-cursor-invert]";
 // trying to read is actively counterproductive. These elements usually
 // already have their own hover affordance (background, color, icon shift).
 const CURSOR_PLAIN_SELECTOR = "[data-cursor-plain]";
+// Roving invert lens: the dot fills as normal, but flips to a cream,
+// mix-blend-difference treatment instead of solid ink. Since blend-mode
+// inverts rather than averages, contrast is preserved everywhere it
+// travels — dark text stays legible (just recolored) instead of the
+// muddy gray a plain opacity reduction produces. No rect to clip to here;
+// the dot's own circle is the mask, so it can roam freely over body copy.
+const LENS_SELECTOR = "[data-cursor-lens]";
 
 // Renders a second cream ring+dot, positioned via the same values as the
 // base cursor but re-based to a fixed-rect container's own coordinate
@@ -145,6 +153,7 @@ export function CustomCursor() {
   );
   const enabled = isFinePointer && !forcedColorsActive;
   const [isInteractive, setIsInteractive] = useState(false);
+  const [isLensTarget, setIsLensTarget] = useState(false);
   const [isTextField, setIsTextField] = useState(false);
   const [isWindowActive, setIsWindowActive] = useState(true);
   const [invertRect, setInvertRect] = useState<DOMRect | null>(null);
@@ -189,6 +198,7 @@ export function CustomCursor() {
         Boolean(target.closest(INTERACTIVE_SELECTOR)) &&
           !target.closest(CURSOR_PLAIN_SELECTOR),
       );
+      setIsLensTarget(Boolean(target.closest(LENS_SELECTOR)));
 
       const invertTarget = target.closest(INVERT_SELECTOR);
       if (invertTarget !== invertTargetRef.current) {
@@ -243,18 +253,25 @@ export function CustomCursor() {
     <>
       <motion.div
         aria-hidden
-        className="fixed top-0 left-0 z-9999 pointer-events-none"
+        className={cn(
+          "fixed top-0 left-0 z-9999 pointer-events-none",
+          isLensTarget && "mix-blend-difference",
+        )}
         style={{
           x: posX,
           y: posY,
-          filter:
-            "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
+          filter: isLensTarget
+            ? undefined
+            : "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
         }}
         animate={{ opacity: isTextField || !isWindowActive ? 0 : 1 }}
         transition={fadeTransition}
       >
         <div
-          className="absolute rounded-full border-ink"
+          className={cn(
+            "absolute rounded-full",
+            isLensTarget ? "border-paper" : "border-ink",
+          )}
           style={{
             width: RING_SIZE,
             height: RING_SIZE,
@@ -264,7 +281,10 @@ export function CustomCursor() {
           }}
         />
         <motion.div
-          className="absolute rounded-full bg-ink"
+          className={cn(
+            "absolute rounded-full",
+            isLensTarget ? "bg-paper" : "bg-ink",
+          )}
           style={{
             width: DOT_SIZE,
             height: DOT_SIZE,

@@ -57,7 +57,7 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
         href="/services"
         className="group block"
         aria-label={service.title}
-        data-cursor-plain="true"
+        data-cursor-lens="true"
       >
         <Rule />
 
