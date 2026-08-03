@@ -9,34 +9,37 @@ import {
   type MotionValue,
 } from "framer-motion";
 
-const RING_SIZE = 32;
-const DOT_SIZE = 8;
+const RING_SIZE = 40;
+const DOT_SIZE = 10;
+const RING_BORDER = 1.5;
 
 const INTERACTIVE_SELECTOR = "a, button, [role='button'], select, label";
 const TEXT_FIELD_SELECTOR =
   "input:not([type='submit']):not([type='button']):not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true']";
 const INVERT_SELECTOR = "[data-cursor-invert]";
 
-// Renders a second cream ring+dot, positioned via the same spring values as
-// the base cursor but re-based to a fixed-rect container's own coordinate
+// Renders a second cream ring+dot, positioned via the same values as the
+// base cursor but re-based to a fixed-rect container's own coordinate
 // space, so the container's overflow:hidden clips it to exactly the hovered
 // element's box. Offsets are plain arithmetic on existing motion values —
 // no extra per-frame work beyond what the base cursor already does.
 function InvertCursor({
-  springX,
-  springY,
+  posX,
+  posY,
   originX,
   originY,
   isInteractive,
+  reduceMotion,
 }: {
-  springX: MotionValue<number>;
-  springY: MotionValue<number>;
+  posX: MotionValue<number>;
+  posY: MotionValue<number>;
   originX: number;
   originY: number;
   isInteractive: boolean;
+  reduceMotion: boolean;
 }) {
-  const localX = useTransform(springX, (v) => v - originX);
-  const localY = useTransform(springY, (v) => v - originY);
+  const localX = useTransform(posX, (v) => v - originX);
+  const localY = useTransform(posY, (v) => v - originY);
 
   return (
     <motion.div
@@ -44,12 +47,13 @@ function InvertCursor({
       style={{ x: localX, y: localY }}
     >
       <div
-        className="absolute rounded-full border border-paper"
+        className="absolute rounded-full border-paper"
         style={{
           width: RING_SIZE,
           height: RING_SIZE,
           left: -RING_SIZE / 2,
           top: -RING_SIZE / 2,
+          borderWidth: RING_BORDER,
         }}
       />
       <motion.div
@@ -61,7 +65,11 @@ function InvertCursor({
           top: -DOT_SIZE / 2,
         }}
         animate={{ scale: isInteractive ? RING_SIZE / DOT_SIZE : 1 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        transition={
+          reduceMotion
+            ? { duration: 0 }
+            : { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
+        }
       />
     </motion.div>
   );
@@ -81,12 +89,54 @@ function getFinePointerServerSnapshot() {
   return false;
 }
 
+function subscribeForcedColors(onChange: () => void) {
+  const mql = window.matchMedia("(forced-colors: active)");
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+}
+
+function getForcedColorsSnapshot() {
+  return window.matchMedia("(forced-colors: active)").matches;
+}
+
+function getForcedColorsServerSnapshot() {
+  return false;
+}
+
+function subscribeReducedMotion(onChange: () => void) {
+  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
+
 export function CustomCursor() {
-  const enabled = useSyncExternalStore(
+  const isFinePointer = useSyncExternalStore(
     subscribeFinePointer,
     getFinePointerSnapshot,
     getFinePointerServerSnapshot,
   );
+  // Forced-colors (Windows High Contrast etc.) means the user needs the OS
+  // to render the pointer plainly — bail out to the native cursor entirely
+  // rather than hiding it behind our own decorative one.
+  const forcedColorsActive = useSyncExternalStore(
+    subscribeForcedColors,
+    getForcedColorsSnapshot,
+    getForcedColorsServerSnapshot,
+  );
+  const reduceMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
+  );
+  const enabled = isFinePointer && !forcedColorsActive;
   const [isInteractive, setIsInteractive] = useState(false);
   const [isTextField, setIsTextField] = useState(false);
   const [isWindowActive, setIsWindowActive] = useState(true);
@@ -104,6 +154,14 @@ export function CustomCursor() {
     damping: 40,
     mass: 0.5,
   });
+  // Reduced motion: track the raw position with no spring lag/overshoot,
+  // and give every animate() below a zero-duration transition instead.
+  const posX = reduceMotion ? cursorX : springX;
+  const posY = reduceMotion ? cursorY : springY;
+  const fadeTransition = reduceMotion ? { duration: 0 } : { duration: 0.2 };
+  const scaleTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const };
 
   useEffect(() => {
     if (!enabled) return;
@@ -177,21 +235,22 @@ export function CustomCursor() {
         aria-hidden
         className="fixed top-0 left-0 z-9999 pointer-events-none"
         style={{
-          x: springX,
-          y: springY,
+          x: posX,
+          y: posY,
           filter:
             "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
         }}
         animate={{ opacity: isTextField || !isWindowActive ? 0 : 1 }}
-        transition={{ duration: 0.2 }}
+        transition={fadeTransition}
       >
         <div
-          className="absolute rounded-full border border-ink"
+          className="absolute rounded-full border-ink"
           style={{
             width: RING_SIZE,
             height: RING_SIZE,
             left: -RING_SIZE / 2,
             top: -RING_SIZE / 2,
+            borderWidth: RING_BORDER,
           }}
         />
         <motion.div
@@ -203,7 +262,7 @@ export function CustomCursor() {
             top: -DOT_SIZE / 2,
           }}
           animate={{ scale: isInteractive ? RING_SIZE / DOT_SIZE : 1 }}
-          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          transition={scaleTransition}
         />
       </motion.div>
 
@@ -223,11 +282,12 @@ export function CustomCursor() {
           }}
         >
           <InvertCursor
-            springX={springX}
-            springY={springY}
+            posX={posX}
+            posY={posY}
             originX={invertRect.left}
             originY={invertRect.top}
             isInteractive={isInteractive}
+            reduceMotion={reduceMotion}
           />
         </div>
       )}
