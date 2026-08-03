@@ -9,9 +9,9 @@ import {
   type MotionValue,
 } from "framer-motion";
 
-const RING_SIZE = 40;
-const DOT_SIZE = 10;
-const RING_BORDER = 1.5;
+const RING_SIZE = 56;
+const DOT_SIZE = 14;
+const RING_BORDER = 2;
 
 const INTERACTIVE_SELECTOR = "a, button, [role='button'], select, label";
 const TEXT_FIELD_SELECTOR =
