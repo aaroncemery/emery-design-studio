@@ -18,20 +18,6 @@ const INTERACTIVE_SELECTOR = "a, button, [role='button'], select, label";
 const TEXT_FIELD_SELECTOR =
   "input:not([type='submit']):not([type='button']):not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true']";
 const INVERT_SELECTOR = "[data-cursor-invert]";
-// Opt-out for interactive elements that wrap substantial body text a user
-// lingers on to read (e.g. a whole row-as-link with a description
-// paragraph inside it) — the dot-fill-to-solid treatment is great for a
-// small button, but ballooning into an opaque disc over text you're
-// trying to read is actively counterproductive. These elements usually
-// already have their own hover affordance (background, color, icon shift).
-const CURSOR_PLAIN_SELECTOR = "[data-cursor-plain]";
-// Roving invert lens: the dot fills as normal, but flips to a cream,
-// mix-blend-difference treatment instead of solid ink. Since blend-mode
-// inverts rather than averages, contrast is preserved everywhere it
-// travels — dark text stays legible (just recolored) instead of the
-// muddy gray a plain opacity reduction produces. No rect to clip to here;
-// the dot's own circle is the mask, so it can roam freely over body copy.
-const LENS_SELECTOR = "[data-cursor-lens]";
 
 // Renders a second cream ring+dot, positioned via the same values as the
 // base cursor but re-based to a fixed-rect container's own coordinate
@@ -153,7 +139,6 @@ export function CustomCursor() {
   );
   const enabled = isFinePointer && !forcedColorsActive;
   const [isInteractive, setIsInteractive] = useState(false);
-  const [isLensTarget, setIsLensTarget] = useState(false);
   const [isTextField, setIsTextField] = useState(false);
   const [isWindowActive, setIsWindowActive] = useState(true);
   const [invertRect, setInvertRect] = useState<DOMRect | null>(null);
@@ -194,11 +179,7 @@ export function CustomCursor() {
 
       const target = e.target as HTMLElement;
       setIsTextField(Boolean(target.closest(TEXT_FIELD_SELECTOR)));
-      setIsInteractive(
-        Boolean(target.closest(INTERACTIVE_SELECTOR)) &&
-          !target.closest(CURSOR_PLAIN_SELECTOR),
-      );
-      setIsLensTarget(Boolean(target.closest(LENS_SELECTOR)));
+      setIsInteractive(Boolean(target.closest(INTERACTIVE_SELECTOR)));
 
       const invertTarget = target.closest(INVERT_SELECTOR);
       if (invertTarget !== invertTargetRef.current) {
@@ -251,16 +232,21 @@ export function CustomCursor() {
 
   return (
     <>
+      {/* Hovering anything interactive swaps the whole cursor from solid ink
+          to a cream mix-blend-difference "lens": blend-mode inverts rather
+          than averages, so contrast survives everywhere the dot travels —
+          text underneath stays legible (just recolored) instead of being
+          blocked by an opaque disc or muddied by a flat opacity fade. */}
       <motion.div
         aria-hidden
         className={cn(
           "fixed top-0 left-0 z-9999 pointer-events-none",
-          isLensTarget && "mix-blend-difference",
+          isInteractive && "mix-blend-difference",
         )}
         style={{
           x: posX,
           y: posY,
-          filter: isLensTarget
+          filter: isInteractive
             ? undefined
             : "drop-shadow(0 0 1px rgba(246,244,239,0.9)) drop-shadow(0 0 2.5px rgba(246,244,239,0.55))",
         }}
@@ -270,7 +256,7 @@ export function CustomCursor() {
         <div
           className={cn(
             "absolute rounded-full",
-            isLensTarget ? "border-paper" : "border-ink",
+            isInteractive ? "border-paper" : "border-ink",
           )}
           style={{
             width: RING_SIZE,
@@ -283,7 +269,7 @@ export function CustomCursor() {
         <motion.div
           className={cn(
             "absolute rounded-full",
-            isLensTarget ? "bg-paper" : "bg-ink",
+            isInteractive ? "bg-paper" : "bg-ink",
           )}
           style={{
             width: DOT_SIZE,
@@ -296,10 +282,12 @@ export function CustomCursor() {
         />
       </motion.div>
 
-      {/* Clipped to the hovered [data-cursor-invert] element's own rect
-          (recomputed on hover-enter/scroll/resize, never per-frame) so the
-          cream, difference-blended cursor only paints inside that block —
-          outside it, the plain ink cursor above is all that's visible. */}
+      {/* data-cursor-invert buttons get this dedicated overlay on top of
+          the lens above: clipped to the hovered element's own rect
+          (recomputed on hover-enter/scroll/resize, never per-frame) rather
+          than the dot's circular mask, so the invert reads as "this whole
+          block flips" instead of a roving spot — a cleaner match for a
+          small, well-bounded button than the free-roaming lens. */}
       {invertRect && !isTextField && isWindowActive && (
         <div
           aria-hidden

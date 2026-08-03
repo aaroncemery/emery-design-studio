@@ -53,12 +53,7 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
 
   return (
     <Reveal delay={index * 0.06}>
-      <Link
-        href="/services"
-        className="group block"
-        aria-label={service.title}
-        data-cursor-lens="true"
-      >
+      <Link href="/services" className="group block" aria-label={service.title}>
         <Rule />
 
         {/* Mobile layout: always-expanded, full-width */}
