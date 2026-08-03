@@ -17,6 +17,13 @@ const INTERACTIVE_SELECTOR = "a, button, [role='button'], select, label";
 const TEXT_FIELD_SELECTOR =
   "input:not([type='submit']):not([type='button']):not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true']";
 const INVERT_SELECTOR = "[data-cursor-invert]";
+// Opt-out for interactive elements that wrap substantial body text a user
+// lingers on to read (e.g. a whole row-as-link with a description
+// paragraph inside it) — the dot-fill-to-solid treatment is great for a
+// small button, but ballooning into an opaque disc over text you're
+// trying to read is actively counterproductive. These elements usually
+// already have their own hover affordance (background, color, icon shift).
+const CURSOR_PLAIN_SELECTOR = "[data-cursor-plain]";
 
 // Renders a second cream ring+dot, positioned via the same values as the
 // base cursor but re-based to a fixed-rect container's own coordinate
@@ -178,7 +185,10 @@ export function CustomCursor() {
 
       const target = e.target as HTMLElement;
       setIsTextField(Boolean(target.closest(TEXT_FIELD_SELECTOR)));
-      setIsInteractive(Boolean(target.closest(INTERACTIVE_SELECTOR)));
+      setIsInteractive(
+        Boolean(target.closest(INTERACTIVE_SELECTOR)) &&
+          !target.closest(CURSOR_PLAIN_SELECTOR),
+      );
 
       const invertTarget = target.closest(INVERT_SELECTOR);
       if (invertTarget !== invertTargetRef.current) {
