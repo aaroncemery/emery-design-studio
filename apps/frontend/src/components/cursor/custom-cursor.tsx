@@ -113,6 +113,11 @@ export function CustomCursor() {
       cursorY.set(e.clientY);
     };
     const handleOver = (e: MouseEvent) => {
+      // A null relatedTarget means the pointer just arrived from outside
+      // the document (as opposed to bubbling from a sibling), i.e. it
+      // re-entered the window.
+      if (!e.relatedTarget) setIsWindowActive(true);
+
       const target = e.target as HTMLElement;
       setIsTextField(Boolean(target.closest(TEXT_FIELD_SELECTOR)));
       setIsInteractive(Boolean(target.closest(INTERACTIVE_SELECTOR)));
@@ -125,8 +130,18 @@ export function CustomCursor() {
         );
       }
     };
-    const handleWindowLeave = () => setIsWindowActive(false);
-    const handleWindowEnter = () => setIsWindowActive(true);
+    // mouseleave on documentElement is the "obvious" way to catch this but
+    // is unreliable across browsers right at the viewport edge. relatedTarget
+    // being null on a bubbled mouseout is the more robust signal that the
+    // pointer left the document entirely. blur/focus catch the case where
+    // the window loses focus without any mouse movement at all (cmd+tab,
+    // clicking another app) — otherwise the cursor is just left stranded at
+    // its last known position with no further events to hide it.
+    const handleOut = (e: MouseEvent) => {
+      if (!e.relatedTarget) setIsWindowActive(false);
+    };
+    const handleWindowBlur = () => setIsWindowActive(false);
+    const handleWindowFocus = () => setIsWindowActive(true);
     const handleScrollOrResize = () => {
       if (invertTargetRef.current) {
         setInvertRect(invertTargetRef.current.getBoundingClientRect());
@@ -136,8 +151,9 @@ export function CustomCursor() {
     document.body.classList.add("custom-cursor-active");
     window.addEventListener("mousemove", handleMove);
     document.addEventListener("mouseover", handleOver);
-    document.documentElement.addEventListener("mouseleave", handleWindowLeave);
-    document.documentElement.addEventListener("mouseenter", handleWindowEnter);
+    document.addEventListener("mouseout", handleOut);
+    window.addEventListener("blur", handleWindowBlur);
+    window.addEventListener("focus", handleWindowFocus);
     window.addEventListener("scroll", handleScrollOrResize, { passive: true });
     window.addEventListener("resize", handleScrollOrResize);
 
@@ -145,14 +161,9 @@ export function CustomCursor() {
       document.body.classList.remove("custom-cursor-active");
       window.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseover", handleOver);
-      document.documentElement.removeEventListener(
-        "mouseleave",
-        handleWindowLeave,
-      );
-      document.documentElement.removeEventListener(
-        "mouseenter",
-        handleWindowEnter,
-      );
+      document.removeEventListener("mouseout", handleOut);
+      window.removeEventListener("blur", handleWindowBlur);
+      window.removeEventListener("focus", handleWindowFocus);
       window.removeEventListener("scroll", handleScrollOrResize);
       window.removeEventListener("resize", handleScrollOrResize);
     };
