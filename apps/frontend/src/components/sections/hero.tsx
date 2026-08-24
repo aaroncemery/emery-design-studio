@@ -96,7 +96,7 @@ export function Hero({ data }: Props) {
 
         {/* H1 */}
         <h1
-          className="font-serif text-white leading-[0.92] tracking-tight mb-7"
+          className="font-serif font-light text-white leading-[0.92] tracking-tight mb-7"
           style={{ fontSize: "clamp(56px, 8vw, 132px)" }}
         >
           <span className="block">{headlineLine1}</span>
