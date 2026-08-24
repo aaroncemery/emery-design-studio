@@ -29,6 +29,10 @@ export interface SiteSettings {
   defaultOgImage?: SanityImage;
   logo?: SanityImage;
   favicon?: SanityImage;
+  headerBrandLabel?: string;
+  headerLocationLabel?: string;
+  headerEstablishedLabel?: string;
+  headerIndexLabel?: string;
 }
 
 export interface Navigation {
@@ -158,10 +162,7 @@ export interface CollectionSection {
   heading?: string;
   subheading?: string;
   displayAs:
-    | "projectGrid"
-    | "serviceRows"
-    | "testimonialRotator"
-    | "pressMentions";
+    "projectGrid" | "serviceRows" | "testimonialRotator" | "pressMentions";
   items?: CollectionItem[];
 }
 
@@ -175,10 +176,7 @@ export interface InquirySection {
 }
 
 export type PageSection =
-  | HeroSection
-  | StudioIntroSection
-  | CollectionSection
-  | InquirySection;
+  HeroSection | StudioIntroSection | CollectionSection | InquirySection;
 
 export interface HomePage {
   title?: string;

@@ -56,6 +56,7 @@ export const HOME_PAGE_QUERY = `
       heading,
       body[] { ${bodyFields} },
       stats[] { label, value },
+      imageLayout,
       "images": images[] { ${imageFields} },
       subheading,
       displayAs,
@@ -203,6 +204,7 @@ export const PAGE_BY_SLUG_QUERY = `
       heading,
       body[] { ${bodyFields} },
       stats[] { label, value },
+      imageLayout,
       "images": images[] { ${imageFields} },
       subheading,
       displayAs,
@@ -241,7 +243,11 @@ export const SITE_SETTINGS_QUERY = `
     siteDescription,
     "defaultOgImage": defaultOgImage { ${imageFields} },
     "logo": logo { ${imageFields} },
-    "favicon": favicon { ${imageFields} }
+    "favicon": favicon { ${imageFields} },
+    headerBrandLabel,
+    headerLocationLabel,
+    headerEstablishedLabel,
+    headerIndexLabel
   }
 `;
 
