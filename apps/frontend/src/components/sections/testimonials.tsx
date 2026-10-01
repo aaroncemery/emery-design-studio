@@ -9,7 +9,6 @@ import type { Testimonial, PressItem } from "@/lib/sanity/types";
 const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
     _id: "fallback-1",
-    _type: "testimonial",
     quote:
       "Working with Emery felt like hiring a trusted collaborator rather than a contractor. The result exceeded everything we imagined for the space.",
     authorName: "Claire & Thomas B.",
@@ -17,7 +16,6 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
   },
   {
     _id: "fallback-2",
-    _type: "testimonial",
     quote:
       "Their restraint is the point. Every choice is deliberate, nothing is decorative for its own sake, and the spaces feel like they always belonged.",
     authorName: "Sarah M.",
@@ -25,7 +23,6 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
   },
   {
     _id: "fallback-3",
-    _type: "testimonial",
     quote:
       "We've done three projects now. The studio's process is meticulous and the outcome is always more than we thought was possible in the space.",
     authorName: "David K.",

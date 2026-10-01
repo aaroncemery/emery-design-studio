@@ -82,7 +82,7 @@ export default async function JournalPostPage({
             className="object-cover"
             priority
             placeholder="blur"
-            blurDataURL={post.coverImage.asset.metadata.lqip}
+            blurDataURL={post.coverImage.asset.metadata?.lqip ?? undefined}
             sizes="100vw"
           />
         </div>

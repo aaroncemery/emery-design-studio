@@ -64,7 +64,9 @@ export default async function WorkPage() {
                         className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         placeholder="blur"
-                        blurDataURL={project.coverImage.asset.metadata.lqip}
+                        blurDataURL={
+                          project.coverImage.asset.metadata?.lqip ?? undefined
+                        }
                       />
                     ) : (
                       <div className="w-full h-full bg-[#e4e0d7]" />

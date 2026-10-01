@@ -1,3 +1,5 @@
+import { defineQuery } from "next-sanity";
+
 const imageFields = `
   asset-> {
     _id,
@@ -41,7 +43,14 @@ const navItemFields = `
   "page": page-> { title, "slug": slug.current, _type }
 `;
 
-export const HOME_PAGE_QUERY = `
+const heroCornerFields = `
+  eyebrow,
+  "headline": coalesce(headline, project->title),
+  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),
+  "href": coalesce(href, "/work/" + project->slug.current)
+`;
+
+export const HOME_PAGE_QUERY = defineQuery(`
   *[_type == "homePage"][0] {
     title,
     "seo": seo { ${seoFields} },
@@ -50,9 +59,10 @@ export const HOME_PAGE_QUERY = `
       _key,
       headline,
       subheadline,
-      availabilityText,
       tagline,
       "backgroundImage": backgroundImage { ${imageFields} },
+      "heroFeatured": heroFeatured { ${heroCornerFields} },
+      "heroStatus": heroStatus { ${heroCornerFields} },
       heading,
       body[] { ${bodyFields} },
       stats[] { label, value },
@@ -86,9 +96,9 @@ export const HOME_PAGE_QUERY = `
       budgetOptions
     }
   }
-`;
+`);
 
-export const FEATURED_PROJECTS_QUERY = `
+export const FEATURED_PROJECTS_QUERY = defineQuery(`
   *[_type == "project" && featured == true] | order(year desc) [0...6] {
     _id,
     title,
@@ -100,9 +110,9 @@ export const FEATURED_PROJECTS_QUERY = `
     excerpt,
     "coverImage": coverImage { ${imageFields} }
   }
-`;
+`);
 
-export const ALL_PROJECTS_QUERY = `
+export const ALL_PROJECTS_QUERY = defineQuery(`
   *[_type == "project"] | order(year desc) {
     _id,
     title,
@@ -115,9 +125,9 @@ export const ALL_PROJECTS_QUERY = `
     featured,
     "coverImage": coverImage { ${imageFields} }
   }
-`;
+`);
 
-export const PROJECT_BY_SLUG_QUERY = `
+export const PROJECT_BY_SLUG_QUERY = defineQuery(`
   *[_type == "project" && slug.current == $slug][0] {
     _id,
     title,
@@ -133,9 +143,9 @@ export const PROJECT_BY_SLUG_QUERY = `
     body[] { ${bodyFields} },
     "seo": seo { ${seoFields} }
   }
-`;
+`);
 
-export const ALL_SERVICES_QUERY = `
+export const ALL_SERVICES_QUERY = defineQuery(`
   *[_type == "service"] | order(number asc) {
     _id,
     title,
@@ -144,27 +154,27 @@ export const ALL_SERVICES_QUERY = `
     description,
     tags
   }
-`;
+`);
 
-export const ALL_TESTIMONIALS_QUERY = `
+export const ALL_TESTIMONIALS_QUERY = defineQuery(`
   *[_type == "testimonial"] {
     _id,
     quote,
     authorName,
     authorContext
   }
-`;
+`);
 
-export const ALL_PRESS_ITEMS_QUERY = `
+export const ALL_PRESS_ITEMS_QUERY = defineQuery(`
   *[_type == "pressItem"] {
     _id,
     publicationName,
     url,
     "logo": logo { ${imageFields} }
   }
-`;
+`);
 
-export const ALL_JOURNAL_POSTS_QUERY = `
+export const ALL_JOURNAL_POSTS_QUERY = defineQuery(`
   *[_type == "journalPost"] | order(publishedAt desc) {
     _id,
     title,
@@ -173,9 +183,9 @@ export const ALL_JOURNAL_POSTS_QUERY = `
     publishedAt,
     "coverImage": coverImage { ${imageFields} }
   }
-`;
+`);
 
-export const JOURNAL_POST_BY_SLUG_QUERY = `
+export const JOURNAL_POST_BY_SLUG_QUERY = defineQuery(`
   *[_type == "journalPost" && slug.current == $slug][0] {
     _id,
     title,
@@ -186,9 +196,9 @@ export const JOURNAL_POST_BY_SLUG_QUERY = `
     body[] { ${bodyFields} },
     "seo": seo { ${seoFields} }
   }
-`;
+`);
 
-export const PAGE_BY_SLUG_QUERY = `
+export const PAGE_BY_SLUG_QUERY = defineQuery(`
   *[_type == "page" && slug.current == $slug][0] {
     _id,
     title,
@@ -198,9 +208,10 @@ export const PAGE_BY_SLUG_QUERY = `
       _key,
       headline,
       subheadline,
-      availabilityText,
       tagline,
       "backgroundImage": backgroundImage { ${imageFields} },
+      "heroFeatured": heroFeatured { ${heroCornerFields} },
+      "heroStatus": heroStatus { ${heroCornerFields} },
       heading,
       body[] { ${bodyFields} },
       stats[] { label, value },
@@ -235,9 +246,9 @@ export const PAGE_BY_SLUG_QUERY = `
     },
     "seo": seo { ${seoFields} }
   }
-`;
+`);
 
-export const SITE_SETTINGS_QUERY = `
+export const SITE_SETTINGS_QUERY = defineQuery(`
   *[_type == "siteSettings"][0] {
     siteName,
     siteDescription,
@@ -249,17 +260,17 @@ export const SITE_SETTINGS_QUERY = `
     headerEstablishedLabel,
     headerIndexLabel
   }
-`;
+`);
 
-export const NAVIGATION_QUERY = `
+export const NAVIGATION_QUERY = defineQuery(`
   *[_type == "navigation"][0] {
     items[] {
       ${navItemFields}
     }
   }
-`;
+`);
 
-export const FOOTER_QUERY = `
+export const FOOTER_QUERY = defineQuery(`
   *[_type == "footer"][0] {
     copyrightText,
     socialLinks[] {
@@ -271,17 +282,17 @@ export const FOOTER_QUERY = `
       ${navItemFields}
     }
   }
-`;
+`);
 
-export const ALL_LEGAL_PAGES_QUERY = `
+export const ALL_LEGAL_PAGES_QUERY = defineQuery(`
   *[_type == "legalPage"] | order(title asc) {
     _id,
     title,
     "slug": slug.current
   }
-`;
+`);
 
-export const LEGAL_PAGE_BY_SLUG_QUERY = `
+export const LEGAL_PAGE_BY_SLUG_QUERY = defineQuery(`
   *[_type == "legalPage" && slug.current == $slug][0] {
     _id,
     title,
@@ -289,4 +300,4 @@ export const LEGAL_PAGE_BY_SLUG_QUERY = `
     body[] { ${bodyFields} },
     "seo": seo { ${seoFields} }
   }
-`;
+`);

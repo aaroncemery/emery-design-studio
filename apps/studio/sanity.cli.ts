@@ -18,4 +18,17 @@ export default defineCliConfig({
     autoUpdates: true,
     appId: "i0plice3m8nt4vfladfrmxv8",
   },
+  typegen: {
+    enabled: true,
+    path: "../frontend/src/**/*.{ts,tsx}",
+    schema: "schema.json",
+    generates: "../frontend/src/lib/sanity/sanity.types.ts",
+    // Off: the frontend calls a custom `sanityFetch` wrapper (next-sanity's
+    // defineLive), not @sanity/client's fetch directly, so the ambient
+    // overload has nothing to attach to — and @sanity/client isn't a direct
+    // dependency of apps/frontend, so the generated `declare module
+    // "@sanity/client"` augmentation can't even resolve. Result types are
+    // imported explicitly at each call site instead.
+    overloadClientMethods: false,
+  },
 });
