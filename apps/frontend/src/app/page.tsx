@@ -85,8 +85,8 @@ export default async function Home() {
       <Hero data={heroData} />
       <FeaturedProjects
         projects={projectsSection?.items as Project[] | undefined}
-        heading={projectsSection?.heading}
-        subheading={projectsSection?.subheading}
+        heading={projectsSection?.heading ?? undefined}
+        subheading={projectsSection?.subheading ?? undefined}
       />
       <StudioIntro data={studioIntroData} />
       <Services services={servicesSection?.items as Service[] | undefined} />

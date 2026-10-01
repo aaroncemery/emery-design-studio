@@ -24,6 +24,7 @@ import { inquirySection } from "./sections/inquirySection";
 import { seo } from "./objects/seo";
 import { navItem } from "./objects/navItem";
 import { socialLink } from "./objects/socialLink";
+import { heroCorner } from "./objects/heroCorner";
 
 export const schemaTypes = [
   // documents
@@ -44,6 +45,7 @@ export const schemaTypes = [
   seo,
   navItem,
   socialLink,
+  heroCorner,
   // admin document types
   siteSettings,
   navigation,

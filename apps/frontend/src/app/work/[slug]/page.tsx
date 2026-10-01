@@ -52,7 +52,7 @@ export async function generateMetadata({
     pageSeo: project.seo,
     siteSettings,
     fallbackTitle: project.title,
-    fallbackDescription: project.excerpt,
+    fallbackDescription: project.excerpt ?? undefined,
   });
 }
 
@@ -86,7 +86,7 @@ export default async function ProjectPage({
             className="object-cover"
             priority
             placeholder="blur"
-            blurDataURL={project.coverImage.asset.metadata.lqip}
+            blurDataURL={project.coverImage.asset.metadata?.lqip ?? undefined}
             sizes="100vw"
           />
           <div
@@ -185,25 +185,29 @@ export default async function ProjectPage({
         {/* Gallery */}
         {project.gallery && project.gallery.length > 0 && (
           <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {project.gallery.map((img) => (
-              <div
-                key={img.asset._id}
-                className="relative overflow-hidden"
-                style={{
-                  aspectRatio: img.asset.metadata.dimensions.aspectRatio,
-                }}
-              >
-                <Image
-                  src={img.asset.url}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  placeholder="blur"
-                  blurDataURL={img.asset.metadata.lqip}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            ))}
+            {project.gallery.map((img) => {
+              if (!img.asset?.url) return null;
+              const { asset } = img;
+              return (
+                <div
+                  key={asset._id}
+                  className="relative overflow-hidden"
+                  style={{
+                    aspectRatio: asset.metadata?.dimensions?.aspectRatio,
+                  }}
+                >
+                  <Image
+                    src={asset.url}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    placeholder="blur"
+                    blurDataURL={asset.metadata?.lqip ?? undefined}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
 

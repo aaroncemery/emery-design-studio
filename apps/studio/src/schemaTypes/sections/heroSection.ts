@@ -8,12 +8,6 @@ export const heroSection = defineType({
     defineField({ name: "headline", type: "string" }),
     defineField({ name: "subheadline", type: "string" }),
     defineField({
-      name: "availabilityText",
-      title: "Availability Text",
-      type: "string",
-      description: 'e.g. "Two commissions for 2026, 2 of 6–8 slots open"',
-    }),
-    defineField({
       name: "tagline",
       type: "string",
       description: 'e.g. "File №24—Resi · Vol. XII · Spec. A"',
@@ -23,6 +17,22 @@ export const heroSection = defineType({
       title: "Background Image",
       type: "image",
       options: { hotspot: true },
+    }),
+    defineField({
+      name: "heroFeatured",
+      title: "Hero – bottom left",
+      type: "heroCorner",
+      initialValue: { eyebrow: "Featured" },
+    }),
+    defineField({
+      name: "heroStatus",
+      title: "Hero – bottom right",
+      type: "heroCorner",
+      initialValue: {
+        eyebrow: "Now booking",
+        headline: "Spring 2027 projects",
+        meta: "Seattle · Eastside · Remote",
+      },
     }),
   ],
   preview: {

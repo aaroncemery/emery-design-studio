@@ -41,7 +41,7 @@ function ImageBlock({
           fill
           className="object-cover"
           placeholder="blur"
-          blurDataURL={image.asset.metadata.lqip}
+          blurDataURL={image.asset.metadata?.lqip ?? undefined}
           sizes={sizes}
         />
       </div>

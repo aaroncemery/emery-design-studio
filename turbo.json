@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "studio#typegen"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
@@ -20,11 +20,15 @@
       "dependsOn": ["^lint"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types", "studio#typegen"]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "typegen": {
+      "cache": false,
+      "outputs": ["schema.json", "../frontend/src/lib/sanity/sanity.types.ts"]
     },
     "studio#deploy": {
       "cache": false,

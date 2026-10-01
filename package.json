@@ -27,6 +27,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "prepare": "husky",
+    "typegen": "turbo run typegen",
     "s:lint": "syncpack lint --dependency-types prod,dev,peer",
     "s:fix": "syncpack fix --dependency-types prod,dev,peer"
   },

@@ -8,7 +8,6 @@ import type { Service } from "@/lib/sanity/types";
 const FALLBACK_SERVICES: Service[] = [
   {
     _id: "fallback-1",
-    _type: "service",
     title: "Full Renovation",
     slug: "full-renovation",
     number: "01",
@@ -18,7 +17,6 @@ const FALLBACK_SERVICES: Service[] = [
   },
   {
     _id: "fallback-2",
-    _type: "service",
     title: "Interior Architecture",
     slug: "interior-architecture",
     number: "02",
@@ -28,7 +26,6 @@ const FALLBACK_SERVICES: Service[] = [
   },
   {
     _id: "fallback-3",
-    _type: "service",
     title: "Styling & Furnishing",
     slug: "styling-furnishing",
     number: "03",
@@ -38,7 +35,6 @@ const FALLBACK_SERVICES: Service[] = [
   },
   {
     _id: "fallback-4",
-    _type: "service",
     title: "Consultation",
     slug: "consultation",
     number: "04",

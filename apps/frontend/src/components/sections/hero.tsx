@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useScroll,
@@ -11,10 +12,50 @@ import {
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { CTA } from "@/components/primitives/cta";
 import { Placeholder } from "@/components/primitives/placeholder";
-import type { HeroSection } from "@/lib/sanity/types";
+import type { HeroCornerData, HeroSection } from "@/lib/sanity/types";
 
 interface Props {
   data?: HeroSection;
+}
+
+function HeroCorner({
+  data,
+  align,
+}: {
+  data?: HeroCornerData;
+  align: "left" | "right";
+}) {
+  if (!data?.headline) return null;
+
+  const content = (
+    <>
+      {data.eyebrow && (
+        <MonoLabel className="text-white/45 block mb-1.5">
+          {data.eyebrow}
+        </MonoLabel>
+      )}
+      <p
+        className={
+          align === "left"
+            ? "font-serif italic text-white text-[20px] leading-tight"
+            : "font-sans text-white text-sm leading-tight"
+        }
+      >
+        {data.headline}
+      </p>
+      {data.meta && (
+        <MonoLabel className="text-white/35 mt-1.5 block text-[9px]">
+          {data.meta.replace(/ /g, " ")}
+        </MonoLabel>
+      )}
+    </>
+  );
+
+  return (
+    <div className={align === "right" ? "text-right" : undefined}>
+      {data.href ? <Link href={data.href}>{content}</Link> : content}
+    </div>
+  );
 }
 
 export function Hero({ data }: Props) {
@@ -46,8 +87,6 @@ export function Hero({ data }: Props) {
     data?.subheadline ??
     "Considered residential interiors from a small, slow studio on Lake Washington.";
 
-  const availabilityText = data?.availabilityText ?? null;
-
   return (
     <section
       ref={sectionRef}
@@ -68,7 +107,7 @@ export function Hero({ data }: Props) {
             className="object-cover"
             priority
             placeholder="blur"
-            blurDataURL={data.backgroundImage.asset.metadata.lqip}
+            blurDataURL={data.backgroundImage.asset.metadata?.lqip ?? undefined}
             sizes="100vw"
           />
         ) : (
@@ -122,20 +161,17 @@ export function Hero({ data }: Props) {
       </div>
 
       {/* Bottom credit rail — hidden on mobile */}
-      <div className="hidden md:flex absolute bottom-7 inset-x-0 px-8 lg:px-14 items-end justify-between z-10">
+      <div className="hidden md:grid grid-cols-3 items-end absolute bottom-7 inset-x-0 px-8 lg:px-14 z-10">
         {/* Left: featured project */}
-        <div>
-          <MonoLabel className="text-white/45 block mb-1.5">Featured</MonoLabel>
-          <p className="font-serif italic text-white text-[20px] leading-tight">
-            Madison Park Residence
-          </p>
-          <MonoLabel className="text-white/35 mt-1.5 block text-[9px]">
-            Seattle,&nbsp;WA&nbsp;·&nbsp;2025&nbsp;·&nbsp;Full&nbsp;Renovation
-          </MonoLabel>
+        <div className="col-start-1">
+          <HeroCorner data={data?.heroFeatured ?? undefined} align="left" />
         </div>
 
         {/* Center: scroll cue */}
-        <div className="flex flex-col items-center gap-2" aria-hidden="true">
+        <div
+          className="col-start-2 justify-self-center flex flex-col items-center gap-2"
+          aria-hidden="true"
+        >
           <MonoLabel className="text-white/35 text-[9px]">Scroll</MonoLabel>
           <div className="relative w-px h-14 bg-white/20 overflow-hidden rounded-full">
             <motion.div
@@ -154,24 +190,8 @@ export function Hero({ data }: Props) {
         </div>
 
         {/* Right: availability */}
-        <div className="text-right">
-          <MonoLabel className="text-white/45 block mb-1.5">
-            Currently
-          </MonoLabel>
-          {availabilityText ? (
-            <p className="font-sans text-white text-sm leading-tight">
-              {availabilityText}
-            </p>
-          ) : (
-            <>
-              <p className="font-sans text-white text-sm leading-tight">
-                Two commissions for 2026
-              </p>
-              <MonoLabel className="text-white/35 mt-1.5 block text-[9px]">
-                2&nbsp;of&nbsp;6–8&nbsp;slots&nbsp;open
-              </MonoLabel>
-            </>
-          )}
+        <div className="col-start-3">
+          <HeroCorner data={data?.heroStatus ?? undefined} align="right" />
         </div>
       </div>
     </section>

@@ -1,194 +1,57 @@
-export interface Seo {
-  title?: string;
-  description?: string;
-  ogImage?: SanityImage;
-  keywords?: string[];
-  noIndex?: boolean;
-  noFollow?: boolean;
-  robots?: string;
-  canonicalUrl?: string;
-}
+import type {
+  HOME_PAGE_QUERY_RESULT,
+  PROJECT_BY_SLUG_QUERY_RESULT,
+  ALL_SERVICES_QUERY_RESULT,
+  ALL_TESTIMONIALS_QUERY_RESULT,
+  ALL_PRESS_ITEMS_QUERY_RESULT,
+  JOURNAL_POST_BY_SLUG_QUERY_RESULT,
+  LEGAL_PAGE_BY_SLUG_QUERY_RESULT,
+  SITE_SETTINGS_QUERY_RESULT,
+  NAVIGATION_QUERY_RESULT,
+  FOOTER_QUERY_RESULT,
+} from "./sanity.types";
 
-export interface NavItem {
-  _key: string;
-  linkType: "page" | "url";
-  label?: string;
-  url?: string;
-  page?: { title: string; slug: string; _type: string };
-}
+// Everything below is derived from the TypeGen output in ./sanity.types.ts
+// (generated from the Studio schema + the GROQ queries in ./queries.ts), not
+// hand-maintained. Run `pnpm typegen` after changing a schema or a query.
 
-export interface SocialLink {
-  _key: string;
-  platform: "instagram" | "facebook" | "houzz" | "youtube";
-  url: string;
-}
+export type SiteSettings = NonNullable<SITE_SETTINGS_QUERY_RESULT>;
+export type Navigation = NonNullable<NAVIGATION_QUERY_RESULT>;
+export type Footer = NonNullable<FOOTER_QUERY_RESULT>;
+export type NavItem = NonNullable<Navigation["items"]>[number];
 
-export interface SiteSettings {
-  siteName?: string;
-  siteDescription?: string;
-  defaultOgImage?: SanityImage;
-  logo?: SanityImage;
-  favicon?: SanityImage;
-  headerBrandLabel?: string;
-  headerLocationLabel?: string;
-  headerEstablishedLabel?: string;
-  headerIndexLabel?: string;
-}
+export type SanityImage = NonNullable<SiteSettings["logo"]>;
+export type SanityImageAsset = NonNullable<SanityImage["asset"]>;
 
-export interface Navigation {
-  items?: NavItem[];
-}
-
-export interface Footer {
-  copyrightText?: string;
-  socialLinks?: SocialLink[];
-  legalLinks?: NavItem[];
-}
-
-export interface LegalPage {
-  _id: string;
-  _type: "legalPage";
-  title: string;
-  slug: string;
-  body?: PortableTextContent;
-  seo?: Seo;
-}
-
-export interface SanityImageAsset {
-  _id: string;
-  url: string;
-  metadata: {
-    dimensions: { width: number; height: number; aspectRatio: number };
-    lqip: string;
-  };
-}
-
-export interface SanityImage {
-  asset: SanityImageAsset;
-  hotspot?: { x: number; y: number };
-  crop?: { top: number; bottom: number; left: number; right: number };
-}
-
-export type PortableTextContent = Array<{
-  _type: string;
-  _key?: string;
-  [key: string]: unknown;
-}>;
-
-export interface Project {
-  _id: string;
-  _type: "project";
-  title: string;
-  slug: string;
-  location?: string;
-  year?: number;
-  season?: "spring" | "summer" | "fall" | "winter" | "year-round";
-  category?:
-    | "Full Renovation"
-    | "Interior Architecture"
-    | "Styling & Furnishing"
-    | "Consultation";
-  excerpt?: string;
-  featured?: boolean;
-  coverImage?: SanityImage;
-  gallery?: SanityImage[];
-  body?: PortableTextContent;
-  seo?: Seo;
-}
-
-export interface Service {
-  _id: string;
-  _type: "service";
-  title: string;
-  slug: string;
-  number?: string;
-  description?: string;
-  tags?: string[];
-}
-
-export interface Testimonial {
-  _id: string;
-  _type: "testimonial";
-  quote: string;
-  authorName?: string;
-  authorContext?: string;
-}
-
-export interface PressItem {
-  _id: string;
-  _type: "pressItem";
-  publicationName: string;
-  logo?: SanityImage;
-  url?: string;
-}
-
-export interface JournalPost {
-  _id: string;
-  _type: "journalPost";
-  title: string;
-  slug: string;
-  author?: string;
-  publishedAt?: string;
-  coverImage?: SanityImage;
-  body?: PortableTextContent;
-  seo?: Seo;
-}
+// The full detail-query shape is used everywhere a Project appears (list
+// cards included) — list queries only ever project a subset of these same
+// field names, so the shape still matches at runtime.
+export type Project = NonNullable<PROJECT_BY_SLUG_QUERY_RESULT>;
+export type Service = ALL_SERVICES_QUERY_RESULT[number];
+export type Testimonial = ALL_TESTIMONIALS_QUERY_RESULT[number];
+export type PressItem = ALL_PRESS_ITEMS_QUERY_RESULT[number];
+export type JournalPost = NonNullable<JOURNAL_POST_BY_SLUG_QUERY_RESULT>;
+export type LegalPage = NonNullable<LEGAL_PAGE_BY_SLUG_QUERY_RESULT>;
 
 export type CollectionItem = Project | Service | Testimonial | PressItem;
 
-export interface HeroSection {
-  _type: "heroSection";
-  _key: string;
-  headline?: string;
-  subheadline?: string;
-  availabilityText?: string;
-  tagline?: string;
-  backgroundImage?: SanityImage;
-}
+type HomePageSection = NonNullable<
+  NonNullable<HOME_PAGE_QUERY_RESULT>["sections"]
+>[number];
 
-export interface StudioIntroSection {
-  _type: "studioIntroSection";
-  _key: string;
-  heading?: string;
-  body?: PortableTextContent;
-  stats?: Array<{ label: string; value: string }>;
-  imageLayout?: "mainWithInset" | "sideBySide" | "singleFull";
-  images?: SanityImage[];
-}
+export type PageSection = HomePageSection;
+export type HeroSection = Extract<PageSection, { _type: "heroSection" }>;
+export type StudioIntroSection = Extract<
+  PageSection,
+  { _type: "studioIntroSection" }
+>;
+export type CollectionSection = Extract<
+  PageSection,
+  { _type: "collectionSection" }
+>;
+export type InquirySection = Extract<PageSection, { _type: "inquirySection" }>;
 
-export interface CollectionSection {
-  _type: "collectionSection";
-  _key: string;
-  heading?: string;
-  subheading?: string;
-  displayAs:
-    "projectGrid" | "serviceRows" | "testimonialRotator" | "pressMentions";
-  items?: CollectionItem[];
-}
+export type HeroCornerData = NonNullable<HeroSection["heroFeatured"]>;
 
-export interface InquirySection {
-  _type: "inquirySection";
-  _key: string;
-  heading?: string;
-  subheading?: string;
-  scopeOptions?: string[];
-  budgetOptions?: string[];
-}
-
-export type PageSection =
-  HeroSection | StudioIntroSection | CollectionSection | InquirySection;
-
-export interface HomePage {
-  title?: string;
-  sections?: PageSection[];
-  seo?: Seo;
-}
-
-export interface Page {
-  _id: string;
-  _type: "page";
-  title: string;
-  slug: string;
-  sections?: PageSection[];
-  seo?: Seo;
-}
+export type HomePage = NonNullable<HOME_PAGE_QUERY_RESULT>;
+export type Seo = NonNullable<HomePage["seo"]>;

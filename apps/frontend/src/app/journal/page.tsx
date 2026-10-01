@@ -66,7 +66,9 @@ export default async function JournalPage() {
                         fill
                         className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] hover:scale-[1.04]"
                         placeholder="blur"
-                        blurDataURL={post.coverImage.asset.metadata.lqip}
+                        blurDataURL={
+                          post.coverImage.asset.metadata?.lqip ?? undefined
+                        }
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     </div>
