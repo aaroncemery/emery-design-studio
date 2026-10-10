@@ -9,6 +9,7 @@ import {
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { stegaClean } from "next-sanity";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
@@ -78,7 +79,17 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
     }
   });
 
-  const active = scrolled || menuOpen;
+  // The white/mix-blend-difference header treatment only reads correctly
+  // over a dark photo hero — the homepage and the project/journal detail
+  // pages (when they have a cover image) are the only routes with one.
+  // Every other route (/studio, /services, /work, /journal, /legal/*)
+  // starts directly on a flat light section, so the header needs its
+  // solid, legible "scrolled" treatment from the very first paint there,
+  // not just after the user scrolls.
+  const pathname = usePathname();
+  const hasMediaHero =
+    pathname === "/" || /^\/(work|journal)\/[^/]+$/.test(pathname);
+  const active = scrolled || menuOpen || !hasMediaHero;
 
   const resolvedLinks = navigation?.items?.length
     ? navigation.items.map((item) => ({
@@ -90,7 +101,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
 
   const labelClass = cn(
     "transition-colors duration-500",
-    scrolled ? "text-[#111111]" : "text-white mix-blend-difference",
+    active ? "text-[#111111]" : "text-white mix-blend-difference",
   );
 
   const dividerClass = cn(
@@ -148,7 +159,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
             <div
               className={cn(
                 "flex items-center px-5 py-2.5 rounded-full transition-all duration-500",
-                scrolled
+                active
                   ? "bg-[rgba(246,244,239,0.88)] backdrop-blur-[18px] shadow-[0_2px_24px_rgba(17,17,17,0.08)] border border-[rgba(17,17,17,0.06)]"
                   : "bg-transparent",
               )}
@@ -159,7 +170,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                   href={link.href}
                   className={cn(
                     "font-mono text-[10px] tracking-[0.16em] uppercase px-3 py-1 transition-colors duration-500 hover:opacity-70",
-                    scrolled
+                    active
                       ? "text-[#111111]"
                       : "text-white mix-blend-difference",
                   )}
@@ -174,7 +185,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                 href="/#contact"
                 className={cn(
                   "font-mono text-[10px] tracking-[0.16em] uppercase px-4 py-1.5 rounded-full border transition-all duration-500",
-                  scrolled
+                  active
                     ? "text-[#1b3a5b] border-[#1b3a5b] hover:bg-[#1b3a5b] hover:text-white"
                     : "text-white border-white/70 hover:bg-white/10 mix-blend-difference",
                 )}
