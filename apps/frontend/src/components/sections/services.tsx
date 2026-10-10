@@ -5,45 +5,6 @@ import { Rule } from "@/components/primitives/rule";
 import { Reveal } from "@/components/primitives/reveal";
 import type { Service } from "@/lib/sanity/types";
 
-const FALLBACK_SERVICES: Service[] = [
-  {
-    _id: "fallback-1",
-    title: "Full Renovation",
-    slug: "full-renovation",
-    number: "01",
-    description:
-      "Ground-up and gut renovations for houses that need more than a refresh. We take on the structure, the light, the flow — everything from permits to the final objects.",
-    tags: ["Planning", "Construction", "Oversight"],
-  },
-  {
-    _id: "fallback-2",
-    title: "Interior Architecture",
-    slug: "interior-architecture",
-    number: "02",
-    description:
-      "Joinery, plaster, stone, and steel. The fixed elements that give a room its character and age well with the people who live there.",
-    tags: ["Millwork", "Materials", "Details"],
-  },
-  {
-    _id: "fallback-3",
-    title: "Styling & Furnishing",
-    slug: "styling-furnishing",
-    number: "03",
-    description:
-      "Considered furnishing and placement. Everything from rugs and custom upholstery to the particular lamp on a particular side table.",
-    tags: ["Furniture", "Objects", "Textiles"],
-  },
-  {
-    _id: "fallback-4",
-    title: "Consultation",
-    slug: "consultation",
-    number: "04",
-    description:
-      "Half-day and full-day sessions for clients who need direction, not a contractor. We help you see what you have and decide what to do with it.",
-    tags: ["Strategy", "Sourcing", "Review"],
-  },
-];
-
 function ServiceRow({ service, index }: { service: Service; index: number }) {
   const displayNumber = service.number ? `/${service.number}` : null;
 
@@ -132,11 +93,12 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
 
 interface Props {
   services?: Service[];
+  heading?: string;
+  subheading?: string;
 }
 
-export function Services({ services }: Props) {
-  const displayServices =
-    services && services.length > 0 ? services : FALLBACK_SERVICES;
+export function Services({ services, heading, subheading }: Props) {
+  const hasServices = services && services.length > 0;
 
   return (
     <Section id="services" className="bg-[#f6f4ef]" paddingY="xl">
@@ -149,17 +111,32 @@ export function Services({ services }: Props) {
             className="font-serif text-[#111111] leading-[0.92] tracking-tight max-w-xl"
             style={{ fontSize: "clamp(36px, 4.5vw, 64px)" }}
           >
-            How we&rsquo;re <em>usually</em> asked to help.
+            {heading ?? (
+              <>
+                How we&rsquo;re <em>usually</em> asked to help.
+              </>
+            )}
           </h2>
+          {subheading && (
+            <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mt-4 max-w-xl">
+              {subheading}
+            </p>
+          )}
         </div>
       </Reveal>
 
-      <div>
-        {displayServices.map((service, i) => (
-          <ServiceRow key={service._id} service={service} index={i} />
-        ))}
-        <Rule />
-      </div>
+      {hasServices ? (
+        <div>
+          {services.map((service, i) => (
+            <ServiceRow key={service._id} service={service} index={i} />
+          ))}
+          <Rule />
+        </div>
+      ) : (
+        <p className="font-sans text-[#9a968d] text-sm">
+          Full service details coming soon.
+        </p>
+      )}
     </Section>
   );
 }

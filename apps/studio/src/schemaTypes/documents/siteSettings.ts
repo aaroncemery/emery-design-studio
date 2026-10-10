@@ -22,6 +22,14 @@ export const siteSettings = defineType({
       group: GROUP.MICROCOPY,
       options: { collapsible: true, collapsed: false },
     },
+    {
+      name: "contact",
+      title: "Contact Info",
+      description:
+        "The studio's canonical contact email and general region — shown in the footer and inquiry section.",
+      group: GROUP.MICROCOPY,
+      options: { collapsible: true, collapsed: false },
+    },
   ],
   fields: [
     defineField({
@@ -96,6 +104,24 @@ export const siteSettings = defineType({
       fieldset: "header",
       description:
         'Line beneath the established label, e.g. "Index №01 — Home". Static copy — not tied to the current page.',
+    }),
+    defineField({
+      name: "contactEmail",
+      title: "Contact Email",
+      type: "email",
+      group: GROUP.MICROCOPY,
+      fieldset: "contact",
+      description:
+        'Public contact email shown in the footer and inquiry section, e.g. "hello@emerydesign.studio".',
+    }),
+    defineField({
+      name: "contactRegion",
+      title: "Contact Region",
+      type: "string",
+      group: GROUP.MICROCOPY,
+      fieldset: "contact",
+      description:
+        'General region shown with the contact email, e.g. "Kirkland, WA" — not a full street address.',
     }),
   ],
   preview: {

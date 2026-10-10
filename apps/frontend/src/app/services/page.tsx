@@ -3,8 +3,11 @@ import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
 import { sanityFetch } from "@/lib/sanity/live";
-import { ALL_SERVICES_QUERY } from "@/lib/sanity/queries";
-import type { Service } from "@/lib/sanity/types";
+import { ALL_SERVICES_QUERY, SERVICES_PAGE_QUERY } from "@/lib/sanity/queries";
+import type {
+  Service,
+  ServicesPage as ServicesPageData,
+} from "@/lib/sanity/types";
 
 export const revalidate = false;
 
@@ -15,25 +18,45 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const { data } = await sanityFetch({
-    query: ALL_SERVICES_QUERY,
-    tags: ["service"],
-  });
-  const services = data as Service[];
+  const [{ data: servicesData }, { data: pageData }] = await Promise.all([
+    sanityFetch({ query: ALL_SERVICES_QUERY, tags: ["service"] }),
+    sanityFetch({ query: SERVICES_PAGE_QUERY, tags: ["servicesPage"] }),
+  ]);
+  const services = servicesData as Service[];
+  const page = pageData as ServicesPageData | null;
+  const header = page?.header;
+
+  // Split on "/" — editor convention: "Heading / italic second line"
+  let headingLine1 = "How we're";
+  let headingLine2 = "usually asked to help.";
+  if (header?.heading) {
+    const idx = header.heading.indexOf("/");
+    if (idx !== -1) {
+      headingLine1 = header.heading.slice(0, idx).trim();
+      headingLine2 = header.heading.slice(idx + 1).trim();
+    } else {
+      headingLine1 = header.heading;
+      headingLine2 = "";
+    }
+  }
 
   return (
     <main id="main">
       <Section className="bg-[#f6f4ef]" paddingY="xl">
         <MonoLabel className="text-[#1b3a5b] block mb-6">
-          Services&nbsp;—&nbsp;How&nbsp;We&nbsp;Work
+          {header?.eyebrow ?? "Services — How We Work"}
         </MonoLabel>
         <h1
           className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-16 max-w-2xl"
           style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
         >
-          How we&rsquo;re <em>usually</em>
-          <br />
-          asked to help.
+          {headingLine1}
+          {headingLine2 && (
+            <>
+              <br />
+              <em>{headingLine2}</em>
+            </>
+          )}
         </h1>
 
         {services && services.length > 0 ? (

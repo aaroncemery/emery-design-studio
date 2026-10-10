@@ -9,6 +9,10 @@ import type {
   SITE_SETTINGS_QUERY_RESULT,
   NAVIGATION_QUERY_RESULT,
   FOOTER_QUERY_RESULT,
+  STUDIO_PAGE_QUERY_RESULT,
+  SERVICES_PAGE_QUERY_RESULT,
+  WORK_PAGE_QUERY_RESULT,
+  JOURNAL_PAGE_QUERY_RESULT,
 } from "./sanity.types";
 
 // Everything below is derived from the TypeGen output in ./sanity.types.ts
@@ -55,3 +59,10 @@ export type HeroCornerData = NonNullable<HeroSection["heroFeatured"]>;
 
 export type HomePage = NonNullable<HOME_PAGE_QUERY_RESULT>;
 export type Seo = NonNullable<HomePage["seo"]>;
+
+export type StudioPage = NonNullable<STUDIO_PAGE_QUERY_RESULT>;
+export type ServicesPage = NonNullable<SERVICES_PAGE_QUERY_RESULT>;
+export type WorkPage = NonNullable<WORK_PAGE_QUERY_RESULT>;
+export type JournalPage = NonNullable<JOURNAL_PAGE_QUERY_RESULT>;
+export type PageHeader = NonNullable<StudioPage["header"]>;
+export type StudioPageIntro = NonNullable<StudioPage["intro"]>;

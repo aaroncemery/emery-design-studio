@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
-import type { Navigation, Footer } from "@/lib/sanity/types";
+import type { Navigation, Footer, SiteSettings } from "@/lib/sanity/types";
 
 const FALLBACK_STUDIO_LINKS = [
   { key: "/work", label: "Work", href: "/work" },
@@ -20,11 +21,6 @@ const FALLBACK_SOCIAL_LINKS = [
   { key: "houzz", label: "Houzz", href: "#" },
 ];
 
-const FALLBACK_LEGAL_LINKS = [
-  { key: "/legal/terms", label: "Terms", href: "/legal/terms" },
-  { key: "/legal/privacy", label: "Privacy", href: "/legal/privacy" },
-];
-
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
   facebook: "Facebook",
@@ -35,9 +31,20 @@ const PLATFORM_LABELS: Record<string, string> = {
 interface SiteFooterProps {
   navigation?: Navigation | null;
   footer?: Footer | null;
+  siteSettings?: SiteSettings | null;
 }
 
-export function SiteFooter({ navigation, footer }: SiteFooterProps) {
+export function SiteFooter({
+  navigation,
+  footer,
+  siteSettings,
+}: SiteFooterProps) {
+  const brandLabel = stegaClean(siteSettings?.headerBrandLabel) || "Emery";
+  const contactEmail =
+    stegaClean(siteSettings?.contactEmail) || "hello@emerydesign.studio";
+  const contactRegion =
+    stegaClean(siteSettings?.contactRegion) || "Kirkland, WA";
+
   const studioLinks = navigation?.items?.length
     ? navigation.items.map((item) => ({
         key: item._key,
@@ -54,13 +61,15 @@ export function SiteFooter({ navigation, footer }: SiteFooterProps) {
       }))
     : FALLBACK_SOCIAL_LINKS;
 
+  // No fallback — a fabricated Terms/Privacy link would 404 until real
+  // legalPage documents exist, so this only ever renders real Sanity data.
   const legalLinks = footer?.legalLinks?.length
     ? footer.legalLinks.map((item) => ({
         key: item._key,
         label: resolveNavLabel(item),
         href: resolveNavHref(item),
       }))
-    : FALLBACK_LEGAL_LINKS;
+    : [];
 
   const copyrightText = footer?.copyrightText ?? "© MMXXVI Emery Design Studio";
 
@@ -71,9 +80,9 @@ export function SiteFooter({ navigation, footer }: SiteFooterProps) {
         <p
           className="font-serif leading-none tracking-tighter text-[#111111] select-none"
           style={{ fontSize: "clamp(80px, 16vw, 280px)" }}
-          aria-label="Emery Studio"
+          aria-label={`${brandLabel} Studio`}
         >
-          <em>Emery</em>
+          <em>{brandLabel}</em>
           <span className="text-[#1b3a5b]" aria-hidden="true">
             &middot;
           </span>
@@ -134,29 +143,18 @@ export function SiteFooter({ navigation, footer }: SiteFooterProps) {
             </nav>
           </div>
 
-          {/* Col 3: Visit */}
+          {/* Col 3: Contact */}
           <div>
-            <MonoLabel className="text-[#9a968d] block mb-5">Visit</MonoLabel>
-            <address className="not-italic space-y-2 mb-6">
-              <p className="font-sans text-[#6b6b66] text-sm">
-                Emery Design Studio
-              </p>
-              <p className="font-sans text-[#6b6b66] text-sm">
-                Kirkland, WA 98033
-              </p>
-            </address>
+            <MonoLabel className="text-[#9a968d] block mb-5">Contact</MonoLabel>
+            <p className="font-sans text-[#6b6b66] text-sm mb-2">
+              {contactRegion}
+            </p>
             <a
-              href="mailto:hello@emerydesignstudio.com"
+              href={`mailto:${contactEmail}`}
               className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#1b3a5b] hover:opacity-70 transition-opacity duration-300 block"
             >
-              hello@emerydesignstudio.com
+              {contactEmail}
             </a>
-            <div className="mt-4">
-              <MonoLabel className="text-[#9a968d] block mb-1">Hours</MonoLabel>
-              <p className="font-sans text-[#6b6b66] text-sm">
-                Mon–Fri, 9–5 PT
-              </p>
-            </div>
           </div>
 
           {/* Col 4: Elsewhere */}

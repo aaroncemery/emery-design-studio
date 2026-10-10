@@ -93,6 +93,8 @@ export type SiteSettings = {
   headerLocationLabel?: string;
   headerEstablishedLabel?: string;
   headerIndexLabel?: string;
+  contactEmail?: string;
+  contactRegion?: string;
 };
 
 export type SanityImageCrop = {
@@ -109,6 +111,12 @@ export type SanityImageHotspot = {
   y: number;
   height: number;
   width: number;
+};
+
+export type PageHeader = {
+  _type: "pageHeader";
+  eyebrow?: string;
+  heading?: string;
 };
 
 export type ProjectReference = {
@@ -301,6 +309,45 @@ export type HeroSection = {
   };
   heroFeatured?: HeroCorner;
   heroStatus?: HeroCorner;
+};
+
+export type JournalPage = {
+  _id: string;
+  _type: "journalPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  header?: PageHeader;
+  emptyStateText?: string;
+};
+
+export type WorkPage = {
+  _id: string;
+  _type: "workPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  header?: PageHeader;
+  emptyStateText?: string;
+};
+
+export type ServicesPage = {
+  _id: string;
+  _type: "servicesPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  header?: PageHeader;
+};
+
+export type StudioPage = {
+  _id: string;
+  _type: "studioPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  header?: PageHeader;
+  intro?: StudioIntroSection;
 };
 
 export type HomePage = {
@@ -627,6 +674,7 @@ export type AllSanitySchemaTypes =
   | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | PageHeader
   | ProjectReference
   | HeroCorner
   | SocialLink
@@ -643,6 +691,10 @@ export type AllSanitySchemaTypes =
   | CollectionSection
   | StudioIntroSection
   | HeroSection
+  | JournalPage
+  | WorkPage
+  | ServicesPage
+  | StudioPage
   | HomePage
   | Page
   | InquirySubmission
@@ -1778,7 +1830,7 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings"][0] {    siteName,    siteDescription,    "defaultOgImage": defaultOgImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    "logo": logo {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    "favicon": favicon {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    headerBrandLabel,    headerLocationLabel,    headerEstablishedLabel,    headerIndexLabel  }
+// Query: *[_type == "siteSettings"][0] {    siteName,    siteDescription,    "defaultOgImage": defaultOgImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    "logo": logo {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    "favicon": favicon {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    headerBrandLabel,    headerLocationLabel,    headerEstablishedLabel,    headerIndexLabel,    contactEmail,    contactRegion  }
 export type SITE_SETTINGS_QUERY_RESULT = {
   siteName: string | null;
   siteDescription: string | null;
@@ -1858,6 +1910,8 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   headerLocationLabel: string | null;
   headerEstablishedLabel: string | null;
   headerIndexLabel: string | null;
+  contactEmail: string | null;
+  contactRegion: string | null;
 } | null;
 
 // Source: ../frontend/src/lib/sanity/queries.ts
@@ -1949,4 +2003,96 @@ export type LEGAL_PAGE_BY_SLUG_QUERY_RESULT = {
     _key: string;
   }> | null;
   seo: null;
+} | null;
+
+// Source: ../frontend/src/lib/sanity/queries.ts
+// Variable: STUDIO_PAGE_QUERY
+// Query: *[_type == "studioPage"][0] {    "header": header { eyebrow, heading },    "intro": intro {      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }    }  }
+export type STUDIO_PAGE_QUERY_RESULT = {
+  header: {
+    eyebrow: string | null;
+    heading: string | null;
+  } | null;
+  intro: {
+    heading: string | null;
+    body: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+      listItem?: "bullet" | "number";
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }> | null;
+    stats: Array<{
+      label: string | null;
+      value: string | null;
+    }> | null;
+    imageLayout: "mainWithInset" | "sideBySide" | "singleFull" | null;
+    images: Array<{
+      asset: {
+        _id: string;
+        url: string;
+        metadata: {
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+          lqip: string | null;
+        } | null;
+      } | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    }> | null;
+  } | null;
+} | null;
+
+// Source: ../frontend/src/lib/sanity/queries.ts
+// Variable: SERVICES_PAGE_QUERY
+// Query: *[_type == "servicesPage"][0] {    "header": header { eyebrow, heading }  }
+export type SERVICES_PAGE_QUERY_RESULT = {
+  header: {
+    eyebrow: string | null;
+    heading: string | null;
+  } | null;
+} | null;
+
+// Source: ../frontend/src/lib/sanity/queries.ts
+// Variable: WORK_PAGE_QUERY
+// Query: *[_type == "workPage"][0] {    "header": header { eyebrow, heading },    emptyStateText  }
+export type WORK_PAGE_QUERY_RESULT = {
+  header: {
+    eyebrow: string | null;
+    heading: string | null;
+  } | null;
+  emptyStateText: string | null;
+} | null;
+
+// Source: ../frontend/src/lib/sanity/queries.ts
+// Variable: JOURNAL_PAGE_QUERY
+// Query: *[_type == "journalPage"][0] {    "header": header { eyebrow, heading },    emptyStateText  }
+export type JOURNAL_PAGE_QUERY_RESULT = {
+  header: {
+    eyebrow: string | null;
+    heading: string | null;
+  } | null;
+  emptyStateText: string | null;
 } | null;

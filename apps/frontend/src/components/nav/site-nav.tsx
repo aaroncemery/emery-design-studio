@@ -7,12 +7,13 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { useState, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { stegaClean } from "next-sanity";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
-import type { Navigation, SiteSettings } from "@/lib/sanity/types";
+import type { Navigation, SiteSettings, SanityImage } from "@/lib/sanity/types";
 
 const FALLBACK_NAV_LINKS = [
   { key: "/work", label: "Work", href: "/work" },
@@ -20,6 +21,33 @@ const FALLBACK_NAV_LINKS = [
   { key: "/services", label: "Services", href: "/services" },
   { key: "/journal", label: "Journal", href: "/journal" },
 ];
+
+// Renders a real logo image once one exists in Sanity, falling back to the
+// text wordmark until then — so uploading a logo later needs no code change.
+function BrandMark({
+  logo,
+  label,
+  textClassName,
+  imageHeight,
+}: {
+  logo?: SanityImage | null;
+  label: string;
+  textClassName: string;
+  imageHeight: number;
+}) {
+  if (logo?.asset?.url) {
+    const aspectRatio = logo.asset.metadata?.dimensions?.aspectRatio ?? 1;
+    return (
+      <Image
+        src={logo.asset.url}
+        alt={label}
+        height={imageHeight}
+        width={Math.round(imageHeight * aspectRatio)}
+      />
+    );
+  }
+  return <span className={textClassName}>{label}</span>;
+}
 
 interface SiteNavProps {
   navigation?: Navigation | null;
@@ -98,8 +126,13 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
             a shared text baseline instead of matched box offsets. */}
         <div className="hidden md:grid absolute inset-x-0 top-5 grid-cols-[1fr_auto_1fr] items-baseline px-5 pointer-events-none">
           <div className="justify-self-start pointer-events-auto">
-            <Link href="/" className={cn(wordmarkClass, labelClass, "block")}>
-              {brandLabel}
+            <Link href="/" className="block">
+              <BrandMark
+                logo={siteSettings?.logo}
+                label={brandLabel}
+                textClassName={cn(wordmarkClass, labelClass)}
+                imageHeight={40}
+              />
             </Link>
             <MonoLabel
               className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
@@ -180,15 +213,13 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                   exit={{ opacity: 0, scale: 0.92 }}
                   transition={revealTransition}
                 >
-                  <Link
-                    href="/"
-                    className={cn(
-                      wordmarkClass,
-                      labelClass,
-                      "whitespace-nowrap block",
-                    )}
-                  >
-                    {brandLabel}
+                  <Link href="/" className="whitespace-nowrap block">
+                    <BrandMark
+                      logo={siteSettings?.logo}
+                      label={brandLabel}
+                      textClassName={cn(wordmarkClass, labelClass)}
+                      imageHeight={40}
+                    />
                   </Link>
                 </motion.div>
               )}
@@ -225,11 +256,16 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                       exit={{ clipPath: "inset(0 0 0 100%)", x: 16 }}
                       transition={revealTransition}
                     >
-                      <Link
-                        href="/"
-                        className={cn(wordmarkClassCompact, pillTextClass)}
-                      >
-                        {brandLabel}
+                      <Link href="/">
+                        <BrandMark
+                          logo={siteSettings?.logo}
+                          label={brandLabel}
+                          textClassName={cn(
+                            wordmarkClassCompact,
+                            pillTextClass,
+                          )}
+                          imageHeight={16}
+                        />
                       </Link>
                     </motion.span>
 

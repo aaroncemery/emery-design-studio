@@ -6,51 +6,22 @@ import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import type { Testimonial, PressItem } from "@/lib/sanity/types";
 
-const FALLBACK_TESTIMONIALS: Testimonial[] = [
-  {
-    _id: "fallback-1",
-    quote:
-      "Working with Emery felt like hiring a trusted collaborator rather than a contractor. The result exceeded everything we imagined for the space.",
-    authorName: "Claire & Thomas B.",
-    authorContext: "Madison Park Residence, 2025",
-  },
-  {
-    _id: "fallback-2",
-    quote:
-      "Their restraint is the point. Every choice is deliberate, nothing is decorative for its own sake, and the spaces feel like they always belonged.",
-    authorName: "Sarah M.",
-    authorContext: "Yarrow Point House, 2025",
-  },
-  {
-    _id: "fallback-3",
-    quote:
-      "We've done three projects now. The studio's process is meticulous and the outcome is always more than we thought was possible in the space.",
-    authorName: "David K.",
-    authorContext: "Hunts Point Retreat, 2024",
-  },
-];
-
-// const FALLBACK_PRESS: PressItem[] = [
-//   { _id: 'p1', _type: 'pressItem', publicationName: 'Architectural Digest' },
-//   { _id: 'p2', _type: 'pressItem', publicationName: 'Dwell' },
-//   { _id: 'p3', _type: 'pressItem', publicationName: 'Remodelista' },
-//   { _id: 'p4', _type: 'pressItem', publicationName: 'Kinfolk' },
-//   { _id: 'p5', _type: 'pressItem', publicationName: 'The Gentlewoman' },
-//   { _id: 'p6', _type: 'pressItem', publicationName: 'Cabana' },
-// ];
-
 const AUTO_ROTATE_DURATION = 7000;
 
 interface Props {
   testimonials?: Testimonial[];
   pressItems?: PressItem[];
+  heading?: string;
+  subheading?: string;
 }
 
-export function Testimonials({ testimonials, pressItems }: Props) {
-  const displayTestimonials =
-    testimonials && testimonials.length > 0
-      ? testimonials
-      : FALLBACK_TESTIMONIALS;
+export function Testimonials({
+  testimonials,
+  pressItems,
+  heading,
+  subheading,
+}: Props) {
+  const hasTestimonials = testimonials && testimonials.length > 0;
   const displayPress =
     pressItems && pressItems.length > 0
       ? pressItems
@@ -58,7 +29,9 @@ export function Testimonials({ testimonials, pressItems }: Props) {
 
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const safeActive = Math.min(active, displayTestimonials.length - 1);
+  const safeActive = hasTestimonials
+    ? Math.min(active, testimonials.length - 1)
+    : 0;
   const prefersReduced = useReducedMotion();
 
   function handleSelect(i: number) {
@@ -67,18 +40,58 @@ export function Testimonials({ testimonials, pressItems }: Props) {
   }
 
   useEffect(() => {
-    if (prefersReduced || paused) return;
+    if (!hasTestimonials || prefersReduced || paused) return;
     const timer = setInterval(() => {
-      setActive((prev) => (prev + 1) % displayTestimonials.length);
+      setActive((prev) => (prev + 1) % testimonials.length);
     }, AUTO_ROTATE_DURATION);
     return () => clearInterval(timer);
-  }, [displayTestimonials, prefersReduced, paused]);
+  }, [hasTestimonials, testimonials, prefersReduced, paused]);
+
+  if (!hasTestimonials) {
+    return (
+      <Section id="testimonials" className="bg-[#111111]" paddingY="xl">
+        <MonoLabel className="text-[#c8553d] block mb-10">
+          §&nbsp;05&nbsp;—&nbsp;Clients
+        </MonoLabel>
+        {heading && (
+          <h2
+            className="font-serif text-[#f6f4ef] leading-[0.92] tracking-tight mb-8"
+            style={{ fontSize: "clamp(32px, 4vw, 56px)" }}
+          >
+            {heading}
+          </h2>
+        )}
+        {subheading && (
+          <p className="font-sans text-[#f6f4ef]/70 text-sm leading-relaxed mb-10 max-w-lg">
+            {subheading}
+          </p>
+        )}
+        <p className="font-sans text-[#f6f4ef]/50 text-sm leading-relaxed max-w-sm">
+          Client testimonials coming soon.
+        </p>
+      </Section>
+    );
+  }
 
   return (
     <Section id="testimonials" className="bg-[#111111]" paddingY="xl">
       <MonoLabel className="text-[#c8553d] block mb-10">
         §&nbsp;05&nbsp;—&nbsp;Clients
       </MonoLabel>
+
+      {heading && (
+        <h2
+          className="font-serif text-[#f6f4ef] leading-[0.92] tracking-tight mb-8"
+          style={{ fontSize: "clamp(32px, 4vw, 56px)" }}
+        >
+          {heading}
+        </h2>
+      )}
+      {subheading && (
+        <p className="font-sans text-[#f6f4ef]/70 text-sm leading-relaxed mb-10 max-w-lg">
+          {subheading}
+        </p>
+      )}
 
       {/* Quote panel */}
       <div
@@ -99,7 +112,7 @@ export function Testimonials({ testimonials, pressItems }: Props) {
 
         {/* Directional slide — grid-stacked so container height never changes */}
         <div className="grid overflow-x-hidden">
-          {displayTestimonials.map((t, i) => {
+          {testimonials.map((t, i) => {
             const isVisible = safeActive === i;
             const xOffset = Math.sign(i - safeActive) * 40;
             return (
@@ -148,7 +161,7 @@ export function Testimonials({ testimonials, pressItems }: Props) {
         aria-label="Client testimonials"
         className="flex border-t border-[rgba(246,244,239,0.1)]"
       >
-        {displayTestimonials.map((t, i) => {
+        {testimonials.map((t, i) => {
           const isActive = safeActive === i;
           return (
             <button

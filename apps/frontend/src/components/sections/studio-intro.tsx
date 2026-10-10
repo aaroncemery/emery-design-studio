@@ -1,15 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
-import { stegaClean } from "next-sanity";
-import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import {
-  Placeholder,
-  type PlaceholderVariant,
-} from "@/components/primitives/placeholder";
 import { Reveal } from "@/components/primitives/reveal";
-import type { SanityImage, StudioIntroSection } from "@/lib/sanity/types";
+import { StudioIntroContent } from "./studio-intro-content";
+import type { StudioIntroSection } from "@/lib/sanity/types";
 
 const FALLBACK_STATS = [
   { value: "12", label: "Years in practice" },
@@ -17,182 +11,65 @@ const FALLBACK_STATS = [
   { value: "6–8", label: "Projects per year" },
 ];
 
+const FALLBACK_BODY = (
+  <>
+    <p>
+      We work with a small number of clients at a time — never more than eight —
+      so that every project receives the full weight of our attention. Our
+      process is deliberate, unhurried, and collaborative.
+    </p>
+    <p>
+      Founded in 2014 by Aaron Emery, the studio has spent a decade refining a
+      single idea: that the best interiors are the ones that take time to
+      understand, not just to build.
+    </p>
+  </>
+);
+
 interface Props {
   data?: StudioIntroSection;
-}
-
-function ImageBlock({
-  image,
-  placeholder,
-  aspectRatio,
-  sizes,
-}: {
-  image?: SanityImage;
-  placeholder: PlaceholderVariant;
-  aspectRatio: number;
-  sizes: string;
-}) {
-  if (image?.asset?.url) {
-    return (
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio }}>
-        <Image
-          src={image.asset.url}
-          alt=""
-          fill
-          className="object-cover"
-          placeholder="blur"
-          blurDataURL={image.asset.metadata?.lqip ?? undefined}
-          sizes={sizes}
-        />
-      </div>
-    );
-  }
-  return (
-    <Placeholder
-      variant={placeholder}
-      aspectRatio={aspectRatio}
-      className="w-full"
-    />
-  );
 }
 
 export function StudioIntro({ data }: Props) {
   const heading =
     data?.heading ??
     "A small atelier on the water in Kirkland, working slowly and close to the hand.";
-  const stats = data?.stats ?? FALLBACK_STATS;
-  const layout = stegaClean(data?.imageLayout) ?? "mainWithInset";
-  const mainImage = data?.images?.[0];
-  const insetImage = data?.images?.[1];
-
-  const imagePanel = (
-    <Reveal>
-      {layout === "mainWithInset" && (
-        <div className="relative lg:pb-8">
-          <ImageBlock
-            image={mainImage}
-            placeholder="plaster"
-            aspectRatio={0.9}
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-          <div
-            className="hidden lg:block absolute -bottom-8 -right-6 w-[45%] border-4 border-[#ece8df]"
-            aria-hidden="true"
-          >
-            <ImageBlock
-              image={insetImage}
-              placeholder="wood"
-              aspectRatio={1.0}
-              sizes="25vw"
-            />
-          </div>
-        </div>
-      )}
-
-      {layout === "sideBySide" && (
-        <div className="relative lg:pb-16">
-          <div className="w-full lg:w-[68%]">
-            <ImageBlock
-              image={mainImage}
-              placeholder="plaster"
-              aspectRatio={0.85}
-              sizes="(max-width: 1024px) 100vw, 34vw"
-            />
-          </div>
-          <div className="hidden lg:block lg:absolute lg:-bottom-12 lg:-right-8 lg:w-[52%] lg:border-4 lg:border-[#ece8df]">
-            <ImageBlock
-              image={insetImage}
-              placeholder="wood"
-              aspectRatio={0.85}
-              sizes="(max-width: 1024px) 100vw, 26vw"
-            />
-          </div>
-        </div>
-      )}
-
-      {layout === "singleFull" && (
-        <ImageBlock
-          image={mainImage}
-          placeholder="plaster"
-          aspectRatio={0.9}
-          sizes="(max-width: 1024px) 100vw, 50vw"
-        />
-      )}
-    </Reveal>
-  );
 
   return (
     <Section id="studio" className="bg-[#ece8df]" paddingY="xl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-[120px] items-start">
-        {/* Left: images */}
-        {imagePanel}
+      <StudioIntroContent
+        data={data}
+        fallbackBody={FALLBACK_BODY}
+        fallbackStats={FALLBACK_STATS}
+        bodyDelay={0.14}
+        statsDelay={0.2}
+        header={
+          <>
+            <Reveal>
+              <MonoLabel className="text-[#1b3a5b] block mb-5">
+                §&nbsp;03&nbsp;—&nbsp;The&nbsp;Studio
+              </MonoLabel>
+            </Reveal>
 
-        {/* Right: copy + stats */}
-        <div className="pt-0 lg:pt-12">
-          <Reveal>
-            <MonoLabel className="text-[#1b3a5b] block mb-5">
-              §&nbsp;03&nbsp;—&nbsp;The&nbsp;Studio
-            </MonoLabel>
-          </Reveal>
-
-          <Reveal delay={0.08}>
-            <h2
-              className="font-serif text-[#111111] leading-[0.94] tracking-tight mb-8"
-              style={{ fontSize: "clamp(34px, 3.8vw, 56px)" }}
-            >
-              {heading.includes("/") ? (
-                <>
-                  {heading.split("/")[0].trim()}&nbsp;/
-                  <br />
-                  <em>{heading.split("/").slice(1).join("/").trim()}</em>
-                </>
-              ) : (
-                <em>{heading}</em>
-              )}
-            </h2>
-          </Reveal>
-
-          <Reveal delay={0.14}>
-            <div className="space-y-4 mb-10 font-sans text-[#6b6b66] text-sm leading-relaxed">
-              {data?.body ? (
-                <PortableText value={data.body} />
-              ) : (
-                <>
-                  <p>
-                    We work with a small number of clients at a time — never
-                    more than eight — so that every project receives the full
-                    weight of our attention. Our process is deliberate,
-                    unhurried, and collaborative.
-                  </p>
-                  <p>
-                    Founded in 2014 by Aaron Emery, the studio has spent a
-                    decade refining a single idea: that the best interiors are
-                    the ones that take time to understand, not just to build.
-                  </p>
-                </>
-              )}
-            </div>
-          </Reveal>
-
-          {/* Stats */}
-          <Reveal delay={0.2}>
-            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-8 border-t border-[rgba(17,17,17,0.12)]">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <span
-                    className="font-serif italic text-[#1b3a5b] leading-none block"
-                    style={{ fontSize: "clamp(40px, 4vw, 56px)" }}
-                  >
-                    {stat.value}
-                  </span>
-                  <MonoLabel className="text-[#9a968d] mt-2 block text-[11px] md:text-[9px] leading-snug">
-                    {stat.label}
-                  </MonoLabel>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
+            <Reveal delay={0.08}>
+              <h2
+                className="font-serif text-[#111111] leading-[0.94] tracking-tight mb-8"
+                style={{ fontSize: "clamp(34px, 3.8vw, 56px)" }}
+              >
+                {heading.includes("/") ? (
+                  <>
+                    {heading.split("/")[0].trim()}&nbsp;/
+                    <br />
+                    <em>{heading.split("/").slice(1).join("/").trim()}</em>
+                  </>
+                ) : (
+                  <em>{heading}</em>
+                )}
+              </h2>
+            </Reveal>
+          </>
+        }
+        footer={
           <Reveal delay={0.26}>
             <div className="mt-10">
               <Link
@@ -204,8 +81,8 @@ export function StudioIntro({ data }: Props) {
               </Link>
             </div>
           </Reveal>
-        </div>
-      </div>
+        }
+      />
     </Section>
   );
 }

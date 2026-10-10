@@ -6,10 +6,15 @@ import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/live";
 import {
   ALL_JOURNAL_POSTS_QUERY,
+  JOURNAL_PAGE_QUERY,
   SITE_SETTINGS_QUERY,
 } from "@/lib/sanity/queries";
 import { buildMetadata } from "@/lib/sanity/build-metadata";
-import type { JournalPost, SiteSettings } from "@/lib/sanity/types";
+import type {
+  JournalPost,
+  JournalPage as JournalPageData,
+  SiteSettings,
+} from "@/lib/sanity/types";
 
 export const revalidate = false;
 
@@ -29,25 +34,49 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function JournalPage() {
-  const { data } = await sanityFetch({
-    query: ALL_JOURNAL_POSTS_QUERY,
-    tags: ["journalPost"],
-  });
-  const posts = data as JournalPost[];
+  const [{ data: postsData }, { data: pageData }] = await Promise.all([
+    sanityFetch({ query: ALL_JOURNAL_POSTS_QUERY, tags: ["journalPost"] }),
+    sanityFetch({ query: JOURNAL_PAGE_QUERY, tags: ["journalPage"] }),
+  ]);
+  const posts = postsData as JournalPost[];
+  const page = pageData as JournalPageData | null;
+  const header = page?.header;
+
+  // Split on "/" — editor convention: "Heading / italic second line"
+  let headingLine1 = "Slow writing";
+  let headingLine2 = "from the studio.";
+  if (header?.heading) {
+    const idx = header.heading.indexOf("/");
+    if (idx !== -1) {
+      headingLine1 = header.heading.slice(0, idx).trim();
+      headingLine2 = header.heading.slice(idx + 1).trim();
+    } else {
+      headingLine1 = header.heading;
+      headingLine2 = "";
+    }
+  }
+
+  const emptyStateText =
+    page?.emptyStateText ??
+    "Essays and notes on materials, process, and the spaces we build. Coming soon.";
 
   return (
     <main id="main">
       <Section className="bg-[#f6f4ef]" paddingY="xl">
         <MonoLabel className="text-[#1b3a5b] block mb-6">
-          Journal&nbsp;—&nbsp;Notes&nbsp;on&nbsp;Practice
+          {header?.eyebrow ?? "Journal — Notes on Practice"}
         </MonoLabel>
         <h1
           className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-16 max-w-2xl"
           style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
         >
-          Slow <em>writing</em>
-          <br />
-          from the studio.
+          {headingLine1}
+          {headingLine2 && (
+            <>
+              <br />
+              <em>{headingLine2}</em>
+            </>
+          )}
         </h1>
 
         {posts && posts.length > 0 ? (
@@ -101,8 +130,7 @@ export default async function JournalPage() {
         ) : (
           <div>
             <p className="font-sans text-[#6b6b66] text-sm leading-relaxed max-w-sm mb-10">
-              Essays and notes on materials, process, and the spaces we build.
-              Coming soon.
+              {emptyStateText}
             </p>
             <Link
               href="/"
