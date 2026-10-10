@@ -16,7 +16,7 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
         aria-label={service.title}
         data-cursor-lens="true"
       >
-        <Rule />
+        <Rule className="md:-mx-4" />
 
         {/* Mobile layout: always-expanded, full-width */}
         <div className="flex flex-col gap-2 py-5 md:hidden">
@@ -130,7 +130,7 @@ export function Services({ services, heading, subheading }: Props) {
           {services.map((service, i) => (
             <ServiceRow key={service._id} service={service} index={i} />
           ))}
-          <Rule />
+          <Rule className="md:-mx-4" />
         </div>
       ) : (
         <p className="font-sans text-[#9a968d] text-sm">
