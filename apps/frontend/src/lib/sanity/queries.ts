@@ -258,7 +258,9 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     headerBrandLabel,
     headerLocationLabel,
     headerEstablishedLabel,
-    headerIndexLabel
+    headerIndexLabel,
+    contactEmail,
+    contactRegion
   }
 `);
 
@@ -299,5 +301,38 @@ export const LEGAL_PAGE_BY_SLUG_QUERY = defineQuery(`
     "slug": slug.current,
     body[] { ${bodyFields} },
     "seo": seo { ${seoFields} }
+  }
+`);
+
+export const STUDIO_PAGE_QUERY = defineQuery(`
+  *[_type == "studioPage"][0] {
+    "header": header { eyebrow, heading },
+    "intro": intro {
+      heading,
+      body[] { ${bodyFields} },
+      stats[] { label, value },
+      imageLayout,
+      "images": images[] { ${imageFields} }
+    }
+  }
+`);
+
+export const SERVICES_PAGE_QUERY = defineQuery(`
+  *[_type == "servicesPage"][0] {
+    "header": header { eyebrow, heading }
+  }
+`);
+
+export const WORK_PAGE_QUERY = defineQuery(`
+  *[_type == "workPage"][0] {
+    "header": header { eyebrow, heading },
+    emptyStateText
+  }
+`);
+
+export const JOURNAL_PAGE_QUERY = defineQuery(`
+  *[_type == "journalPage"][0] {
+    "header": header { eyebrow, heading },
+    emptyStateText
   }
 `);

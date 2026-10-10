@@ -12,17 +12,18 @@ export const inquirySection = defineType({
       title: "Scope Options",
       type: "array",
       of: [defineArrayMember({ type: "string" })],
-      options: { layout: "tags" },
       description:
-        'Options shown in the scope dropdown, e.g. "Full Renovation"',
+        'Options shown in the scope dropdown, e.g. "Full Renovation". ' +
+        "Drag the handle on each row to reorder.",
     }),
     defineField({
       name: "budgetOptions",
       title: "Budget Options",
       type: "array",
       of: [defineArrayMember({ type: "string" })],
-      options: { layout: "tags" },
-      description: 'Options shown as pill toggles, e.g. "Under $500k"',
+      description:
+        'Options shown as pill toggles, e.g. "Under $500k". Drag the ' +
+        "handle on each row to reorder.",
     }),
   ],
   preview: {

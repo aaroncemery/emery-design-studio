@@ -45,11 +45,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const { data } = await sanityFetch({
-    query: HOME_PAGE_QUERY,
-    tags: ["homePage"],
-  });
+  const [{ data }, { data: siteSettingsData }] = await Promise.all([
+    sanityFetch({
+      query: HOME_PAGE_QUERY,
+      tags: ["homePage"],
+    }),
+    sanityFetch({ query: SITE_SETTINGS_QUERY, tags: ["siteSettings"] }),
+  ]);
   const homePage = data as HomePage | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
 
   const sections = homePage?.sections ?? [];
 
@@ -89,12 +93,18 @@ export default async function Home() {
         subheading={projectsSection?.subheading ?? undefined}
       />
       <StudioIntro data={studioIntroData} />
-      <Services services={servicesSection?.items as Service[] | undefined} />
+      <Services
+        services={servicesSection?.items as Service[] | undefined}
+        heading={servicesSection?.heading ?? undefined}
+        subheading={servicesSection?.subheading ?? undefined}
+      />
       <Testimonials
         testimonials={testimonialsSection?.items as Testimonial[] | undefined}
         pressItems={pressSection?.items as PressItem[] | undefined}
+        heading={testimonialsSection?.heading ?? undefined}
+        subheading={testimonialsSection?.subheading ?? undefined}
       />
-      <Inquiry data={inquiryData} />
+      <Inquiry data={inquiryData} siteSettings={siteSettings} />
     </main>
   );
 }

@@ -21,12 +21,20 @@ import {
   NotebookPenIcon,
   StickyNotePlusIcon,
   SpeechIcon,
+  BookOpenIcon,
+  ClipboardListIcon,
+  ImagesIcon,
+  NotebookTabsIcon,
 } from "lucide-react";
 
 const SINGLETON_HOME_PAGE_ID = "singleton-homePage";
 const SINGLETON_SITE_SETTINGS_ID = "singleton-siteSettings";
 const SINGLETON_NAVIGATION_ID = "singleton-navigation";
 const SINGLETON_FOOTER_ID = "singleton-footer";
+const SINGLETON_STUDIO_PAGE_ID = "singleton-studioPage";
+const SINGLETON_SERVICES_PAGE_ID = "singleton-servicesPage";
+const SINGLETON_WORK_PAGE_ID = "singleton-workPage";
+const SINGLETON_JOURNAL_PAGE_ID = "singleton-journalPage";
 
 const PRODUCTION_PREVIEW_URL = "https://www.emerydesign.studio";
 
@@ -44,6 +52,10 @@ const mainDocuments = defineDocuments([
     filter: `_type == "legalPage" && slug.current == $slug`,
   },
   { route: "/", filter: `_type == "homePage"` },
+  { route: "/studio", filter: `_type == "studioPage"` },
+  { route: "/services", filter: `_type == "servicesPage"` },
+  { route: "/work", filter: `_type == "workPage"` },
+  { route: "/journal", filter: `_type == "journalPage"` },
 ]);
 
 const locations = {
@@ -77,6 +89,30 @@ const locations = {
     select: {},
     resolve: () => ({
       locations: [{ title: "Home", href: "/" }],
+    }),
+  }),
+  studioPage: defineLocations({
+    select: {},
+    resolve: () => ({
+      locations: [{ title: "Studio", href: "/studio" }],
+    }),
+  }),
+  servicesPage: defineLocations({
+    select: {},
+    resolve: () => ({
+      locations: [{ title: "Services", href: "/services" }],
+    }),
+  }),
+  workPage: defineLocations({
+    select: {},
+    resolve: () => ({
+      locations: [{ title: "Work", href: "/work" }],
+    }),
+  }),
+  journalPage: defineLocations({
+    select: {},
+    resolve: () => ({
+      locations: [{ title: "Journal", href: "/journal" }],
     }),
   }),
   service: defineLocations({
@@ -185,6 +221,48 @@ export default defineConfig({
                 S.document()
                   .schemaType("homePage")
                   .documentId(SINGLETON_HOME_PAGE_ID),
+              ),
+
+            // Singletons: fixed-shape header/content for routes that don't
+            // need the flexible section-builder homePage uses
+            S.listItem()
+              .title("Studio Page")
+              .id("studioPage")
+              .icon(BookOpenIcon)
+              .child(
+                S.document()
+                  .schemaType("studioPage")
+                  .documentId(SINGLETON_STUDIO_PAGE_ID),
+              ),
+
+            S.listItem()
+              .title("Services Page")
+              .id("servicesPage")
+              .icon(ClipboardListIcon)
+              .child(
+                S.document()
+                  .schemaType("servicesPage")
+                  .documentId(SINGLETON_SERVICES_PAGE_ID),
+              ),
+
+            S.listItem()
+              .title("Work Page")
+              .id("workPage")
+              .icon(ImagesIcon)
+              .child(
+                S.document()
+                  .schemaType("workPage")
+                  .documentId(SINGLETON_WORK_PAGE_ID),
+              ),
+
+            S.listItem()
+              .title("Journal Page")
+              .id("journalPage")
+              .icon(NotebookTabsIcon)
+              .child(
+                S.document()
+                  .schemaType("journalPage")
+                  .documentId(SINGLETON_JOURNAL_PAGE_ID),
               ),
 
             S.divider(),

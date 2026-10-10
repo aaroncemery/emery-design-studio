@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { stegaClean } from "next-sanity";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
 import { Reveal } from "@/components/primitives/reveal";
 import { submitInquiry } from "@/app/actions/inquiry";
-import type { InquirySection } from "@/lib/sanity/types";
+import type { InquirySection, SiteSettings } from "@/lib/sanity/types";
 
 const FALLBACK_SCOPE_OPTIONS = [
   "Full Renovation",
@@ -46,9 +47,15 @@ const inputBase =
 
 interface Props {
   data?: InquirySection;
+  siteSettings?: SiteSettings | null;
 }
 
-export function Inquiry({ data }: Props) {
+export function Inquiry({ data, siteSettings }: Props) {
+  const contactEmail =
+    stegaClean(siteSettings?.contactEmail) || "hello@emerydesign.studio";
+  const contactRegion =
+    stegaClean(siteSettings?.contactRegion) || "Kirkland, WA";
+
   const scopeOptions =
     data?.scopeOptions && data.scopeOptions.length > 0
       ? data.scopeOptions
@@ -113,23 +120,15 @@ export function Inquiry({ data }: Props) {
           </Reveal>
           <Reveal delay={0.18}>
             <Rule className="mb-8" />
-            <address className="not-italic space-y-1 mb-6">
-              <MonoLabel className="text-[#9a968d] block mb-3">
-                Studio address
-              </MonoLabel>
-              <p className="font-sans text-[#111111] text-sm">
-                Emery Design Studio
-              </p>
-              <p className="font-sans text-[#6b6b66] text-sm">
-                Kirkland, WA 98033
-              </p>
-            </address>
+            <MonoLabel className="text-[#9a968d] block mb-3">
+              {contactRegion}
+            </MonoLabel>
             <div className="space-y-1">
               <a
-                href="mailto:hello@emerydesignstudio.com"
+                href={`mailto:${contactEmail}`}
                 className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#1b3a5b] hover:opacity-70 transition-opacity duration-300 block"
               >
-                hello@emerydesignstudio.com
+                {contactEmail}
               </a>
             </div>
           </Reveal>

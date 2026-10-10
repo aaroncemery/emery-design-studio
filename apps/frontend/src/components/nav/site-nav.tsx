@@ -7,12 +7,14 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { useState, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { stegaClean } from "next-sanity";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
-import type { Navigation, SiteSettings } from "@/lib/sanity/types";
+import type { Navigation, SiteSettings, SanityImage } from "@/lib/sanity/types";
 
 const FALLBACK_NAV_LINKS = [
   { key: "/work", label: "Work", href: "/work" },
@@ -20,6 +22,33 @@ const FALLBACK_NAV_LINKS = [
   { key: "/services", label: "Services", href: "/services" },
   { key: "/journal", label: "Journal", href: "/journal" },
 ];
+
+// Renders a real logo image once one exists in Sanity, falling back to the
+// text wordmark until then — so uploading a logo later needs no code change.
+function BrandMark({
+  logo,
+  label,
+  textClassName,
+  imageHeight,
+}: {
+  logo?: SanityImage | null;
+  label: string;
+  textClassName: string;
+  imageHeight: number;
+}) {
+  if (logo?.asset?.url) {
+    const aspectRatio = logo.asset.metadata?.dimensions?.aspectRatio ?? 1;
+    return (
+      <Image
+        src={logo.asset.url}
+        alt={label}
+        height={imageHeight}
+        width={Math.round(imageHeight * aspectRatio)}
+      />
+    );
+  }
+  return <span className={textClassName}>{label}</span>;
+}
 
 interface SiteNavProps {
   navigation?: Navigation | null;
@@ -50,7 +79,17 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
     }
   });
 
-  const active = scrolled || menuOpen;
+  // The white/mix-blend-difference header treatment only reads correctly
+  // over a dark photo hero — the homepage and the project/journal detail
+  // pages (when they have a cover image) are the only routes with one.
+  // Every other route (/studio, /services, /work, /journal, /legal/*)
+  // starts directly on a flat light section, so the header needs its
+  // solid, legible "scrolled" treatment from the very first paint there,
+  // not just after the user scrolls.
+  const pathname = usePathname();
+  const hasMediaHero =
+    pathname === "/" || /^\/(work|journal)\/[^/]+$/.test(pathname);
+  const active = scrolled || menuOpen || !hasMediaHero;
 
   const resolvedLinks = navigation?.items?.length
     ? navigation.items.map((item) => ({
@@ -62,7 +101,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
 
   const labelClass = cn(
     "transition-colors duration-500",
-    scrolled ? "text-[#111111]" : "text-white mix-blend-difference",
+    active ? "text-[#111111]" : "text-white mix-blend-difference",
   );
 
   const dividerClass = cn(
@@ -98,8 +137,13 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
             a shared text baseline instead of matched box offsets. */}
         <div className="hidden md:grid absolute inset-x-0 top-5 grid-cols-[1fr_auto_1fr] items-baseline px-5 pointer-events-none">
           <div className="justify-self-start pointer-events-auto">
-            <Link href="/" className={cn(wordmarkClass, labelClass, "block")}>
-              {brandLabel}
+            <Link href="/" className="block">
+              <BrandMark
+                logo={siteSettings?.logo}
+                label={brandLabel}
+                textClassName={cn(wordmarkClass, labelClass)}
+                imageHeight={40}
+              />
             </Link>
             <MonoLabel
               className={cn(labelClass, "block text-[9px] mt-1 opacity-60")}
@@ -115,7 +159,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
             <div
               className={cn(
                 "flex items-center px-5 py-2.5 rounded-full transition-all duration-500",
-                scrolled
+                active
                   ? "bg-[rgba(246,244,239,0.88)] backdrop-blur-[18px] shadow-[0_2px_24px_rgba(17,17,17,0.08)] border border-[rgba(17,17,17,0.06)]"
                   : "bg-transparent",
               )}
@@ -126,7 +170,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                   href={link.href}
                   className={cn(
                     "font-mono text-[10px] tracking-[0.16em] uppercase px-3 py-1 transition-colors duration-500 hover:opacity-70",
-                    scrolled
+                    active
                       ? "text-[#111111]"
                       : "text-white mix-blend-difference",
                   )}
@@ -141,7 +185,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                 href="/#contact"
                 className={cn(
                   "font-mono text-[10px] tracking-[0.16em] uppercase px-4 py-1.5 rounded-full border transition-all duration-500",
-                  scrolled
+                  active
                     ? "text-[#1b3a5b] border-[#1b3a5b] hover:bg-[#1b3a5b] hover:text-white"
                     : "text-white border-white/70 hover:bg-white/10 mix-blend-difference",
                 )}
@@ -180,15 +224,13 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                   exit={{ opacity: 0, scale: 0.92 }}
                   transition={revealTransition}
                 >
-                  <Link
-                    href="/"
-                    className={cn(
-                      wordmarkClass,
-                      labelClass,
-                      "whitespace-nowrap block",
-                    )}
-                  >
-                    {brandLabel}
+                  <Link href="/" className="whitespace-nowrap block">
+                    <BrandMark
+                      logo={siteSettings?.logo}
+                      label={brandLabel}
+                      textClassName={cn(wordmarkClass, labelClass)}
+                      imageHeight={40}
+                    />
                   </Link>
                 </motion.div>
               )}
@@ -225,11 +267,16 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                       exit={{ clipPath: "inset(0 0 0 100%)", x: 16 }}
                       transition={revealTransition}
                     >
-                      <Link
-                        href="/"
-                        className={cn(wordmarkClassCompact, pillTextClass)}
-                      >
-                        {brandLabel}
+                      <Link href="/">
+                        <BrandMark
+                          logo={siteSettings?.logo}
+                          label={brandLabel}
+                          textClassName={cn(
+                            wordmarkClassCompact,
+                            pillTextClass,
+                          )}
+                          imageHeight={16}
+                        />
                       </Link>
                     </motion.span>
 

@@ -4,9 +4,17 @@ import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/live";
-import { ALL_PROJECTS_QUERY, SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
+import {
+  ALL_PROJECTS_QUERY,
+  SITE_SETTINGS_QUERY,
+  WORK_PAGE_QUERY,
+} from "@/lib/sanity/queries";
 import { buildMetadata } from "@/lib/sanity/build-metadata";
-import type { Project, SiteSettings } from "@/lib/sanity/types";
+import type {
+  Project,
+  SiteSettings,
+  WorkPage as WorkPageData,
+} from "@/lib/sanity/types";
 
 export const revalidate = false;
 
@@ -26,25 +34,47 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function WorkPage() {
-  const { data } = await sanityFetch({
-    query: ALL_PROJECTS_QUERY,
-    tags: ["project"],
-  });
-  const projects = data as Project[];
+  const [{ data: projectsData }, { data: pageData }] = await Promise.all([
+    sanityFetch({ query: ALL_PROJECTS_QUERY, tags: ["project"] }),
+    sanityFetch({ query: WORK_PAGE_QUERY, tags: ["workPage"] }),
+  ]);
+  const projects = projectsData as Project[];
+  const page = pageData as WorkPageData | null;
+  const header = page?.header;
+
+  // Split on "/" — editor convention: "Heading / italic second line"
+  let headingLine1 = "The full";
+  let headingLine2 = "archive.";
+  if (header?.heading) {
+    const idx = header.heading.indexOf("/");
+    if (idx !== -1) {
+      headingLine1 = header.heading.slice(0, idx).trim();
+      headingLine2 = header.heading.slice(idx + 1).trim();
+    } else {
+      headingLine1 = header.heading;
+      headingLine2 = "";
+    }
+  }
+
+  const emptyStateText = page?.emptyStateText ?? "Projects coming soon.";
 
   return (
     <main id="main">
       <Section className="bg-[#f6f4ef]" paddingY="xl">
         <MonoLabel className="text-[#1b3a5b] block mb-6">
-          Work&nbsp;—&nbsp;Project&nbsp;Archive
+          {header?.eyebrow ?? "Work — Project Archive"}
         </MonoLabel>
         <h1
           className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-16 max-w-2xl"
           style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
         >
-          The full
-          <br />
-          <em>archive.</em>
+          {headingLine1}
+          {headingLine2 && (
+            <>
+              <br />
+              <em>{headingLine2}</em>
+            </>
+          )}
         </h1>
 
         {projects && projects.length > 0 ? (
@@ -97,7 +127,7 @@ export default async function WorkPage() {
         ) : (
           <div>
             <p className="font-sans text-[#6b6b66] text-sm leading-relaxed max-w-sm mb-10">
-              Projects coming soon. In the meantime,{" "}
+              {emptyStateText} In the meantime,{" "}
               <Link
                 href="/#projects"
                 className="text-[#1b3a5b] hover:opacity-70 transition-opacity"
