@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/live";
@@ -30,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     fallbackTitle: "Journal",
     fallbackDescription:
       "Writing and notes from Emery Design Studio on interiors, materials, and process.",
+    path: "/journal",
   });
 }
 
@@ -84,7 +86,11 @@ export default async function JournalPage() {
             {posts.map((post) => (
               <article key={post._id}>
                 {post.coverImage?.asset?.url && (
-                  <Link href={`/journal/${post.slug}`}>
+                  <TrackedLink
+                    href={`/journal/${post.slug}`}
+                    eventName="journal_post_click"
+                    eventParams={{ post: post.slug ?? undefined }}
+                  >
                     <div
                       className="relative overflow-hidden mb-5"
                       style={{ aspectRatio: 1.5 }}
@@ -101,7 +107,7 @@ export default async function JournalPage() {
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     </div>
-                  </Link>
+                  </TrackedLink>
                 )}
                 <MonoLabel className="text-[#9a968d] block mb-2 text-[9px]">
                   {post.publishedAt
@@ -112,12 +118,14 @@ export default async function JournalPage() {
                     : null}
                 </MonoLabel>
                 <h2 className="font-serif text-[#111111] text-[22px] leading-tight mb-2">
-                  <Link
+                  <TrackedLink
                     href={`/journal/${post.slug}`}
                     className="hover:opacity-70 transition-opacity"
+                    eventName="journal_post_click"
+                    eventParams={{ post: post.slug ?? undefined }}
                   >
                     {post.title}
-                  </Link>
+                  </TrackedLink>
                 </h2>
                 {post.author && (
                   <MonoLabel className="text-[#9a968d] text-[9px]">

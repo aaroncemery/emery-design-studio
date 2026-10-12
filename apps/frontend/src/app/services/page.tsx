@@ -2,28 +2,54 @@ import type { Metadata } from "next";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
+import { JsonLd } from "@/components/seo/json-ld";
 import { sanityFetch } from "@/lib/sanity/live";
-import { ALL_SERVICES_QUERY, SERVICES_PAGE_QUERY } from "@/lib/sanity/queries";
+import {
+  ALL_SERVICES_QUERY,
+  SERVICES_PAGE_QUERY,
+  SITE_SETTINGS_QUERY,
+} from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
+import { serviceJsonLd } from "@/lib/structured-data";
 import type {
   Service,
   ServicesPage as ServicesPageData,
+  SiteSettings,
 } from "@/lib/sanity/types";
 
 export const revalidate = false;
 
-export const metadata: Metadata = {
-  title: "Services — Emery Design Studio",
-  description:
-    "Interior design services offered by Emery Design Studio — full renovation, interior architecture, styling, and consultation.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [{ data: pageData }, { data: siteSettingsData }] = await Promise.all([
+    sanityFetch({ query: SERVICES_PAGE_QUERY, tags: ["servicesPage"] }),
+    sanityFetch({ query: SITE_SETTINGS_QUERY, tags: ["siteSettings"] }),
+  ]);
+  const page = pageData as ServicesPageData | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
+
+  return buildMetadata({
+    pageSeo: page?.seo,
+    siteSettings,
+    fallbackTitle: "Services",
+    fallbackDescription:
+      "Interior design services offered by Emery Design Studio — full renovation, interior architecture, styling, and consultation.",
+    path: "/services",
+  });
+}
 
 export default async function ServicesPage() {
-  const [{ data: servicesData }, { data: pageData }] = await Promise.all([
+  const [
+    { data: servicesData },
+    { data: pageData },
+    { data: siteSettingsData },
+  ] = await Promise.all([
     sanityFetch({ query: ALL_SERVICES_QUERY, tags: ["service"] }),
     sanityFetch({ query: SERVICES_PAGE_QUERY, tags: ["servicesPage"] }),
+    sanityFetch({ query: SITE_SETTINGS_QUERY, tags: ["siteSettings"] }),
   ]);
   const services = servicesData as Service[];
   const page = pageData as ServicesPageData | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
   const header = page?.header;
 
   // Split on "/" — editor convention: "Heading / italic second line"
@@ -42,6 +68,12 @@ export default async function ServicesPage() {
 
   return (
     <main id="main">
+      {services?.map((service) => (
+        <JsonLd
+          key={service._id}
+          data={serviceJsonLd(service, siteSettings?.siteName)}
+        />
+      ))}
       <Section className="bg-[#f6f4ef]" paddingY="xl">
         <MonoLabel className="text-[#1b3a5b] block mb-6">
           {header?.eyebrow ?? "Services — How We Work"}

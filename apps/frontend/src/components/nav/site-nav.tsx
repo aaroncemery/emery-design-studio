@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { stegaClean } from "next-sanity";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
+import { trackEvent } from "@/lib/analytics";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
 import type { Navigation, SiteSettings, SanityImage } from "@/lib/sanity/types";
 
@@ -168,6 +169,9 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                 <Link
                   key={link.key}
                   href={link.href}
+                  onClick={() =>
+                    trackEvent("nav_click", { destination: link.key })
+                  }
                   className={cn(
                     "font-mono text-[10px] tracking-[0.16em] uppercase px-3 py-1 transition-colors duration-500 hover:opacity-70",
                     active
@@ -183,6 +187,7 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
 
               <Link
                 href="/#contact"
+                onClick={() => trackEvent("cta_click", { label: "inquire" })}
                 className={cn(
                   "font-mono text-[10px] tracking-[0.16em] uppercase px-4 py-1.5 rounded-full border transition-all duration-500",
                   active
@@ -329,7 +334,10 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
                 <li key={link.key}>
                   <Link
                     href={link.href}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      trackEvent("nav_click", { destination: link.key });
+                    }}
                     className="block font-serif italic text-[#111111] leading-tight py-5 border-b border-[rgba(17,17,17,0.08)] hover:text-[#1b3a5b] transition-colors duration-300"
                     style={{ fontSize: "clamp(36px, 9vw, 52px)" }}
                   >
@@ -342,7 +350,10 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
             <div className="mt-10">
               <Link
                 href="/#contact"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  setMenuOpen(false);
+                  trackEvent("cta_click", { label: "inquire" });
+                }}
                 className="font-mono text-[10px] tracking-[0.16em] uppercase px-6 py-4 bg-[#1b3a5b] text-white inline-flex items-center gap-3"
               >
                 Begin an inquiry&nbsp;→

@@ -8,11 +8,16 @@ export function buildMetadata({
   siteSettings,
   fallbackTitle,
   fallbackDescription,
+  path,
 }: {
   pageSeo?: Seo | null;
   siteSettings?: SiteSettings | null;
   fallbackTitle?: string;
   fallbackDescription?: string;
+  // The route this metadata is for (e.g. "/", "/work/woodinville") — used
+  // to build a default canonical URL and the dynamic OG image fallback.
+  // Relative URLs below resolve against the metadataBase set in layout.tsx.
+  path: string;
 }): Metadata {
   const siteName = siteSettings?.siteName ?? FALLBACK_SITE_NAME;
   const pageTitle = pageSeo?.title ?? fallbackTitle;
@@ -23,32 +28,33 @@ export function buildMetadata({
     fallbackDescription ??
     siteSettings?.siteDescription;
 
+  // A manually-uploaded Sanity image always wins. Otherwise fall back to a
+  // dynamically generated image instead of leaving the share preview blank.
   const ogImageUrl =
-    pageSeo?.ogImage?.asset?.url ?? siteSettings?.defaultOgImage?.asset?.url;
+    pageSeo?.ogImage?.asset?.url ??
+    siteSettings?.defaultOgImage?.asset?.url ??
+    `/og?title=${encodeURIComponent(pageTitle ?? siteName)}`;
 
-  const metadata: Metadata = { title, description };
-
-  if (ogImageUrl) {
-    metadata.openGraph = {
+  const metadata: Metadata = {
+    title,
+    description,
+    alternates: { canonical: pageSeo?.canonicalUrl ?? path },
+    openGraph: {
       title,
       description: description ?? undefined,
       images: [{ url: ogImageUrl }],
-    };
-    metadata.twitter = {
+    },
+    twitter: {
       card: "summary_large_image",
       images: [ogImageUrl],
-    };
-  }
+    },
+  };
 
   if (pageSeo?.noIndex || pageSeo?.noFollow) {
     metadata.robots = {
       index: !pageSeo.noIndex,
       follow: !pageSeo.noFollow,
     };
-  }
-
-  if (pageSeo?.canonicalUrl) {
-    metadata.alternates = { canonical: pageSeo.canonicalUrl };
   }
 
   if (pageSeo?.keywords?.length) {

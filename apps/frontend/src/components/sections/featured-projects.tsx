@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { CTA } from "@/components/primitives/cta";
@@ -61,7 +61,12 @@ function ProjectCard({
 }) {
   return (
     <article className={`group ${layout.paddingClass}`}>
-      <Link href={`/work/${project.slug}`} aria-label={`View ${project.title}`}>
+      <TrackedLink
+        href={`/work/${project.slug}`}
+        aria-label={`View ${project.title}`}
+        eventName="project_card_click"
+        eventParams={{ project: project.slug ?? undefined }}
+      >
         <div
           className="relative overflow-hidden"
           style={{ aspectRatio: layout.aspectRatio }}
@@ -106,7 +111,7 @@ function ProjectCard({
             </div>
           </div>
         </div>
-      </Link>
+      </TrackedLink>
 
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>

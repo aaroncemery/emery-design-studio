@@ -4,6 +4,7 @@ import Link from "next/link";
 import { stegaClean } from "next-sanity";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
+import { trackEvent } from "@/lib/analytics";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
 import type { Navigation, Footer, SiteSettings } from "@/lib/sanity/types";
 
@@ -151,6 +152,9 @@ export function SiteFooter({
             </p>
             <a
               href={`mailto:${contactEmail}`}
+              onClick={() =>
+                trackEvent("outbound_click", { destination: "email" })
+              }
               className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#1b3a5b] hover:opacity-70 transition-opacity duration-300 block"
             >
               {contactEmail}
@@ -170,6 +174,11 @@ export function SiteFooter({
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() =>
+                        trackEvent("outbound_click", {
+                          destination: link.key,
+                        })
+                      }
                       className="font-sans text-[#6b6b66] text-sm hover:text-[#111111] transition-colors duration-300 inline-flex items-center gap-2"
                     >
                       {link.label}

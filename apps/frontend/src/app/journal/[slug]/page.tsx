@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
+import { JsonLd } from "@/components/seo/json-ld";
 import { client } from "@/lib/sanity/client";
 import { sanityFetch } from "@/lib/sanity/live";
 import {
@@ -12,6 +13,8 @@ import {
   SITE_SETTINGS_QUERY,
 } from "@/lib/sanity/queries";
 import { buildMetadata } from "@/lib/sanity/build-metadata";
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
+import { SITE_URL } from "@/lib/site-url";
 import type { JournalPost, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
@@ -50,6 +53,7 @@ export async function generateMetadata({
     pageSeo: post.seo,
     siteSettings,
     fallbackTitle: post.title,
+    path: `/journal/${slug}`,
   });
 }
 
@@ -70,6 +74,13 @@ export default async function JournalPostPage({
 
   return (
     <main id="main">
+      <JsonLd data={articleJsonLd(post)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Journal", url: `${SITE_URL}/journal` },
+          { name: post.title, url: `${SITE_URL}/journal/${post.slug}` },
+        ])}
+      />
       {post.coverImage?.asset?.url && (
         <div
           className="relative w-full overflow-hidden"

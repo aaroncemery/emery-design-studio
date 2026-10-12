@@ -338,6 +338,7 @@ export type ServicesPage = {
   _updatedAt: string;
   _rev: string;
   header?: PageHeader;
+  seo?: Seo;
 };
 
 export type StudioPage = {
@@ -348,6 +349,7 @@ export type StudioPage = {
   _rev: string;
   header?: PageHeader;
   intro?: StudioIntroSection;
+  seo?: Seo;
 };
 
 export type HomePage = {
@@ -2007,7 +2009,7 @@ export type LEGAL_PAGE_BY_SLUG_QUERY_RESULT = {
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: STUDIO_PAGE_QUERY
-// Query: *[_type == "studioPage"][0] {    "header": header { eyebrow, heading },    "intro": intro {      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }    }  }
+// Query: *[_type == "studioPage"][0] {    "header": header { eyebrow, heading },    "intro": intro {      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }    },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
 export type STUDIO_PAGE_QUERY_RESULT = {
   header: {
     eyebrow: string | null;
@@ -2063,17 +2065,115 @@ export type STUDIO_PAGE_QUERY_RESULT = {
       } | null;
     }> | null;
   } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+    ogImage: {
+      asset: {
+        _id: string;
+        url: string;
+        metadata: {
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+          lqip: string | null;
+        } | null;
+      } | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    } | null;
+    keywords: Array<string> | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+    robots: string | null;
+    canonicalUrl: string | null;
+  } | null;
 } | null;
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: SERVICES_PAGE_QUERY
-// Query: *[_type == "servicesPage"][0] {    "header": header { eyebrow, heading }  }
+// Query: *[_type == "servicesPage"][0] {    "header": header { eyebrow, heading },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
 export type SERVICES_PAGE_QUERY_RESULT = {
   header: {
     eyebrow: string | null;
     heading: string | null;
   } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+    ogImage: {
+      asset: {
+        _id: string;
+        url: string;
+        metadata: {
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+          lqip: string | null;
+        } | null;
+      } | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    } | null;
+    keywords: Array<string> | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+    robots: string | null;
+    canonicalUrl: string | null;
+  } | null;
 } | null;
+
+// Source: ../frontend/src/lib/sanity/queries.ts
+// Variable: LLMS_TXT_QUERY
+// Query: {    "siteSettings": *[_type == "siteSettings"][0] {      siteName,      siteDescription,      contactEmail,      contactRegion    },    "services": *[_type == "service"] | order(number asc) {      title,      description    },    "projects": *[_type == "project"] | order(year desc) {      title,      location,      year,      category,      "slug": slug.current    },    "journalPosts": *[_type == "journalPost"] | order(publishedAt desc) {      title,      "slug": slug.current    }  }
+export type LLMS_TXT_QUERY_RESULT = {
+  siteSettings: {
+    siteName: string | null;
+    siteDescription: string | null;
+    contactEmail: string | null;
+    contactRegion: string | null;
+  } | null;
+  services: Array<{
+    title: string;
+    description: string | null;
+  }>;
+  projects: Array<{
+    title: string;
+    location: string | null;
+    year: number | null;
+    category:
+      | "Consultation"
+      | "Full Renovation"
+      | "Interior Architecture"
+      | "Styling & Furnishing"
+      | null;
+    slug: string;
+  }>;
+  journalPosts: Array<{
+    title: string;
+    slug: string;
+  }>;
+};
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: WORK_PAGE_QUERY

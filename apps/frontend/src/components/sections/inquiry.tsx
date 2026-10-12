@@ -7,6 +7,7 @@ import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
 import { Reveal } from "@/components/primitives/reveal";
 import { submitInquiry } from "@/app/actions/inquiry";
+import { trackEvent } from "@/lib/analytics";
 import type { InquirySection, SiteSettings } from "@/lib/sanity/types";
 
 const FALLBACK_SCOPE_OPTIONS = [
@@ -80,8 +81,10 @@ export function Inquiry({ data, siteSettings }: Props) {
       const result = await submitInquiry(formData);
       if (result.success) {
         setSuccess(true);
+        trackEvent("inquiry_submit_success");
       } else {
         setError(result.error ?? "Something went wrong. Please try again.");
+        trackEvent("inquiry_submit_failure", { error: result.error });
       }
     });
   }
@@ -126,6 +129,9 @@ export function Inquiry({ data, siteSettings }: Props) {
             <div className="space-y-1">
               <a
                 href={`mailto:${contactEmail}`}
+                onClick={() =>
+                  trackEvent("outbound_click", { destination: "email" })
+                }
                 className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#1b3a5b] hover:opacity-70 transition-opacity duration-300 block"
               >
                 {contactEmail}
@@ -196,7 +202,17 @@ export function Inquiry({ data, siteSettings }: Props) {
               {/* Scope */}
               <div>
                 <FieldLabel htmlFor="scope">Scope</FieldLabel>
-                <select id="scope" name="scope" className={inputBase}>
+                <select
+                  id="scope"
+                  name="scope"
+                  className={inputBase}
+                  onChange={(e) =>
+                    e.target.value &&
+                    trackEvent("inquiry_scope_select", {
+                      value: e.target.value,
+                    })
+                  }
+                >
                   <option value="">Select a scope…</option>
                   {scopeOptions.map((o) => (
                     <option key={o} value={o}>
@@ -219,7 +235,13 @@ export function Inquiry({ data, siteSettings }: Props) {
                     <button
                       key={opt}
                       type="button"
-                      onClick={() => setBudget(opt === budget ? "" : opt)}
+                      onClick={() => {
+                        const next = opt === budget ? "" : opt;
+                        setBudget(next);
+                        if (next) {
+                          trackEvent("inquiry_budget_select", { value: next });
+                        }
+                      }}
                       aria-pressed={budget === opt}
                       className="font-mono text-[11px] md:text-[9px] tracking-[0.14em] uppercase px-4 py-3 md:py-2 border transition-all duration-300"
                       style={{
