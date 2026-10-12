@@ -286,39 +286,51 @@ export function ServicesFolio({ services }: Props) {
         </MonoLabel>
       </nav>
 
-      {/* Copy column — bottom padding (desktop only, matching the
-          sticky photo's own `calc(100vh - (NAV_CLEARANCE+48)px)`
-          height — keep the 160 below in sync with NAV_CLEARANCE+48)
-          gives this column's containing block enough room for the
-          photo to stay pinned through the last service's full reading
-          length, instead of releasing early as "Consultation" scrolls
-          into view. Not needed on mobile, where there's no sticky
-          photo to protect. */}
-      <div className="lg:pb-[calc(100vh-160px)]">
-        {services.map((service, i) => (
-          <article
-            key={service._id}
-            id={service.slug}
-            ref={(el) => {
-              articlesRef.current[i] = el;
-            }}
-            className="py-16 lg:min-h-[70vh] lg:flex lg:flex-col lg:justify-center first:pt-0"
-            style={{ scrollMarginTop: NAV_CLEARANCE }}
-          >
-            {/* Photo — mobile/tablet only, inline per service, full-bleed */}
-            <div
-              className="lg:hidden -mx-6 md:-mx-10 relative mb-10 overflow-hidden"
-              style={{ aspectRatio: "4 / 5" }}
+      {/* Copy column */}
+      <div>
+        {services.map((service, i) => {
+          const isLast = i === services.length - 1;
+          return (
+            <article
+              key={service._id}
+              id={service.slug}
+              ref={(el) => {
+                articlesRef.current[i] = el;
+              }}
+              className={cn(
+                "py-16 lg:flex lg:flex-col lg:justify-center first:pt-0",
+                // The last article's own box is what the sticky photo's
+                // containing block ends at — giving it the same height as
+                // the photo (instead of the usual 70vh) is what keeps the
+                // photo pinned through this section's full length, rather
+                // than releasing as soon as there's less room left in the
+                // grid than the photo needs. `--sticky-h` is set below so
+                // this stays derived from NAV_CLEARANCE, not a duplicated
+                // magic number.
+                isLast ? "lg:min-h-[var(--sticky-h)]" : "lg:min-h-[70vh]",
+              )}
+              style={
+                {
+                  scrollMarginTop: NAV_CLEARANCE,
+                  "--sticky-h": `calc(100vh - ${NAV_CLEARANCE + 48}px)`,
+                } as React.CSSProperties
+              }
             >
-              <ServicePhoto
-                service={service}
-                variant={PHOTO_VARIANTS[i % PHOTO_VARIANTS.length]}
-              />
-            </div>
+              {/* Photo — mobile/tablet only, inline per service, full-bleed */}
+              <div
+                className="lg:hidden -mx-6 md:-mx-10 relative mb-10 overflow-hidden"
+                style={{ aspectRatio: "4 / 5" }}
+              >
+                <ServicePhoto
+                  service={service}
+                  variant={PHOTO_VARIANTS[i % PHOTO_VARIANTS.length]}
+                />
+              </div>
 
-            <ServiceContent service={service} totalCount={totalCount} />
-          </article>
-        ))}
+              <ServiceContent service={service} totalCount={totalCount} />
+            </article>
+          );
+        })}
       </div>
 
       {/* Photo column — desktop only. Each photo sits in its own lane,
