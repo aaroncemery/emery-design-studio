@@ -4,6 +4,7 @@ import Link from "next/link";
 import { stegaClean } from "next-sanity";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
+import { BrandMark } from "@/components/primitives/brand-mark";
 import { trackEvent } from "@/lib/analytics";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
 import type { Navigation, Footer, SiteSettings } from "@/lib/sanity/types";
@@ -76,19 +77,13 @@ export function SiteFooter({
 
   return (
     <footer className="bg-[#f6f4ef]" id="footer">
-      {/* Massive display wordmark */}
-      <div className="mx-auto w-full max-w-370 px-6 md:px-10 lg:px-14 pt-24 pb-10 overflow-hidden">
-        <p
-          className="font-serif leading-none tracking-tighter text-[#111111] select-none"
-          style={{ fontSize: "clamp(80px, 16vw, 280px)" }}
-          aria-label={`${brandLabel} Studio`}
-        >
-          <em>{brandLabel}</em>
-          <span className="text-[#1b3a5b]" aria-hidden="true">
-            &middot;
-          </span>
-          Studio
-        </p>
+      <div className="mx-auto w-full max-w-370 px-6 md:px-10 lg:px-14 pt-16 pb-10">
+        <BrandMark
+          logo={siteSettings?.logo}
+          label={brandLabel}
+          textClassName="font-naancy font-bold text-[32px] leading-none tracking-[-0.05em] uppercase text-[#111111]"
+          imageHeight={28}
+        />
       </div>
 
       <Rule strong className="mx-6 md:mx-10 lg:mx-14" />

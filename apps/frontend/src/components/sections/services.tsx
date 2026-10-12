@@ -14,7 +14,6 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
         href={`/services#${service.slug}`}
         className="group block"
         aria-label={service.title}
-        data-cursor-lens="true"
       >
         <Rule className="md:-mx-4" />
 

@@ -7,7 +7,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
-import { CustomCursor } from "@/components/cursor/custom-cursor";
 import { NavWrapper } from "@/components/nav/nav-wrapper";
 import { FooterWrapper } from "@/components/sections/footer-wrapper";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -253,7 +252,6 @@ export default async function RootLayout({
         <FooterWrapper />
         <SanityLive />
         {isDraftMode && <VisualEditing />}
-        <CustomCursor />
         <Analytics />
         <SpeedInsights />
         {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}

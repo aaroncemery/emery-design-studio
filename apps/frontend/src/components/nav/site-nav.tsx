@@ -7,15 +7,15 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { useState, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { stegaClean } from "next-sanity";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
+import { BrandMark } from "@/components/primitives/brand-mark";
 import { trackEvent } from "@/lib/analytics";
 import { resolveNavHref, resolveNavLabel } from "@/lib/sanity/utils";
-import type { Navigation, SiteSettings, SanityImage } from "@/lib/sanity/types";
+import type { Navigation, SiteSettings } from "@/lib/sanity/types";
 
 const FALLBACK_NAV_LINKS = [
   { key: "/work", label: "Work", href: "/work" },
@@ -23,33 +23,6 @@ const FALLBACK_NAV_LINKS = [
   { key: "/services", label: "Services", href: "/services" },
   { key: "/journal", label: "Journal", href: "/journal" },
 ];
-
-// Renders a real logo image once one exists in Sanity, falling back to the
-// text wordmark until then — so uploading a logo later needs no code change.
-function BrandMark({
-  logo,
-  label,
-  textClassName,
-  imageHeight,
-}: {
-  logo?: SanityImage | null;
-  label: string;
-  textClassName: string;
-  imageHeight: number;
-}) {
-  if (logo?.asset?.url) {
-    const aspectRatio = logo.asset.metadata?.dimensions?.aspectRatio ?? 1;
-    return (
-      <Image
-        src={logo.asset.url}
-        alt={label}
-        height={imageHeight}
-        width={Math.round(imageHeight * aspectRatio)}
-      />
-    );
-  }
-  return <span className={textClassName}>{label}</span>;
-}
 
 interface SiteNavProps {
   navigation?: Navigation | null;
