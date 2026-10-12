@@ -316,9 +316,10 @@ export function ServicesFolio({ services }: Props) {
 
       {/* Photo column — desktop only. Each photo sits in its own lane,
             offset a full frame-height from its neighbors; advancing the
-            active index slides the whole stack down into place rather
-            than cross-fading in place, so the swap reads as one
-            continuous, physical motion instead of a blink. */}
+            active index slides the whole stack up into place — matching
+            the direction the copy column itself moves as you scroll
+            down — rather than cross-fading in place, so the swap reads
+            as one continuous, physical motion instead of a blink. */}
       <div
         className="hidden lg:block sticky self-start overflow-hidden"
         style={{
@@ -331,7 +332,7 @@ export function ServicesFolio({ services }: Props) {
             key={service._id}
             className="absolute inset-0"
             initial={false}
-            animate={{ y: `${(active - i) * 100}%` }}
+            animate={{ y: `${(i - active) * 100}%` }}
             transition={{
               duration: prefersReduced ? 0 : 1,
               ease: [0.2, 0.7, 0.2, 1],
