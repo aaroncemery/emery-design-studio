@@ -14,9 +14,11 @@ import {
 import type { Service } from "@/lib/sanity/types";
 
 // Where the rail/photo-crossfade "active" section flips as you scroll —
-// a thin trigger band placed 35% down the viewport, read via
-// IntersectionObserver rather than a manual scroll+rAF loop.
-const FLIP_ROOT_MARGIN = "-35% 0px -64% 0px";
+// a trigger band centered ~35% down the viewport, read via
+// IntersectionObserver rather than a manual scroll+rAF loop. A few
+// percent tall (not a hairline) so ordinary scroll jitter right at a
+// section boundary doesn't toggle the active index back and forth.
+const FLIP_ROOT_MARGIN = "-33% 0px -62% 0px";
 
 // Clears the fixed floating nav pill (site-nav.tsx: `top-5` + its own
 // padding) so an anchor-jump, rail click, or sticky element never lands
@@ -84,7 +86,7 @@ function ServiceContent({
       )}
 
       <h2
-        className="font-serif text-[#111111] leading-[1.1] tracking-tight"
+        className="font-serif text-[#111111] leading-[1.2] tracking-tight"
         style={{ fontSize: "clamp(32px, 4vw, 56px)" }}
       >
         {service.title}
@@ -195,15 +197,27 @@ export function ServicesFolio({ services }: Props) {
   const totalCount = String(services.length).padStart(2, "0");
 
   useEffect(() => {
+    // More than one article can straddle the trigger band for a moment
+    // right at a shared border — tracking the full intersecting set and
+    // always resolving to its highest index (rather than reacting to
+    // whichever entry's callback happens to fire last) keeps that
+    // moment deterministic instead of flickering between the two.
+    const intersecting = new Set<number>();
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
           const index = articlesRef.current.indexOf(
             entry.target as HTMLElement,
           );
-          if (index !== -1) setActive(index);
+          if (index === -1) return;
+          if (entry.isIntersecting) {
+            intersecting.add(index);
+          } else {
+            intersecting.delete(index);
+          }
         });
+        if (intersecting.size > 0) setActive(Math.max(...intersecting));
       },
       { rootMargin: FLIP_ROOT_MARGIN, threshold: 0 },
     );
