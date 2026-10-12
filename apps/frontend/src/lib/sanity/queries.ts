@@ -313,13 +313,41 @@ export const STUDIO_PAGE_QUERY = defineQuery(`
       stats[] { label, value },
       imageLayout,
       "images": images[] { ${imageFields} }
-    }
+    },
+    "seo": seo { ${seoFields} }
   }
 `);
 
 export const SERVICES_PAGE_QUERY = defineQuery(`
   *[_type == "servicesPage"][0] {
-    "header": header { eyebrow, heading }
+    "header": header { eyebrow, heading },
+    "seo": seo { ${seoFields} }
+  }
+`);
+
+export const LLMS_TXT_QUERY = defineQuery(`
+  {
+    "siteSettings": *[_type == "siteSettings"][0] {
+      siteName,
+      siteDescription,
+      contactEmail,
+      contactRegion
+    },
+    "services": *[_type == "service"] | order(number asc) {
+      title,
+      description
+    },
+    "projects": *[_type == "project"] | order(year desc) {
+      title,
+      location,
+      year,
+      category,
+      "slug": slug.current
+    },
+    "journalPosts": *[_type == "journalPost"] | order(publishedAt desc) {
+      title,
+      "slug": slug.current
+    }
   }
 `);
 

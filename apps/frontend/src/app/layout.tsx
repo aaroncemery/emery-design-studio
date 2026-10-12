@@ -3,13 +3,21 @@ import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/cursor/custom-cursor";
 import { NavWrapper } from "@/components/nav/nav-wrapper";
 import { FooterWrapper } from "@/components/sections/footer-wrapper";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SanityLive, sanityFetch } from "@/lib/sanity/live";
 import { SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
+import { organizationJsonLd } from "@/lib/structured-data";
+import { SITE_URL } from "@/lib/site-url";
 import type { SiteSettings } from "@/lib/sanity/types";
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const canela = localFont({
   src: [
@@ -208,6 +216,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const faviconUrl = siteSettings?.favicon?.asset?.url;
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: "Emery Design Studio — Kirkland, WA",
     description:
       "Considered residential interiors from a small, slow studio on Lake Washington.",
@@ -220,7 +229,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isEnabled: isDraftMode } = await draftMode();
+  const [{ isEnabled: isDraftMode }, { data }] = await Promise.all([
+    draftMode(),
+    sanityFetch({ query: SITE_SETTINGS_QUERY, tags: ["siteSettings"] }),
+  ]);
+  const siteSettings = data as SiteSettings | null;
 
   return (
     <html
@@ -228,6 +241,7 @@ export default async function RootLayout({
       className={`${canela.variable} ${suisse.variable} ${jetbrainsMono.variable} ${naancy.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <JsonLd data={organizationJsonLd(siteSettings)} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:z-9999 focus:px-5 focus:py-2.5 focus:bg-[#1b3a5b] focus:text-white focus:text-[10px] focus:font-mono focus:tracking-widest focus:uppercase focus:rounded-full focus:outline-none"
@@ -240,6 +254,9 @@ export default async function RootLayout({
         <SanityLive />
         {isDraftMode && <VisualEditing />}
         <CustomCursor />
+        <Analytics />
+        <SpeedInsights />
+        {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
       </body>
     </html>
   );

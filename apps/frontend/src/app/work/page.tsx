@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/live";
@@ -30,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     fallbackTitle: "Work",
     fallbackDescription:
       "Selected residential interior projects by Emery Design Studio, Kirkland WA.",
+    path: "/work",
   });
 }
 
@@ -81,7 +83,12 @@ export default async function WorkPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
             {projects.map((project) => (
               <article key={project._id} className="group">
-                <Link href={`/work/${project.slug}`} aria-label={project.title}>
+                <TrackedLink
+                  href={`/work/${project.slug}`}
+                  aria-label={project.title}
+                  eventName="project_card_click"
+                  eventParams={{ project: project.slug ?? undefined }}
+                >
                   <div
                     className="relative overflow-hidden mb-5"
                     style={{ aspectRatio: 0.75 }}
@@ -102,7 +109,7 @@ export default async function WorkPage() {
                       <div className="w-full h-full bg-[#e4e0d7]" />
                     )}
                   </div>
-                </Link>
+                </TrackedLink>
                 <h2 className="font-serif italic text-[#111111] text-[22px] leading-tight mb-1.5">
                   <Link
                     href={`/work/${project.slug}`}

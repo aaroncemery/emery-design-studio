@@ -13,6 +13,7 @@ import type {
   SERVICES_PAGE_QUERY_RESULT,
   WORK_PAGE_QUERY_RESULT,
   JOURNAL_PAGE_QUERY_RESULT,
+  LLMS_TXT_QUERY_RESULT,
 } from "./sanity.types";
 
 // Everything below is derived from the TypeGen output in ./sanity.types.ts
@@ -66,3 +67,5 @@ export type WorkPage = NonNullable<WORK_PAGE_QUERY_RESULT>;
 export type JournalPage = NonNullable<JOURNAL_PAGE_QUERY_RESULT>;
 export type PageHeader = NonNullable<StudioPage["header"]>;
 export type StudioPageIntro = NonNullable<StudioPage["intro"]>;
+
+export type LlmsTxtData = LLMS_TXT_QUERY_RESULT;

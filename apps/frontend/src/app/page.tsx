@@ -41,6 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
     siteSettings,
     fallbackDescription:
       "Considered residential interiors from a small, slow studio on Lake Washington.",
+    path: "/",
   });
 }
 

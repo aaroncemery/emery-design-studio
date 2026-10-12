@@ -3,17 +3,33 @@ import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { sanityFetch } from "@/lib/sanity/live";
-import { STUDIO_PAGE_QUERY } from "@/lib/sanity/queries";
+import { STUDIO_PAGE_QUERY, SITE_SETTINGS_QUERY } from "@/lib/sanity/queries";
+import { buildMetadata } from "@/lib/sanity/build-metadata";
 import { StudioIntroContent } from "@/components/sections/studio-intro-content";
-import type { StudioPage as StudioPageData } from "@/lib/sanity/types";
+import type {
+  StudioPage as StudioPageData,
+  SiteSettings,
+} from "@/lib/sanity/types";
 
 export const revalidate = false;
 
-export const metadata: Metadata = {
-  title: "Studio — Emery Design Studio",
-  description:
-    "About Emery Design Studio — a small interior design atelier in Kirkland, WA.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [{ data: pageData }, { data: siteSettingsData }] = await Promise.all([
+    sanityFetch({ query: STUDIO_PAGE_QUERY, tags: ["studioPage"] }),
+    sanityFetch({ query: SITE_SETTINGS_QUERY, tags: ["siteSettings"] }),
+  ]);
+  const page = pageData as StudioPageData | null;
+  const siteSettings = siteSettingsData as SiteSettings | null;
+
+  return buildMetadata({
+    pageSeo: page?.seo,
+    siteSettings,
+    fallbackTitle: "Studio",
+    fallbackDescription:
+      "About Emery Design Studio — a small interior design atelier in Kirkland, WA.",
+    path: "/studio",
+  });
+}
 
 export default async function StudioPage() {
   const { data } = await sanityFetch({

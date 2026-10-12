@@ -49,6 +49,7 @@ export async function generateMetadata({
     pageSeo: page.seo,
     siteSettings,
     fallbackTitle: page.title,
+    path: `/legal/${slug}`,
   });
 }
 
