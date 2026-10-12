@@ -109,7 +109,10 @@ export default async function ServicesPage() {
                     <MonoLabel className="text-[#1b3a5b]">
                       {service.number}
                     </MonoLabel>
-                    <MonoLabel className="text-[#111111]">
+                    <MonoLabel
+                      className="text-[#111111]"
+                      style={{ lineHeight: 1.4 }}
+                    >
                       {service.title}
                     </MonoLabel>
                     <span

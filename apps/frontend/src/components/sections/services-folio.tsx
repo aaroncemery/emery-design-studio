@@ -86,7 +86,7 @@ function ServiceContent({
       )}
 
       <h2
-        className="font-serif text-[#111111] leading-[1.2] tracking-tight"
+        className="font-serif text-[#111111] leading-[1.1] tracking-tight"
         style={{ fontSize: "clamp(32px, 4vw, 56px)" }}
       >
         {service.title}
@@ -264,6 +264,7 @@ export function ServicesFolio({ services }: Props) {
                         ? "text-[#f6f4ef]"
                         : "text-[#111111] group-hover:text-[#6b6b66] transition-colors duration-300"
                     }
+                    style={{ lineHeight: 1.4 }}
                   >
                     {service.title}
                   </MonoLabel>
