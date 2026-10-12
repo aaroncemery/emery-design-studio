@@ -81,57 +81,48 @@ export default async function ServicesPage() {
         ))}
 
       <Section className="bg-[#f6f4ef]" paddingY="xl">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-x-16 gap-y-10 items-end mb-20 lg:mb-28">
-          <div>
-            <MonoLabel className="text-[#1b3a5b] block mb-6">
-              {header?.eyebrow ?? "Services — How We Work"}
-            </MonoLabel>
-            <h1
-              className="font-serif text-[#111111] leading-[0.92] tracking-tight max-w-2xl"
-              style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
-            >
-              {headingLine1}
-              {headingLine2 && (
-                <>
-                  <br />
-                  <em>{headingLine2}</em>
-                </>
-              )}
-            </h1>
-          </div>
-
-          <div>
-            {page?.intro && (
-              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-6 max-w-sm">
-                {page.intro}
-              </p>
+        <div className="max-w-3xl mb-20 lg:mb-28">
+          <MonoLabel className="text-[#1b3a5b] block mb-6">
+            {header?.eyebrow ?? "Services — How We Work"}
+          </MonoLabel>
+          <h1
+            className="font-serif text-[#111111] leading-[0.92] tracking-tight max-w-2xl"
+            style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
+          >
+            {headingLine1}
+            {headingLine2 && (
+              <>
+                <br />
+                <em>{headingLine2}</em>
+              </>
             )}
+          </h1>
 
-            {hasServices && (
-              <ol className="max-w-[440px]">
-                {services.map((service) => (
-                  <li key={service._id}>
-                    <Link
-                      href={`#${service.slug}`}
-                      className="grid grid-cols-[40px_1fr_auto] items-baseline gap-x-4 py-2.5 border-t border-[rgba(17,17,17,0.12)] group"
+          {hasServices && (
+            <ol className="lg:hidden max-w-[440px] mt-9">
+              {services.map((service) => (
+                <li key={service._id}>
+                  <Link
+                    href={`#${service.slug}`}
+                    className="grid grid-cols-[32px_1fr_auto] items-center gap-x-3 py-3 min-h-12 border-t border-[rgba(17,17,17,0.12)] group"
+                  >
+                    <MonoLabel className="text-[#1b3a5b]">
+                      {service.number}
+                    </MonoLabel>
+                    <MonoLabel className="text-[#111111]">
+                      {service.title}
+                    </MonoLabel>
+                    <span
+                      aria-hidden="true"
+                      className="text-[#9a968d] text-sm transition-transform duration-300 group-hover:translate-y-0.5"
                     >
-                      <MonoLabel className="text-[#9a968d] group-hover:text-[#1b3a5b] transition-colors duration-300">
-                        {service.number}
-                      </MonoLabel>
-                      <span className="font-serif text-[#111111] text-[15px]">
-                        {service.title}
-                      </span>
-                      {service.duration && (
-                        <MonoLabel className="text-[#9a968d] text-[9px] text-right">
-                          {service.duration}
-                        </MonoLabel>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </div>
+                      ↓
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
 
         {hasServices ? (

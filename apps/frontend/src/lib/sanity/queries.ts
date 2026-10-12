@@ -316,7 +316,6 @@ export const STUDIO_PAGE_QUERY = defineQuery(`
 export const SERVICES_PAGE_QUERY = defineQuery(`
   *[_type == "servicesPage"][0] {
     "header": header { eyebrow, heading },
-    intro,
     "seo": seo { ${seoFields} }
   }
 `);

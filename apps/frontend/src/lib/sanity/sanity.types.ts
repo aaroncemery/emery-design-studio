@@ -351,7 +351,6 @@ export type ServicesPage = {
   _updatedAt: string;
   _rev: string;
   header?: PageHeader;
-  intro?: string;
   seo?: Seo;
 };
 
@@ -2173,13 +2172,12 @@ export type STUDIO_PAGE_QUERY_RESULT = {
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: SERVICES_PAGE_QUERY
-// Query: *[_type == "servicesPage"][0] {    "header": header { eyebrow, heading },    intro,    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
+// Query: *[_type == "servicesPage"][0] {    "header": header { eyebrow, heading },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
 export type SERVICES_PAGE_QUERY_RESULT = {
   header: {
     eyebrow: string | null;
     heading: string | null;
   } | null;
-  intro: string | null;
   seo: {
     title: string | null;
     description: string | null;
