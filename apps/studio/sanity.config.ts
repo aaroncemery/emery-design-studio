@@ -116,11 +116,14 @@ const locations = {
     }),
   }),
   service: defineLocations({
-    select: { title: "title" },
+    select: { title: "title", slug: "slug.current" },
     resolve: (doc) => ({
       locations: [
-        { title: doc?.title || "Untitled", href: "/" },
-        { title: "Services", href: "/services" },
+        {
+          title: doc?.title || "Untitled",
+          href: doc?.slug ? `/services#${doc.slug}` : "/services",
+        },
+        { title: "Home", href: "/" },
       ],
     }),
   }),

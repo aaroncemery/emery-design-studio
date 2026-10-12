@@ -11,7 +11,7 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
   return (
     <Reveal delay={index * 0.06}>
       <Link
-        href="/services"
+        href={`/services#${service.slug}`}
         className="group block"
         aria-label={service.title}
         data-cursor-lens="true"
@@ -67,12 +67,12 @@ function ServiceRow({ service, index }: { service: Service; index: number }) {
             </p>
           )}
 
-          {/* Tags */}
-          {service.tags && service.tags.length > 0 && (
+          {/* What's included (teaser) */}
+          {service.whatsIncluded && service.whatsIncluded.length > 0 && (
             <div className="hidden lg:flex flex-col gap-1.5">
-              {service.tags.map((tag) => (
-                <MonoLabel key={tag} className="text-[#9a968d] text-[9px]">
-                  —&nbsp;{tag}
+              {service.whatsIncluded.slice(0, 4).map((item) => (
+                <MonoLabel key={item} className="text-[#9a968d] text-[9px]">
+                  —&nbsp;{item}
                 </MonoLabel>
               ))}
             </div>

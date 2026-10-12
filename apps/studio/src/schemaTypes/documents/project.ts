@@ -1,5 +1,5 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
-import { GROUP, GROUPS } from "../../utils/constants";
+import { GROUP, GROUPS, PROJECT_CATEGORIES } from "../../utils/constants";
 
 export const project = defineType({
   name: "project",
@@ -63,14 +63,7 @@ export const project = defineType({
     defineField({
       name: "category",
       type: "string",
-      options: {
-        list: [
-          { title: "Full Renovation", value: "Full Renovation" },
-          { title: "Interior Architecture", value: "Interior Architecture" },
-          { title: "Styling & Furnishing", value: "Styling & Furnishing" },
-          { title: "Consultation", value: "Consultation" },
-        ],
-      },
+      options: { list: PROJECT_CATEGORIES },
       group: GROUP.DETAILS,
     }),
     defineField({

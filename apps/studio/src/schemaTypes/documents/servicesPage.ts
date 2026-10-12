@@ -14,6 +14,14 @@ export const servicesPage = defineType({
       group: GROUP.MAIN_CONTENT,
     }),
     defineField({
+      name: "intro",
+      title: "Intro",
+      type: "text",
+      rows: 3,
+      description: "Short paragraph shown beside the H1 in the header.",
+      group: GROUP.MAIN_CONTENT,
+    }),
+    defineField({
       name: "seo",
       title: "SEO",
       type: "seo",

@@ -50,6 +50,29 @@ const heroCornerFields = `
   "href": coalesce(href, "/work/" + project->slug.current)
 `;
 
+const collectionItemFields = `
+  _type,
+  _id,
+  title,
+  "slug": slug.current,
+  location,
+  year,
+  season,
+  category,
+  excerpt,
+  featured,
+  "coverImage": coverImage { ${imageFields} },
+  number,
+  description,
+  whatsIncluded,
+  quote,
+  authorName,
+  authorContext,
+  publicationName,
+  url,
+  "logo": logo { ${imageFields} }
+`;
+
 export const HOME_PAGE_QUERY = defineQuery(`
   *[_type == "homePage"][0] {
     title,
@@ -70,28 +93,7 @@ export const HOME_PAGE_QUERY = defineQuery(`
       "images": images[] { ${imageFields} },
       subheading,
       displayAs,
-      "items": items[]-> {
-        _type,
-        _id,
-        title,
-        "slug": slug.current,
-        location,
-        year,
-        season,
-        category,
-        excerpt,
-        featured,
-        "coverImage": coverImage { ${imageFields} },
-        number,
-        description,
-        tags,
-        quote,
-        authorName,
-        authorContext,
-        publicationName,
-        url,
-        "logo": logo { ${imageFields} }
-      },
+      "items": items[]-> { ${collectionItemFields} },
       scopeOptions,
       budgetOptions
     }
@@ -113,7 +115,7 @@ export const FEATURED_PROJECTS_QUERY = defineQuery(`
 `);
 
 export const ALL_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project"] | order(year desc) {
+  *[_type == "project" && (!defined($category) || category == $category)] | order(year desc) {
     _id,
     title,
     "slug": slug.current,
@@ -151,8 +153,22 @@ export const ALL_SERVICES_QUERY = defineQuery(`
     title,
     "slug": slug.current,
     number,
+    subtitle,
     description,
-    tags
+    whatsIncluded,
+    duration,
+    engagement,
+    relatedWorkCategory,
+    "image": image {
+      "asset": asset { ${imageFields} },
+      alt,
+      caption
+    },
+    "recentProjects": recentProjects[]-> {
+      _id,
+      title,
+      "slug": slug.current
+    }
   }
 `);
 
@@ -219,28 +235,7 @@ export const PAGE_BY_SLUG_QUERY = defineQuery(`
       "images": images[] { ${imageFields} },
       subheading,
       displayAs,
-      "items": items[]-> {
-        _type,
-        _id,
-        title,
-        "slug": slug.current,
-        location,
-        year,
-        season,
-        category,
-        excerpt,
-        featured,
-        "coverImage": coverImage { ${imageFields} },
-        number,
-        description,
-        tags,
-        quote,
-        authorName,
-        authorContext,
-        publicationName,
-        url,
-        "logo": logo { ${imageFields} }
-      },
+      "items": items[]-> { ${collectionItemFields} },
       scopeOptions,
       budgetOptions
     },
@@ -321,6 +316,7 @@ export const STUDIO_PAGE_QUERY = defineQuery(`
 export const SERVICES_PAGE_QUERY = defineQuery(`
   *[_type == "servicesPage"][0] {
     "header": header { eyebrow, heading },
+    intro,
     "seo": seo { ${seoFields} }
   }
 `);
@@ -335,6 +331,7 @@ export const LLMS_TXT_QUERY = defineQuery(`
     },
     "services": *[_type == "service"] | order(number asc) {
       title,
+      subtitle,
       description
     },
     "projects": *[_type == "project"] | order(year desc) {

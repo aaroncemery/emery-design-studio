@@ -17,7 +17,20 @@ import type {
   WorkPage as WorkPageData,
 } from "@/lib/sanity/types";
 
-export const revalidate = false;
+// `export const revalidate = false` isn't set here (intentionally, not an
+// oversight) — reading `searchParams` below already forces this page into
+// per-request dynamic rendering, which makes a static `revalidate` value a
+// no-op. See apps/frontend/CLAUDE.md for the sanityFetch/live-revalidation
+// pattern this otherwise follows.
+
+const WORK_CATEGORY_TABS = [
+  { label: "Interior Architecture", value: "Interior Architecture" },
+  { label: "Styling & Furnishing", value: "Styling & Furnishing" },
+  { label: "Consultation", value: "Consultation" },
+  // "Full Renovation" is intentionally omitted — it's a dormant service
+  // category for now (see apps/studio/src/utils/constants.ts PROJECT_CATEGORIES
+  // for the full schema enum, which this list mirrors a subset of).
+];
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await sanityFetch({
@@ -35,9 +48,23 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function WorkPage() {
+interface WorkPageProps {
+  searchParams: Promise<{ category?: string }>;
+}
+
+export default async function WorkPage({ searchParams }: WorkPageProps) {
+  const { category } = await searchParams;
+  const activeCategory =
+    category && WORK_CATEGORY_TABS.some((tab) => tab.value === category)
+      ? category
+      : undefined;
+
   const [{ data: projectsData }, { data: pageData }] = await Promise.all([
-    sanityFetch({ query: ALL_PROJECTS_QUERY, tags: ["project"] }),
+    sanityFetch({
+      query: ALL_PROJECTS_QUERY,
+      params: { category: activeCategory ?? null },
+      tags: ["project"],
+    }),
     sanityFetch({ query: WORK_PAGE_QUERY, tags: ["workPage"] }),
   ]);
   const projects = projectsData as Project[];
@@ -67,7 +94,7 @@ export default async function WorkPage() {
           {header?.eyebrow ?? "Work — Project Archive"}
         </MonoLabel>
         <h1
-          className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-16 max-w-2xl"
+          className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-10 max-w-2xl"
           style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
         >
           {headingLine1}
@@ -78,6 +105,37 @@ export default async function WorkPage() {
             </>
           )}
         </h1>
+
+        <nav
+          aria-label="Filter by category"
+          className="flex flex-wrap gap-3 mb-16"
+        >
+          <Link
+            href="/work"
+            className={`font-mono text-[10px] tracking-[0.18em] uppercase px-4 py-2 border transition-colors duration-300 ${
+              !activeCategory
+                ? "border-[#1b3a5b] bg-[#1b3a5b] text-white"
+                : "border-[rgba(17,17,17,0.28)] text-[#6b6b66] hover:border-[rgba(17,17,17,0.5)] hover:text-[#111111]"
+            }`}
+            aria-current={!activeCategory ? "page" : undefined}
+          >
+            All
+          </Link>
+          {WORK_CATEGORY_TABS.map((tab) => (
+            <Link
+              key={tab.value}
+              href={`/work?category=${encodeURIComponent(tab.value)}`}
+              className={`font-mono text-[10px] tracking-[0.18em] uppercase px-4 py-2 border transition-colors duration-300 ${
+                activeCategory === tab.value
+                  ? "border-[#1b3a5b] bg-[#1b3a5b] text-white"
+                  : "border-[rgba(17,17,17,0.28)] text-[#6b6b66] hover:border-[rgba(17,17,17,0.5)] hover:text-[#111111]"
+              }`}
+              aria-current={activeCategory === tab.value ? "page" : undefined}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </nav>
 
         {projects && projects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
@@ -130,6 +188,25 @@ export default async function WorkPage() {
                 )}
               </article>
             ))}
+          </div>
+        ) : activeCategory ? (
+          <div>
+            <p className="font-sans text-[#6b6b66] text-sm leading-relaxed max-w-sm mb-10">
+              No {activeCategory} projects yet — check back soon, or{" "}
+              <Link
+                href="/work"
+                className="text-[#1b3a5b] hover:opacity-70 transition-opacity"
+              >
+                see all work
+              </Link>
+              .
+            </p>
+            <Link
+              href="/work"
+              className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#1b3a5b] hover:opacity-70 transition-opacity duration-300 inline-flex items-center gap-2"
+            >
+              ← Clear filter
+            </Link>
           </div>
         ) : (
           <div>
