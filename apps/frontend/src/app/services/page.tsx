@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { Rule } from "@/components/primitives/rule";
+import { CTA } from "@/components/primitives/cta";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ServicesFolio } from "@/components/sections/services-folio";
 import { sanityFetch } from "@/lib/sanity/live";
 import {
   ALL_SERVICES_QUERY,
@@ -32,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
     siteSettings,
     fallbackTitle: "Services",
     fallbackDescription:
-      "Interior design services offered by Emery Design Studio — full renovation, interior architecture, styling, and consultation.",
+      "Interior design services offered by Emery Design Studio — interior architecture, styling & furnishing, and consultation.",
     path: "/services",
   });
 }
@@ -66,79 +68,87 @@ export default async function ServicesPage() {
     }
   }
 
+  const hasServices = services && services.length > 0;
+
   return (
     <main id="main">
-      {services?.map((service) => (
-        <JsonLd
-          key={service._id}
-          data={serviceJsonLd(service, siteSettings?.siteName)}
-        />
-      ))}
-      <Section className="bg-[#f6f4ef]" paddingY="xl">
-        <MonoLabel className="text-[#1b3a5b] block mb-6">
-          {header?.eyebrow ?? "Services — How We Work"}
-        </MonoLabel>
-        <h1
-          className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-16 max-w-2xl"
-          style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
-        >
-          {headingLine1}
-          {headingLine2 && (
-            <>
-              <br />
-              <em>{headingLine2}</em>
-            </>
-          )}
-        </h1>
+      {hasServices &&
+        services.map((service) => (
+          <JsonLd
+            key={service._id}
+            data={serviceJsonLd(service, siteSettings?.siteName)}
+          />
+        ))}
 
-        {services && services.length > 0 ? (
-          <div>
-            {services.map((service, i) => (
-              <div key={service._id}>
-                <Rule />
-                <div className="grid grid-cols-1 md:grid-cols-[80px_1fr_2fr_1fr] gap-x-8 py-10 items-start">
-                  {service.number && (
-                    <span
-                      className="font-serif italic text-[#9a968d]"
-                      style={{ fontSize: "clamp(32px, 3vw, 48px)" }}
-                      aria-hidden="true"
-                    >
-                      /{service.number}
-                    </span>
-                  )}
-                  <h2
-                    className="font-serif text-[#111111] leading-tight"
-                    style={{ fontSize: "clamp(22px, 2.4vw, 34px)" }}
+      <Section className="bg-[#f6f4ef]" paddingY="xl">
+        <div className="max-w-3xl mb-20 lg:mb-28">
+          <MonoLabel className="text-[#1b3a5b] block mb-6">
+            {header?.eyebrow ?? "Services — How We Work"}
+          </MonoLabel>
+          <h1
+            className="font-serif text-[#111111] leading-[0.92] tracking-tight max-w-2xl"
+            style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
+          >
+            {headingLine1}
+            {headingLine2 && (
+              <>
+                <br />
+                <em>{headingLine2}</em>
+              </>
+            )}
+          </h1>
+
+          {hasServices && (
+            <ol className="lg:hidden max-w-[440px] mt-9">
+              {services.map((service) => (
+                <li key={service._id}>
+                  <Link
+                    href={`#${service.slug}`}
+                    className="grid grid-cols-[32px_1fr_auto] items-center gap-x-3 py-3 min-h-12 border-t border-[rgba(17,17,17,0.12)] group"
                   >
-                    {service.title}
-                  </h2>
-                  {service.description && (
-                    <p className="font-sans text-[#6b6b66] text-[14px] leading-relaxed mt-2 md:mt-0">
-                      {service.description}
-                    </p>
-                  )}
-                  {service.tags && service.tags.length > 0 && (
-                    <div className="flex flex-col gap-1.5 mt-2 md:mt-0">
-                      {service.tags.map((tag) => (
-                        <MonoLabel
-                          key={tag}
-                          className="text-[#9a968d] text-[9px]"
-                        >
-                          —&nbsp;{tag}
-                        </MonoLabel>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {i === services.length - 1 && <Rule />}
-              </div>
-            ))}
-          </div>
+                    <MonoLabel className="text-[#1b3a5b]">
+                      {service.number}
+                    </MonoLabel>
+                    <MonoLabel
+                      className="text-[#111111]"
+                      style={{ lineHeight: 1.4 }}
+                    >
+                      {service.title}
+                    </MonoLabel>
+                    <span
+                      aria-hidden="true"
+                      className="text-[#9a968d] text-sm transition-transform duration-300 group-hover:translate-y-0.5"
+                    >
+                      ↓
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+
+        {hasServices ? (
+          <ServicesFolio services={services} />
         ) : (
           <p className="font-sans text-[#6b6b66] text-sm leading-relaxed max-w-sm">
             Full service details coming soon.
           </p>
         )}
+      </Section>
+
+      <Section className="bg-[#ece8df]" paddingY="lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <h2
+            className="font-serif text-[#111111] leading-[0.95] tracking-tight max-w-xl"
+            style={{ fontSize: "clamp(28px, 3.4vw, 48px)" }}
+          >
+            Not sure which fits? <em>Start a conversation.</em>
+          </h2>
+          <CTA href="/#contact" variant="accent">
+            Begin an inquiry
+          </CTA>
+        </div>
       </Section>
     </main>
   );

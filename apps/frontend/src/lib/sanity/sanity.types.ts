@@ -113,6 +113,19 @@ export type SanityImageHotspot = {
   width: number;
 };
 
+export type CaptionedImage = {
+  _type: "captionedImage";
+  asset: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  alt: string;
+  caption?: string;
+};
+
 export type PageHeader = {
   _type: "pageHeader";
   eyebrow?: string;
@@ -503,8 +516,22 @@ export type Service = {
   title: string;
   slug: Slug;
   number?: string;
+  subtitle?: string;
   description?: string;
-  tags?: Array<string>;
+  whatsIncluded?: Array<string>;
+  duration?: string;
+  engagement?: string;
+  relatedWorkCategory?:
+    | "Full Renovation"
+    | "Interior Architecture"
+    | "Styling & Furnishing"
+    | "Consultation";
+  image?: CaptionedImage;
+  recentProjects?: Array<
+    {
+      _key: string;
+    } & ProjectReference
+  >;
 };
 
 export type Project = {
@@ -676,6 +703,7 @@ export type AllSanitySchemaTypes =
   | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | CaptionedImage
   | PageHeader
   | ProjectReference
   | HeroCorner
@@ -716,7 +744,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_type == "homePage"][0] {    title,    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl },    sections[] {      _type,      _key,      headline,      subheadline,      tagline,      "backgroundImage": backgroundImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      "heroFeatured": heroFeatured {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      "heroStatus": heroStatus {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      subheading,      displayAs,      "items": items[]-> {        _type,        _id,        title,        "slug": slug.current,        location,        year,        season,        category,        excerpt,        featured,        "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },        number,        description,        tags,        quote,        authorName,        authorContext,        publicationName,        url,        "logo": logo {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }      },      scopeOptions,      budgetOptions    }  }
+// Query: *[_type == "homePage"][0] {    title,    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl },    sections[] {      _type,      _key,      headline,      subheadline,      tagline,      "backgroundImage": backgroundImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      "heroFeatured": heroFeatured {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      "heroStatus": heroStatus {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      subheading,      displayAs,      "items": items[]-> {   _type,  _id,  title,  "slug": slug.current,  location,  year,  season,  category,  excerpt,  featured,  "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  number,  description,  whatsIncluded,  quote,  authorName,  authorContext,  publicationName,  url,  "logo": logo {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } } },      scopeOptions,      budgetOptions    }  }
 export type HOME_PAGE_QUERY_RESULT = {
   title: string | null;
   seo: {
@@ -788,7 +816,7 @@ export type HOME_PAGE_QUERY_RESULT = {
               coverImage: null;
               number: null;
               description: null;
-              tags: null;
+              whatsIncluded: null;
               quote: null;
               authorName: null;
               authorContext: null;
@@ -862,7 +890,7 @@ export type HOME_PAGE_QUERY_RESULT = {
               } | null;
               number: null;
               description: null;
-              tags: null;
+              whatsIncluded: null;
               quote: null;
               authorName: null;
               authorContext: null;
@@ -884,7 +912,7 @@ export type HOME_PAGE_QUERY_RESULT = {
               coverImage: null;
               number: string | null;
               description: string | null;
-              tags: Array<string> | null;
+              whatsIncluded: Array<string> | null;
               quote: null;
               authorName: null;
               authorContext: null;
@@ -906,7 +934,7 @@ export type HOME_PAGE_QUERY_RESULT = {
               coverImage: null;
               number: null;
               description: null;
-              tags: null;
+              whatsIncluded: null;
               quote: string;
               authorName: string | null;
               authorContext: string | null;
@@ -1103,7 +1131,7 @@ export type FEATURED_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: ALL_PROJECTS_QUERY
-// Query: *[_type == "project"] | order(year desc) {    _id,    title,    "slug": slug.current,    location,    year,    season,    category,    excerpt,    featured,    "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }  }
+// Query: *[_type == "project" && (!defined($category) || category == $category)] | order(year desc) {    _id,    title,    "slug": slug.current,    location,    year,    season,    category,    excerpt,    featured,    "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }  }
 export type ALL_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -1288,14 +1316,56 @@ export type PROJECT_BY_SLUG_QUERY_RESULT = {
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: ALL_SERVICES_QUERY
-// Query: *[_type == "service"] | order(number asc) {    _id,    title,    "slug": slug.current,    number,    description,    tags  }
+// Query: *[_type == "service"] | order(number asc) {    _id,    title,    "slug": slug.current,    number,    subtitle,    description,    whatsIncluded,    duration,    engagement,    relatedWorkCategory,    "image": image {      "asset": asset {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      alt,      caption    },    "recentProjects": recentProjects[]-> {      _id,      title,      "slug": slug.current    }  }
 export type ALL_SERVICES_QUERY_RESULT = Array<{
   _id: string;
   title: string;
   slug: string;
   number: string | null;
+  subtitle: string | null;
   description: string | null;
-  tags: Array<string> | null;
+  whatsIncluded: Array<string> | null;
+  duration: string | null;
+  engagement: string | null;
+  relatedWorkCategory:
+    | "Consultation"
+    | "Full Renovation"
+    | "Interior Architecture"
+    | "Styling & Furnishing"
+    | null;
+  image: {
+    asset: {
+      asset: {
+        _id: string;
+        url: string;
+        metadata: {
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+          lqip: string | null;
+        } | null;
+      } | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    };
+    alt: string;
+    caption: string | null;
+  } | null;
+  recentProjects: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+  }> | null;
 }>;
 
 // Source: ../frontend/src/lib/sanity/queries.ts
@@ -1486,7 +1556,7 @@ export type JOURNAL_POST_BY_SLUG_QUERY_RESULT = {
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: PAGE_BY_SLUG_QUERY
-// Query: *[_type == "page" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    sections[] {      _type,      _key,      headline,      subheadline,      tagline,      "backgroundImage": backgroundImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      "heroFeatured": heroFeatured {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      "heroStatus": heroStatus {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      subheading,      displayAs,      "items": items[]-> {        _type,        _id,        title,        "slug": slug.current,        location,        year,        season,        category,        excerpt,        featured,        "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },        number,        description,        tags,        quote,        authorName,        authorContext,        publicationName,        url,        "logo": logo {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }      },      scopeOptions,      budgetOptions    },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
+// Query: *[_type == "page" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    sections[] {      _type,      _key,      headline,      subheadline,      tagline,      "backgroundImage": backgroundImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      "heroFeatured": heroFeatured {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      "heroStatus": heroStatus {   eyebrow,  "headline": coalesce(headline, project->title),  "meta": coalesce(meta, project->location + " · " + string(project->year) + " · " + project->category),  "href": coalesce(href, "/work/" + project->slug.current) },      heading,      body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },      stats[] { label, value },      imageLayout,      "images": images[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },      subheading,      displayAs,      "items": items[]-> {   _type,  _id,  title,  "slug": slug.current,  location,  year,  season,  category,  excerpt,  featured,  "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  number,  description,  whatsIncluded,  quote,  authorName,  authorContext,  publicationName,  url,  "logo": logo {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } } },      scopeOptions,      budgetOptions    },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
 export type PAGE_BY_SLUG_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -1527,7 +1597,7 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
               coverImage: null;
               number: null;
               description: null;
-              tags: null;
+              whatsIncluded: null;
               quote: null;
               authorName: null;
               authorContext: null;
@@ -1601,7 +1671,7 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
               } | null;
               number: null;
               description: null;
-              tags: null;
+              whatsIncluded: null;
               quote: null;
               authorName: null;
               authorContext: null;
@@ -1623,7 +1693,7 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
               coverImage: null;
               number: string | null;
               description: string | null;
-              tags: Array<string> | null;
+              whatsIncluded: Array<string> | null;
               quote: null;
               authorName: null;
               authorContext: null;
@@ -1645,7 +1715,7 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
               coverImage: null;
               number: null;
               description: null;
-              tags: null;
+              whatsIncluded: null;
               quote: string;
               authorName: string | null;
               authorContext: string | null;
@@ -2145,7 +2215,7 @@ export type SERVICES_PAGE_QUERY_RESULT = {
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: LLMS_TXT_QUERY
-// Query: {    "siteSettings": *[_type == "siteSettings"][0] {      siteName,      siteDescription,      contactEmail,      contactRegion    },    "services": *[_type == "service"] | order(number asc) {      title,      description    },    "projects": *[_type == "project"] | order(year desc) {      title,      location,      year,      category,      "slug": slug.current    },    "journalPosts": *[_type == "journalPost"] | order(publishedAt desc) {      title,      "slug": slug.current    }  }
+// Query: {    "siteSettings": *[_type == "siteSettings"][0] {      siteName,      siteDescription,      contactEmail,      contactRegion    },    "services": *[_type == "service"] | order(number asc) {      title,      subtitle,      description    },    "projects": *[_type == "project"] | order(year desc) {      title,      location,      year,      category,      "slug": slug.current    },    "journalPosts": *[_type == "journalPost"] | order(publishedAt desc) {      title,      "slug": slug.current    }  }
 export type LLMS_TXT_QUERY_RESULT = {
   siteSettings: {
     siteName: string | null;
@@ -2155,6 +2225,7 @@ export type LLMS_TXT_QUERY_RESULT = {
   } | null;
   services: Array<{
     title: string;
+    subtitle: string | null;
     description: string | null;
   }>;
   projects: Array<{

@@ -40,7 +40,6 @@ export function SiteFooter({
   footer,
   siteSettings,
 }: SiteFooterProps) {
-  const brandLabel = stegaClean(siteSettings?.headerBrandLabel) || "Emery";
   const contactEmail =
     stegaClean(siteSettings?.contactEmail) || "hello@emerydesign.studio";
   const contactRegion =
@@ -76,22 +75,7 @@ export function SiteFooter({
 
   return (
     <footer className="bg-[#f6f4ef]" id="footer">
-      {/* Massive display wordmark */}
-      <div className="mx-auto w-full max-w-370 px-6 md:px-10 lg:px-14 pt-24 pb-10 overflow-hidden">
-        <p
-          className="font-serif leading-none tracking-tighter text-[#111111] select-none"
-          style={{ fontSize: "clamp(80px, 16vw, 280px)" }}
-          aria-label={`${brandLabel} Studio`}
-        >
-          <em>{brandLabel}</em>
-          <span className="text-[#1b3a5b]" aria-hidden="true">
-            &middot;
-          </span>
-          Studio
-        </p>
-      </div>
-
-      <Rule strong className="mx-6 md:mx-10 lg:mx-14" />
+      <Rule strong className="mx-6 md:mx-10 lg:mx-14 mt-16" />
 
       {/* 4-column grid */}
       <div className="mx-auto w-full max-w-[1480px] px-6 md:px-10 lg:px-14 py-16">

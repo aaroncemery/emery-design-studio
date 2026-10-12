@@ -25,7 +25,10 @@ export function serviceJsonLd(service: Service, providerName?: string | null) {
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.title,
-    description: service.description ?? undefined,
+    description:
+      [service.subtitle, service.description].filter(Boolean).join(" ") ||
+      undefined,
+    url: service.slug ? `${SITE_URL}/services#${service.slug}` : undefined,
     provider: {
       "@type": "LocalBusiness",
       name: providerName || "Emery Design Studio",

@@ -32,6 +32,7 @@ import { navItem } from "./objects/navItem";
 import { socialLink } from "./objects/socialLink";
 import { heroCorner } from "./objects/heroCorner";
 import { pageHeader } from "./objects/pageHeader";
+import { captionedImage } from "./objects/captionedImage";
 
 export const schemaTypes = [
   // documents
@@ -59,6 +60,7 @@ export const schemaTypes = [
   socialLink,
   heroCorner,
   pageHeader,
+  captionedImage,
   // admin document types
   siteSettings,
   navigation,

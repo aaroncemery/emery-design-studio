@@ -28,7 +28,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { data: journalPostsData },
     { data: legalPagesData },
   ] = await Promise.all([
-    sanityFetch({ query: ALL_PROJECTS_QUERY, tags: ["project"] }),
+    sanityFetch({
+      query: ALL_PROJECTS_QUERY,
+      params: { category: null },
+      tags: ["project"],
+    }),
     sanityFetch({ query: ALL_JOURNAL_POSTS_QUERY, tags: ["journalPost"] }),
     sanityFetch({ query: ALL_LEGAL_PAGES_QUERY, tags: ["legalPage"] }),
   ]);

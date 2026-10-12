@@ -19,6 +19,13 @@ export const GROUP = {
   MICROCOPY: "microcopy",
 } as const;
 
+export const PROJECT_CATEGORIES: { title: string; value: string }[] = [
+  { title: "Full Renovation", value: "Full Renovation" },
+  { title: "Interior Architecture", value: "Interior Architecture" },
+  { title: "Styling & Furnishing", value: "Styling & Furnishing" },
+  { title: "Consultation", value: "Consultation" },
+];
+
 export const GROUPS = {
   content: {
     name: GROUP.MAIN_CONTENT,
