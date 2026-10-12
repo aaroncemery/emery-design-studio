@@ -286,8 +286,15 @@ export function ServicesFolio({ services }: Props) {
         </MonoLabel>
       </nav>
 
-      {/* Copy column */}
-      <div>
+      {/* Copy column — bottom padding (desktop only, matching the
+          sticky photo's own `calc(100vh - (NAV_CLEARANCE+48)px)`
+          height — keep the 160 below in sync with NAV_CLEARANCE+48)
+          gives this column's containing block enough room for the
+          photo to stay pinned through the last service's full reading
+          length, instead of releasing early as "Consultation" scrolls
+          into view. Not needed on mobile, where there's no sticky
+          photo to protect. */}
+      <div className="lg:pb-[calc(100vh-160px)]">
         {services.map((service, i) => (
           <article
             key={service._id}
@@ -295,7 +302,7 @@ export function ServicesFolio({ services }: Props) {
             ref={(el) => {
               articlesRef.current[i] = el;
             }}
-            className="py-16 lg:min-h-[70vh] lg:flex lg:flex-col lg:justify-center border-t border-[rgba(17,17,17,0.12)] first:border-t-0 first:pt-0"
+            className="py-16 lg:min-h-[70vh] lg:flex lg:flex-col lg:justify-center first:pt-0"
             style={{ scrollMarginTop: NAV_CLEARANCE }}
           >
             {/* Photo — mobile/tablet only, inline per service, full-bleed */}
