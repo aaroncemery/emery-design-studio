@@ -8,6 +8,7 @@ import { Rule } from "@/components/primitives/rule";
 import { Reveal } from "@/components/primitives/reveal";
 import { submitInquiry } from "@/app/actions/inquiry";
 import { trackEvent } from "@/lib/analytics";
+import { cleanText } from "@/lib/sanity/utils";
 import type { InquirySection, SiteSettings } from "@/lib/sanity/types";
 
 const FALLBACK_SCOPE_OPTIONS = [
@@ -52,6 +53,8 @@ interface Props {
 }
 
 export function Inquiry({ data, siteSettings }: Props) {
+  const heading = cleanText(data?.heading);
+  const subheading = cleanText(data?.subheading);
   const contactEmail =
     stegaClean(siteSettings?.contactEmail) || "hello@emerydesign.studio";
   const contactRegion =
@@ -99,28 +102,23 @@ export function Inquiry({ data, siteSettings }: Props) {
               §&nbsp;06&nbsp;—&nbsp;Inquiry
             </MonoLabel>
           </Reveal>
-          <Reveal delay={0.06}>
-            <h2
-              className="font-serif text-[#111111] leading-[0.94] tracking-tight mb-8"
-              style={{ fontSize: "clamp(34px, 3.8vw, 56px)" }}
-            >
-              {data?.heading ? (
-                data.heading
-              ) : (
-                <>
-                  We&rsquo;d be glad&nbsp;/
-                  <br />
-                  to <em>hear</em> from you.
-                </>
-              )}
-            </h2>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-10">
-              {data?.subheading ??
-                "We take on six to eight projects per year and give each one our full attention. If you’re thinking about a project — even one that’s still forming — we’d love to hear about it."}
-            </p>
-          </Reveal>
+          {heading && (
+            <Reveal delay={0.06}>
+              <h2
+                className="font-serif text-[#111111] leading-[0.94] tracking-tight mb-8"
+                style={{ fontSize: "clamp(34px, 3.8vw, 56px)" }}
+              >
+                {heading}
+              </h2>
+            </Reveal>
+          )}
+          {subheading && (
+            <Reveal delay={0.12}>
+              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-10">
+                {subheading}
+              </p>
+            </Reveal>
+          )}
           <Reveal delay={0.18}>
             <Rule className="mb-8" />
             <MonoLabel className="text-[#9a968d] block mb-3">

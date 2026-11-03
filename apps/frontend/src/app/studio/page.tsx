@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cleanText } from "@/lib/sanity/utils";
 import Link from "next/link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
@@ -41,16 +42,16 @@ export default async function StudioPage() {
   const intro = page?.intro;
 
   // Split on "/" — editor convention: "Heading / italic second line"
-  let headingLine1 = "A small atelier";
-  let headingLine2 = "on the water.";
-  if (header?.heading) {
-    const idx = header.heading.indexOf("/");
+  let headingLine1 = "";
+  let headingLine2 = "";
+  const heading = cleanText(header?.heading);
+  if (heading) {
+    const idx = heading.indexOf("/");
     if (idx !== -1) {
-      headingLine1 = header.heading.slice(0, idx).trim();
-      headingLine2 = header.heading.slice(idx + 1).trim();
+      headingLine1 = heading.slice(0, idx).trim();
+      headingLine2 = heading.slice(idx + 1).trim();
     } else {
-      headingLine1 = header.heading;
-      headingLine2 = "";
+      headingLine1 = heading;
     }
   }
 
@@ -63,18 +64,16 @@ export default async function StudioPage() {
         <MonoLabel className="text-[#1b3a5b] block mb-6">
           {header?.eyebrow ?? "Studio — About"}
         </MonoLabel>
-        <h1
-          className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-8 max-w-2xl"
-          style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
-        >
-          {headingLine1}
-          {headingLine2 && (
-            <>
-              <br />
-              <em>{headingLine2}</em>
-            </>
-          )}
-        </h1>
+        {heading && (
+          <h1
+            className="font-serif text-[#111111] leading-[0.92] tracking-tight mb-8 max-w-2xl"
+            style={{ fontSize: "clamp(48px, 6vw, 96px)" }}
+          >
+            {headingLine1}
+            {headingLine1 && headingLine2 && <br />}
+            {headingLine2 && <em>{headingLine2}</em>}
+          </h1>
+        )}
 
         {intro ? (
           <StudioIntroContent data={intro} />
