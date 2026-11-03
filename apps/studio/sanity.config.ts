@@ -38,6 +38,15 @@ const SINGLETON_JOURNAL_PAGE_ID = "singleton-journalPage";
 
 const PRODUCTION_PREVIEW_URL = "https://www.emerydesign.studio";
 
+// The env override (e.g. http://localhost:3000 in .env.local) only applies to
+// `sanity dev`. Honoring it in a deployed build would bake localhost into the
+// hosted Studio and break Presentation for editors.
+const PREVIEW_URL =
+  process.env.NODE_ENV === "development" &&
+  process.env.SANITY_STUDIO_PREVIEW_URL
+    ? process.env.SANITY_STUDIO_PREVIEW_URL
+    : PRODUCTION_PREVIEW_URL;
+
 const mainDocuments = defineDocuments([
   {
     route: "/work/:slug",
@@ -323,8 +332,7 @@ export default defineConfig({
     }),
     presentationTool({
       previewUrl: {
-        initial:
-          process.env.SANITY_STUDIO_PREVIEW_URL || PRODUCTION_PREVIEW_URL,
+        initial: PREVIEW_URL,
         previewMode: {
           enable: "/api/draft-mode/enable",
           disable: "/api/draft-mode/disable",
