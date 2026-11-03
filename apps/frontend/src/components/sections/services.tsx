@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cleanText } from "@/lib/sanity/utils";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { Rule } from "@/components/primitives/rule";
@@ -96,7 +97,13 @@ interface Props {
   subheading?: string;
 }
 
-export function Services({ services, heading, subheading }: Props) {
+export function Services({
+  services,
+  heading: rawHeading,
+  subheading: rawSubheading,
+}: Props) {
+  const heading = cleanText(rawHeading);
+  const subheading = cleanText(rawSubheading);
   const hasServices = services && services.length > 0;
 
   return (
@@ -106,16 +113,14 @@ export function Services({ services, heading, subheading }: Props) {
           <MonoLabel className="text-[#1b3a5b] block mb-4">
             §&nbsp;04&nbsp;—&nbsp;Services
           </MonoLabel>
-          <h2
-            className="font-serif text-[#111111] leading-[0.92] tracking-tight max-w-xl"
-            style={{ fontSize: "clamp(36px, 4.5vw, 64px)" }}
-          >
-            {heading ?? (
-              <>
-                How we&rsquo;re <em>usually</em> asked to help.
-              </>
-            )}
-          </h2>
+          {heading && (
+            <h2
+              className="font-serif text-[#111111] leading-[0.92] tracking-tight max-w-xl"
+              style={{ fontSize: "clamp(36px, 4.5vw, 64px)" }}
+            >
+              {heading}
+            </h2>
+          )}
           {subheading && (
             <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mt-4 max-w-xl">
               {subheading}

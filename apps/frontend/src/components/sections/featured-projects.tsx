@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { cleanText } from "@/lib/sanity/utils";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
 import { MonoLabel } from "@/components/primitives/mono-label";
@@ -135,7 +136,13 @@ interface Props {
   subheading?: string;
 }
 
-export function FeaturedProjects({ projects, heading, subheading }: Props) {
+export function FeaturedProjects({
+  projects,
+  heading: rawHeading,
+  subheading: rawSubheading,
+}: Props) {
+  const heading = cleanText(rawHeading);
+  const subheading = cleanText(rawSubheading);
   const hasProjects = projects && projects.length > 0;
 
   return (
@@ -147,29 +154,19 @@ export function FeaturedProjects({ projects, heading, subheading }: Props) {
             <MonoLabel className="text-[#1b3a5b] block mb-4">
               §&nbsp;02&nbsp;—&nbsp;Selected&nbsp;Work
             </MonoLabel>
-            <h2
-              className="font-serif text-[#111111] leading-[0.92] tracking-tight"
-              style={{ fontSize: "clamp(40px, 5vw, 72px)" }}
-            >
-              {heading ?? (
-                <>
-                  Rooms we&rsquo;ve&nbsp;/
-                  <br />
-                  <em>quietly</em> built.
-                </>
-              )}
-            </h2>
+            {heading && (
+              <h2
+                className="font-serif text-[#111111] leading-[0.92] tracking-tight"
+                style={{ fontSize: "clamp(40px, 5vw, 72px)" }}
+              >
+                {heading}
+              </h2>
+            )}
           </div>
           <div className="max-w-xs">
             {subheading && (
               <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-6">
                 {subheading}
-              </p>
-            )}
-            {!subheading && (
-              <p className="font-sans text-[#6b6b66] text-sm leading-relaxed mb-6">
-                A small selection of completed projects. Each one takes two to
-                three years and leaves us changed by it.
               </p>
             )}
             <CTA href="/work" variant="solid">

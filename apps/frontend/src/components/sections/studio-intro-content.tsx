@@ -7,6 +7,7 @@ import {
   type PlaceholderVariant,
 } from "@/components/primitives/placeholder";
 import { Reveal } from "@/components/primitives/reveal";
+import { stripEmptyBlocks } from "@/lib/sanity/utils";
 import type { SanityImage, StudioIntroSection } from "@/lib/sanity/types";
 
 interface StudioIntroContentData {
@@ -18,8 +19,6 @@ interface StudioIntroContentData {
 
 interface Props {
   data?: StudioIntroContentData;
-  fallbackBody?: React.ReactNode;
-  fallbackStats?: Array<{ label: string; value: string }>;
   /** Rendered at the top of the copy column, above the body text — e.g. an eyebrow + heading. */
   header?: React.ReactNode;
   /** Rendered at the bottom of the copy column, after the stats — e.g. a link. */
@@ -68,14 +67,13 @@ function ImageBlock({
 // both consume one implementation of the imageLayout switch.
 export function StudioIntroContent({
   data,
-  fallbackBody,
-  fallbackStats,
   header,
   footer,
   bodyDelay = 0,
   statsDelay = 0,
 }: Props) {
-  const stats = data?.stats ?? fallbackStats ?? [];
+  const body = stripEmptyBlocks(data?.body);
+  const stats = data?.stats ?? [];
   const layout = stegaClean(data?.imageLayout) ?? "mainWithInset";
   const mainImage = data?.images?.[0];
   const insetImage = data?.images?.[1];
@@ -142,11 +140,13 @@ export function StudioIntroContent({
 
       <div className="pt-0 lg:pt-12">
         {header}
-        <Reveal delay={bodyDelay}>
-          <div className="space-y-4 mb-10 font-sans text-[#6b6b66] text-sm leading-relaxed">
-            {data?.body ? <PortableText value={data.body} /> : fallbackBody}
-          </div>
-        </Reveal>
+        {body.length > 0 && (
+          <Reveal delay={bodyDelay}>
+            <div className="space-y-4 mb-10 font-sans text-[#6b6b66] text-sm leading-relaxed">
+              <PortableText value={body} />
+            </div>
+          </Reveal>
+        )}
 
         {stats.length > 0 && (
           <Reveal delay={statsDelay}>

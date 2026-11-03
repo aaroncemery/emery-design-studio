@@ -1,5 +1,6 @@
 "use client";
 
+import { cleanText } from "@/lib/sanity/utils";
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,25 +68,24 @@ export function Hero({ data }: Props) {
   });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
 
-  const tagline = data?.tagline ?? "File ℶ24—Resi · Vol. XII · Spec. A";
+  const tagline = cleanText(data?.tagline);
 
   // Split on "/" — editor convention: "Headline / italic second line"
-  let headlineLine1 = "Interiors /";
-  let headlineLine2 = "of consequence.";
-  if (data?.headline) {
-    const idx = data.headline.indexOf("/");
+  let headlineLine1 = "";
+  let headlineLine2 = "";
+  const headline = cleanText(data?.headline);
+  if (headline) {
+    const idx = headline.indexOf("/");
     if (idx !== -1) {
-      headlineLine1 = data.headline.slice(0, idx).trim() + " /";
-      headlineLine2 = data.headline.slice(idx + 1).trim();
+      headlineLine1 = headline.slice(0, idx).trim();
+      headlineLine2 = headline.slice(idx + 1).trim();
+      if (headlineLine1 && headlineLine2) headlineLine1 += " /";
     } else {
-      headlineLine1 = data.headline;
-      headlineLine2 = "";
+      headlineLine1 = headline;
     }
   }
 
-  const subheadline =
-    data?.subheadline ??
-    "Considered residential interiors from a small, slow studio on Lake Washington.";
+  const subheadline = cleanText(data?.subheadline);
 
   return (
     <section
@@ -127,27 +127,33 @@ export function Hero({ data }: Props) {
       {/* Centered masthead */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
         {/* Eyebrow with flanking rules */}
-        <div className="flex items-center gap-5 mb-8">
-          <div className="w-12 h-px bg-white/35" aria-hidden="true" />
-          <MonoLabel className="text-white/60">{tagline}</MonoLabel>
-          <div className="w-12 h-px bg-white/35" aria-hidden="true" />
-        </div>
+        {tagline && (
+          <div className="flex items-center gap-5 mb-8">
+            <div className="w-12 h-px bg-white/35" aria-hidden="true" />
+            <MonoLabel className="text-white/60">{tagline}</MonoLabel>
+            <div className="w-12 h-px bg-white/35" aria-hidden="true" />
+          </div>
+        )}
 
         {/* H1 */}
-        <h1
-          className="font-serif font-light text-white leading-[0.92] tracking-tight mb-7"
-          style={{ fontSize: "clamp(56px, 8vw, 132px)" }}
-        >
-          <span className="block">{headlineLine1}</span>
-          {headlineLine2 && (
-            <span className="block italic">{headlineLine2}</span>
-          )}
-        </h1>
+        {headline && (
+          <h1
+            className="font-serif font-light text-white leading-[0.92] tracking-tight mb-7"
+            style={{ fontSize: "clamp(56px, 8vw, 132px)" }}
+          >
+            {headlineLine1 && <span className="block">{headlineLine1}</span>}
+            {headlineLine2 && (
+              <span className="block italic">{headlineLine2}</span>
+            )}
+          </h1>
+        )}
 
         {/* Subhead */}
-        <p className="font-sans text-white/75 text-base leading-relaxed max-w-sm mb-10">
-          {subheadline}
-        </p>
+        {subheadline && (
+          <p className="font-sans text-white/75 text-base leading-relaxed max-w-sm mb-10">
+            {subheadline}
+          </p>
+        )}
 
         {/* CTAs */}
         <div className="flex flex-wrap justify-center gap-4">
