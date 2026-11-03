@@ -29,6 +29,13 @@ const typed = data as SomeQueryResult; // or a hand-derived type from lib/sanity
 
 Skipping the cast doesn't error at the fetch call — it fails later, confusingly, wherever you first access a field (`Property 'x' does not exist on type '{}'`). If you add a new query, add the cast at the same time.
 
+## Publish → site refresh
+
+Two mechanisms keep the site fresh, and **both are needed**:
+
+- `<SanityLive />` (layout) revalidates tags, but only from a visitor's open browser tab. If an editor publishes while nobody is on the site, it does nothing, and pages with `revalidate = false` stay stale until the next deploy.
+- `POST /api/revalidate` (`src/app/api/revalidate/route.ts`) is the Sanity webhook target that covers that gap. Setup at sanity.io/manage → project `qehxawm7` → API → Webhooks: URL `https://www.emerydesign.studio/api/revalidate`, dataset `edc-prod`, trigger on Create/Update/Delete, projection `{_type}`, no filter, and a secret that matches the `SANITY_REVALIDATE_SECRET` env var in Vercel (production + preview).
+
 ## Metadata & SEO
 
 - `buildMetadata()` (`lib/sanity/build-metadata.ts`) requires a `path` argument — every route passes its own (`"/"`, `"/work"`, `` `/work/${slug}` ``, etc.). This is what makes canonical URLs default sensibly when a page hasn't set `seo.canonicalUrl` explicitly in Sanity.
