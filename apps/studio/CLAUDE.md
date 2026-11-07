@@ -33,6 +33,10 @@ pnpm --filter studio deploy
 
 This pushes to `https://emery-design.sanity.studio` (hostname pinned in `sanity.cli.ts`). Merging the code and deploying the frontend does **not** deploy Studio — they're separate steps.
 
+## Media Library
+
+The Studio is connected to the organization's Media Library (`mediaLibrary` in `sanity.config.ts`, library ID `mlUTbPRX5WqW`, with token auth enabled — cookie auth disables private-asset previews). Editors can select from or upload to it in any image field, alongside the default dataset source. Assets uploaded the old way live in the dataset and keep working; they are not migrated automatically. Frontend image queries still dereference `asset->` — verify that a Media Library asset resolves `url` and `metadata.lqip` before relying on one in production. Docs: sanity.io/docs/media-library/configure-library.
+
 ## Content philosophy
 
 See the root `CLAUDE.md`'s standing mandate: default to making new content Sanity-editable, and never fabricate specific-sounding fallback content. The practical implications for schema design:

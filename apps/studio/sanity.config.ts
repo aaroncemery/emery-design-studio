@@ -165,6 +165,19 @@ export default defineConfig({
   projectId: "qehxawm7",
   dataset: "edc-prod",
 
+  // Lets editors pick/upload image assets from the organization's Media
+  // Library. `libraryId` pins the Studio to our library instead of relying
+  // on auto-detection.
+  mediaLibrary: {
+    enabled: true,
+    libraryId: "mlUTbPRX5WqW",
+  },
+  // Cookie auth disables private-asset previews, downloads, and signing-key
+  // management in Media Library; token auth enables the full feature set.
+  auth: {
+    loginMethod: "token",
+  },
+
   plugins: [
     structureTool({
       structure: (S) =>
