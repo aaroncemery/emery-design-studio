@@ -29,6 +29,15 @@ export const inquirySubmission = defineType({
       },
       initialValue: "new",
     }),
+    defineField({
+      name: "emailSent",
+      title: "Notification Email Sent",
+      description:
+        "False means the inquiry was saved but the notification email to the studio failed — check this one manually.",
+      type: "boolean",
+      readOnly: true,
+      initialValue: false,
+    }),
   ],
   preview: {
     select: { title: "name", subtitle: "email" },

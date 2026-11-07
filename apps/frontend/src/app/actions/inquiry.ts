@@ -22,10 +22,8 @@ export interface InquiryData {
   message: string;
 }
 
-export interface InquiryResult {
-  success: boolean;
-  error?: string;
-}
+export type InquiryResult =
+  { success: true } | { success: false; error: string };
 
 export async function submitInquiry(
   formData: FormData,
@@ -43,8 +41,9 @@ export async function submitInquiry(
     return { success: false, error: "Name, email, and message are required." };
   }
 
+  let inquiryId: string;
   try {
-    await writeClient.create({
+    const created = await writeClient.create({
       _type: "inquirySubmission",
       name: data.name,
       email: data.email,
@@ -54,7 +53,9 @@ export async function submitInquiry(
       message: data.message,
       submittedAt: new Date().toISOString(),
       status: "new",
+      emailSent: false,
     });
+    inquiryId = created._id;
   } catch (err) {
     console.error("[Inquiry] Sanity write failed:", err);
     return {
@@ -63,8 +64,9 @@ export async function submitInquiry(
     };
   }
 
+  let emailSent = false;
   try {
-    await resend.emails.send({
+    const { error: sendError } = await resend.emails.send({
       from: "Emery Studio <noreply@emerydesign.studio>",
       to: process.env.RESEND_TO_EMAIL!,
       subject: `New inquiry from ${data.name}`,
@@ -78,9 +80,22 @@ export async function submitInquiry(
         <p>${data.message.replace(/\n/g, "<br>")}</p>
       `,
     });
+    if (sendError) throw sendError;
+    emailSent = true;
   } catch (err) {
-    // Email failure is non-fatal — submission is already saved in Sanity
+    // Email failure is non-fatal — submission is already saved in Sanity,
+    // and its `emailSent: false` flags it for manual follow-up in Studio.
     console.error("[Inquiry] Resend failed:", err);
+  }
+
+  if (emailSent) {
+    try {
+      await writeClient.patch(inquiryId).set({ emailSent: true }).commit();
+    } catch (err) {
+      // Worst case the doc still says emailSent: false — errs toward a
+      // harmless manual check rather than a missed lead.
+      console.error("[Inquiry] emailSent patch failed:", err);
+    }
   }
 
   return { success: true };
