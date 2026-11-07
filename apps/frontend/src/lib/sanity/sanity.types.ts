@@ -428,6 +428,7 @@ export type InquirySubmission = {
   message?: string;
   submittedAt?: string;
   status?: "new" | "reviewed" | "responded";
+  emailSent?: boolean;
 };
 
 export type JournalPost = {

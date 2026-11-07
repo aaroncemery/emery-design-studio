@@ -47,6 +47,14 @@ function FieldLabel({
 const inputBase =
   "w-full bg-transparent border-0 border-b border-[rgba(17,17,17,0.2)] pb-3 font-sans text-[14px] text-[#111111] placeholder:text-[#9a968d] focus:outline-none focus:border-[#1b3a5b] transition-colors duration-300 resize-none";
 
+// One source of truth for the form's lifecycle: idle → submitting →
+// success (terminal) | error → submitting (retry).
+type InquiryStatus =
+  | { kind: "idle" }
+  | { kind: "submitting" }
+  | { kind: "success" }
+  | { kind: "error"; message: string };
+
 interface Props {
   data?: InquirySection;
   siteSettings?: SiteSettings | null;
@@ -70,24 +78,33 @@ export function Inquiry({ data, siteSettings }: Props) {
       : FALLBACK_BUDGET_OPTIONS;
 
   const [budget, setBudget] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [status, setStatus] = useState<InquiryStatus>({ kind: "idle" });
+  const [, startTransition] = useTransition();
+  const isSubmitting = status.kind === "submitting";
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.set("budget", budget);
-    setError("");
+    if (isSubmitting) return;
+    setStatus({ kind: "submitting" });
 
     startTransition(async () => {
-      const result = await submitInquiry(formData);
-      if (result.success) {
-        setSuccess(true);
-        trackEvent("inquiry_submit_success");
-      } else {
-        setError(result.error ?? "Something went wrong. Please try again.");
-        trackEvent("inquiry_submit_failure", { error: result.error });
+      try {
+        const result = await submitInquiry(formData);
+        if (result.success) {
+          setStatus({ kind: "success" });
+          trackEvent("inquiry_submit_success");
+        } else {
+          setStatus({ kind: "error", message: result.error });
+          trackEvent("inquiry_submit_failure", { error: result.error });
+        }
+      } catch {
+        // Network failure or thrown server error — without this the form
+        // would silently return to idle with no feedback.
+        const message = "Something went wrong. Please try again.";
+        setStatus({ kind: "error", message });
+        trackEvent("inquiry_submit_failure", { error: message });
       }
     });
   }
@@ -140,7 +157,7 @@ export function Inquiry({ data, siteSettings }: Props) {
 
         {/* Right: form */}
         <Reveal delay={0.1}>
-          {success ? (
+          {status.kind === "success" ? (
             <div className="flex flex-col justify-center min-h-[400px]">
               <MonoLabel className="text-[#1b3a5b] block mb-4">
                 Received
@@ -269,9 +286,9 @@ export function Inquiry({ data, siteSettings }: Props) {
                 />
               </div>
 
-              {error && (
+              {status.kind === "error" && (
                 <p role="alert" className="font-sans text-xs text-[#c8553d]">
-                  {error}
+                  {status.message}
                 </p>
               )}
 
@@ -281,11 +298,11 @@ export function Inquiry({ data, siteSettings }: Props) {
                 </MonoLabel>
                 <button
                   type="submit"
-                  disabled={isPending}
+                  disabled={isSubmitting}
                   className="inline-flex items-center gap-3 px-6 py-3 font-mono text-[10px] tracking-[0.16em] uppercase border border-[#1b3a5b] bg-[#1b3a5b] text-white transition-all duration-[360ms] ease-[cubic-bezier(.2,.7,.2,1)] hover:bg-[#152e4a] hover:border-[#152e4a] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isPending ? "Sending…" : "Send inquiry"}
-                  {!isPending && <span aria-hidden="true">→</span>}
+                  {isSubmitting ? "Sending…" : "Send inquiry"}
+                  {!isSubmitting && <span aria-hidden="true">→</span>}
                 </button>
               </div>
             </form>
