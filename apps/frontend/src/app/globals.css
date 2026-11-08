@@ -235,3 +235,39 @@ html {
   }
 }
 
+/*
+ * Vertical rhythm for the project page blocks (story + making-of notes).
+ * Spacing depends on the pair of neighbouring blocks, not a uniform gap:
+ * text-text 24, big images 112, quotes 96, everything else 80.
+ * See lib/work/layout.ts and docs/work-page-blocks-handoff.md.
+ */
+[data-block] {
+  margin-top: 80px;
+}
+[data-block]:first-child {
+  margin-top: 0;
+}
+[data-block="big"],
+[data-block="big"] + [data-block] {
+  margin-top: 112px;
+}
+[data-block="quote"],
+[data-block="quote"] + [data-block] {
+  margin-top: 96px;
+}
+[data-block="heading"] {
+  margin-top: 96px;
+}
+[data-block="heading"] + [data-block] {
+  margin-top: 24px;
+}
+[data-block="text"] + [data-block="text"] {
+  margin-top: 24px;
+}
+[data-block]:first-child,
+[data-block="heading"]:first-child {
+  margin-top: 0;
+}
+[data-block="big"] + [data-block="quote"] {
+  margin-top: 96px;
+}

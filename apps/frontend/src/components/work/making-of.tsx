@@ -3,13 +3,12 @@ import { MonoLabel } from "@/components/primitives/mono-label";
 import { CTA } from "@/components/primitives/cta";
 import { FULL_WIDTH_SIZES, ProjectFigure } from "./project-figure";
 import { SplitHeadline } from "./split-headline";
-import { COLUMN, FRAME } from "./project-story";
+import { COLUMN, FRAME, bodyText } from "./frame";
+import { BesideText } from "./beside-text";
+import { ColumnImage } from "./project-story";
 import type { MakingOf } from "@/lib/sanity/types";
 
 type Note = NonNullable<MakingOf["notes"]>[number];
-
-const bodyText =
-  "text-pretty font-serif text-[17px] font-normal leading-[1.7] text-[#2a2a2a]";
 
 /** True when the editor has filled in anything worth rendering. */
 export function hasMakingOfContent(m: MakingOf | null): m is MakingOf {
@@ -31,9 +30,9 @@ function NoteText({ note }: { note: Note }) {
 }
 
 /**
- * Layout follows content, not position: 2+ images pair up, one wide image
- * bleeds, one image with text sits beside it (alternating sides), a lone
- * image floats to a side, text alone sits in the column.
+ * Layout follows content, not position: 2+ images pair up (container width),
+ * one wide image bleeds, one image with text sits beside it (alternating
+ * sides), a lone image sits in the column, text alone sits in the column.
  */
 function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
   const images = (note.images ?? []).filter((i) => i.asset?.url);
@@ -41,7 +40,7 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
 
   if (images.length > 1) {
     return (
-      <div className="flex flex-col gap-8 py-8 md:py-12">
+      <div data-block="big" className="flex flex-col gap-8">
         {hasText && (
           <div className={FRAME}>
             <div className={COLUMN}>
@@ -52,7 +51,7 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
         <div className={FRAME}>
           <div
             className={cn(
-              "grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:col-span-10 lg:col-start-2",
+              "grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:col-span-12",
               flip && "sm:[&>*:first-child]:order-2",
             )}
           >
@@ -60,7 +59,7 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
               <ProjectFigure
                 key={image.asset?._id ?? image.alt}
                 image={image}
-                sizes="(min-width: 640px) 45vw, calc(100vw - 3rem)"
+                sizes="(min-width: 640px) 50vw, calc(100vw - 3rem)"
               />
             ))}
           </div>
@@ -71,7 +70,7 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
 
   if (images.length === 1 && note.wide) {
     return (
-      <div className="flex flex-col gap-8 py-8 md:py-12">
+      <div data-block="big" className="flex flex-col gap-8">
         {hasText && (
           <div className={FRAME}>
             <div className={COLUMN}>
@@ -92,44 +91,20 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
 
   if (images.length === 1 && hasText) {
     return (
-      <div className={cn(FRAME, "items-start gap-y-6 py-8 md:py-12")}>
-        <div className="lg:col-span-5 lg:col-start-4 lg:row-start-1">
-          <NoteText note={note} />
-        </div>
-        <ProjectFigure
-          image={images[0]}
-          className={cn(
-            "max-w-[360px] lg:row-start-1 lg:max-w-none",
-            flip
-              ? "lg:col-span-2 lg:col-start-1"
-              : "lg:col-span-3 lg:col-start-10",
-          )}
-          sizes="(min-width: 1024px) 25vw, 70vw"
-        />
-      </div>
+      <BesideText
+        image={images[0]}
+        label={note.label}
+        text={note.text}
+        side={flip ? "left" : "right"}
+      />
     );
   }
 
-  if (images.length === 1) {
-    return (
-      <div className={cn(FRAME, "py-8 md:py-12")}>
-        <ProjectFigure
-          image={images[0]}
-          className={cn(
-            "max-w-[480px] lg:max-w-none",
-            flip
-              ? "lg:col-span-4 lg:col-start-2"
-              : "lg:col-span-4 lg:col-start-8",
-          )}
-          sizes="(min-width: 1024px) 33vw, 80vw"
-        />
-      </div>
-    );
-  }
+  if (images.length === 1) return <ColumnImage image={images[0]} />;
 
   if (!hasText) return null;
   return (
-    <div className={cn(FRAME, "py-6 md:py-8")}>
+    <div data-block="side" className={FRAME}>
       <div className={COLUMN}>
         <NoteText note={note} />
       </div>
@@ -146,8 +121,14 @@ function MakerStrip({ maker }: { maker: NonNullable<MakingOf["maker"]> }) {
     .filter(Boolean)
     .join(" ");
   return (
-    <div className={cn(FRAME, "py-12 md:py-16")}>
-      <div className="grid grid-cols-1 items-center gap-6 border-t border-[rgba(17,17,17,0.28)] pt-10 sm:grid-cols-[auto_1fr_auto] sm:gap-8 lg:col-span-10 lg:col-start-2">
+    <div data-block="side" className={FRAME}>
+      <div
+        className={cn(
+          COLUMN,
+          "grid grid-cols-1 items-center gap-6 border-t border-[rgba(17,17,17,0.28)] pt-10 sm:gap-8",
+          maker.portrait?.asset?.url && "sm:grid-cols-[auto_1fr]",
+        )}
+      >
         {maker.portrait?.asset?.url && (
           <ProjectFigure
             image={maker.portrait}
@@ -157,7 +138,7 @@ function MakerStrip({ maker }: { maker: NonNullable<MakingOf["maker"]> }) {
             sizes="112px"
           />
         )}
-        <div className="flex flex-col gap-3 sm:col-start-2">
+        <div className="flex flex-col gap-3">
           <MonoLabel className="text-[#1b3a5b]">The maker</MonoLabel>
           <p className={bodyText}>
             Made by <strong className="font-semibold">{maker.name}</strong>
@@ -174,7 +155,10 @@ function MakerStrip({ maker }: { maker: NonNullable<MakingOf["maker"]> }) {
             href={maker.url}
             variant="ghost"
             external
-            className="justify-self-start sm:justify-self-end"
+            className={cn(
+              "justify-self-start",
+              maker.portrait?.asset?.url && "sm:col-start-2",
+            )}
           >
             Visit the maker
           </CTA>
@@ -194,7 +178,7 @@ export function MakingOfSection({ makingOf }: { makingOf: MakingOf }) {
       className="scroll-mt-24 bg-[#ece8df] py-16 md:py-28"
     >
       {(makingOf.heading || makingOf.intro) && (
-        <div className={FRAME}>
+        <div data-block="text" className={FRAME}>
           <div className={COLUMN}>
             <MonoLabel className="text-[#1b3a5b]">
               {makingOf.label || "The making of"}

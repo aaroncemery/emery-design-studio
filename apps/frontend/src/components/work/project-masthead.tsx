@@ -56,6 +56,7 @@ export function ProjectMasthead({
               ratio={2.1}
               sizes={FULL_WIDTH_SIZES}
               priority
+              capHeight={false}
             />
           </div>
         )}

@@ -1,31 +1,61 @@
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
+import { sanityImageAspect } from "@/lib/sanity/image";
+import { FIG, figSizes, figWidths } from "@/lib/work/layout";
+import { BesideText } from "./beside-text";
+import { COLUMN, FRAME, bodyText } from "./frame";
 import { FULL_WIDTH_SIZES, ProjectFigure } from "./project-figure";
 import type { ProjectBodyBlock } from "@/lib/sanity/types";
 
-/** Shared page frame: 12-col grid inside the site's max width. */
-export const FRAME =
-  "mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-x-6 px-6 md:px-10 lg:grid-cols-12 lg:px-14";
-/** The reading column, offset from the left like the design. */
-export const COLUMN = "lg:col-span-6 lg:col-start-4";
+export { FRAME, COLUMN } from "./frame";
 
 type Block<T extends ProjectBodyBlock["_type"]> = Extract<
   ProjectBodyBlock,
   { _type: T }
 >;
 
-const bodyText =
-  "text-pretty font-serif text-[17px] font-normal leading-[1.7] text-[#2a2a2a]";
+/**
+ * An image in the reading column. A portrait would be ~1.5 screens tall at
+ * column width, so it's sized by area on the column's left edge with its
+ * caption in the empty space beside it; a landscape fills the column.
+ */
+export function ColumnImage({
+  image,
+}: {
+  image: ComponentProps<typeof ProjectFigure>["image"];
+}) {
+  const ratio = sanityImageAspect(image) ?? 4 / 3;
+  const portrait = ratio < 1;
+  const width = portrait
+    ? figWidths(ratio, FIG.soloArea, FIG.soloMaxW)
+    : undefined;
+  return (
+    <div data-block="side" className={FRAME}>
+      <ProjectFigure
+        image={image}
+        className={COLUMN}
+        width={width}
+        sideCaption={portrait}
+        sizes={
+          width
+            ? figSizes(width)
+            : "(min-width: 1024px) 50vw, calc(100vw - 3rem)"
+        }
+      />
+    </div>
+  );
+}
 
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <div className={cn(FRAME, "py-3")}>
+      <div data-block="text" className={FRAME}>
         <p className={cn(bodyText, COLUMN)}>{children}</p>
       </div>
     ),
     lead: ({ children }) => (
-      <div className={cn(FRAME, "py-3")}>
+      <div data-block="text" className={FRAME}>
         <p
           className={cn(
             COLUMN,
@@ -37,7 +67,7 @@ const components: PortableTextComponents = {
       </div>
     ),
     h2: ({ children }) => (
-      <div className={cn(FRAME, "pb-2 pt-10")}>
+      <div data-block="heading" className={FRAME}>
         <h2
           className={cn(
             COLUMN,
@@ -50,51 +80,29 @@ const components: PortableTextComponents = {
     ),
   },
   types: {
-    storyImage: ({ value }: { value: Block<"storyImage"> }) =>
-      value.layout === "column" ? (
-        <div className={cn(FRAME, "py-8")}>
-          <ProjectFigure
-            image={value.image}
-            className={COLUMN}
-            sizes="(min-width: 1024px) 50vw, calc(100vw - 3rem)"
-          />
-        </div>
-      ) : (
-        <div className={cn(FRAME, "py-10 md:py-14")}>
-          <ProjectFigure
-            image={value.image}
-            className="lg:col-span-12"
-            sizes={FULL_WIDTH_SIZES}
-          />
-        </div>
-      ),
-    storyInset: ({ value }: { value: Block<"storyInset"> }) => {
-      const left = value.side === "left";
-      return (
-        <div className={cn(FRAME, "items-start gap-y-6 py-8 md:py-12")}>
-          <p
-            className={cn(
-              bodyText,
-              "lg:col-span-5 lg:col-start-4 lg:row-start-1",
-            )}
-          >
-            {value.text}
-          </p>
-          <ProjectFigure
-            image={value.image}
-            className={cn(
-              "max-w-[360px] lg:row-start-1 lg:max-w-none",
-              left
-                ? "lg:col-span-2 lg:col-start-1"
-                : "lg:col-span-3 lg:col-start-10",
-            )}
-            sizes="(min-width: 1024px) 25vw, 70vw"
-          />
-        </div>
-      );
+    storyImage: ({ value }: { value: Block<"storyImage"> }) => {
+      if (value.layout !== "column") {
+        return (
+          <div data-block="big" className={FRAME}>
+            <ProjectFigure
+              image={value.image}
+              className="lg:col-span-12"
+              sizes={FULL_WIDTH_SIZES}
+            />
+          </div>
+        );
+      }
+      return <ColumnImage image={value.image} />;
     },
+    storyInset: ({ value }: { value: Block<"storyInset"> }) => (
+      <BesideText
+        image={value.image}
+        text={value.text}
+        side={value.side === "left" ? "left" : "right"}
+      />
+    ),
     storyPair: ({ value }: { value: Block<"storyPair"> }) => (
-      <div className={cn(FRAME, "py-10 md:py-14")}>
+      <div data-block="big" className={FRAME}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-12">
           {value.images?.map((image) => (
             <ProjectFigure
@@ -108,7 +116,7 @@ const components: PortableTextComponents = {
       </div>
     ),
     pullQuote: ({ value }: { value: Block<"pullQuote"> }) => (
-      <div className={cn(FRAME, "py-14 md:py-20")}>
+      <div data-block="quote" className={FRAME}>
         <blockquote className="m-0 text-balance text-center font-serif text-[clamp(28px,3vw,46px)] font-light italic leading-[1.15] tracking-[-0.01em] text-[#111111] lg:col-span-8 lg:col-start-3">
           {value.text}
         </blockquote>
@@ -117,20 +125,16 @@ const components: PortableTextComponents = {
     // Legacy plain image from before the story types existed.
     image: ({ value }: { value: Block<"image"> }) =>
       value.asset?.url ? (
-        <div className={cn(FRAME, "py-8")}>
-          <ProjectFigure
-            image={{
-              asset: value.asset,
-              hotspot: value.hotspot ?? null,
-              crop: value.crop ?? null,
-              alt: "",
-              caption: null,
-              source: null,
-            }}
-            className={COLUMN}
-            sizes="(min-width: 1024px) 50vw, calc(100vw - 3rem)"
-          />
-        </div>
+        <ColumnImage
+          image={{
+            asset: value.asset,
+            hotspot: value.hotspot ?? null,
+            crop: value.crop ?? null,
+            alt: "",
+            caption: null,
+            source: null,
+          }}
+        />
       ) : null,
   },
 };
