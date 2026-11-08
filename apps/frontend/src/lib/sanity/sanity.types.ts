@@ -21,6 +21,16 @@ type ArrayOf<T> = Array<
 >;
 
 // Source: schema.json
+export type Maker = {
+  name?: string;
+  discipline?: string;
+  location?: string;
+  piece?: string;
+  quote?: string;
+  portrait?: CaptionedImage;
+  url?: string;
+};
+
 export type Footer = {
   _id: string;
   _type: "footer";
@@ -113,6 +123,53 @@ export type SanityImageHotspot = {
   width: number;
 };
 
+export type MakingOf = {
+  _type: "makingOf";
+  label?: string;
+  heading?: string;
+  intro?: string;
+  notes?: Array<{
+    label?: string;
+    text?: string;
+    images?: Array<
+      {
+        _key: string;
+      } & CaptionedImage
+    >;
+    wide?: boolean;
+    _type: "makingNote";
+    _key: string;
+  }>;
+  maker?: Maker;
+};
+
+export type PullQuote = {
+  _type: "pullQuote";
+  text: string;
+};
+
+export type StoryPair = {
+  _type: "storyPair";
+  images: Array<
+    {
+      _key: string;
+    } & CaptionedImage
+  >;
+};
+
+export type StoryInset = {
+  _type: "storyInset";
+  text: string;
+  image: CaptionedImage;
+  side?: "right" | "left";
+};
+
+export type StoryImage = {
+  _type: "storyImage";
+  image: CaptionedImage;
+  layout?: "wide" | "column";
+};
+
 export type CaptionedImage = {
   _type: "captionedImage";
   asset: {
@@ -124,6 +181,7 @@ export type CaptionedImage = {
   };
   alt: string;
   caption?: string;
+  source?: string;
 };
 
 export type PageHeader = {
@@ -544,6 +602,7 @@ export type Project = {
   title: string;
   slug: Slug;
   excerpt?: string;
+  headline?: string;
   featured?: boolean;
   body?: Array<
     | {
@@ -553,8 +612,7 @@ export type Project = {
           _type: "span";
           _key: string;
         }>;
-        style?:
-          "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+        style?: "normal" | "lead" | "h2";
         listItem?: "bullet" | "number";
         markDefs?: Array<{
           href?: string;
@@ -565,6 +623,18 @@ export type Project = {
         _type: "block";
         _key: string;
       }
+    | ({
+        _key: string;
+      } & StoryImage)
+    | ({
+        _key: string;
+      } & StoryInset)
+    | ({
+        _key: string;
+      } & StoryPair)
+    | ({
+        _key: string;
+      } & PullQuote)
     | {
         asset?: SanityImageAssetReference;
         media?: unknown;
@@ -574,8 +644,10 @@ export type Project = {
         _key: string;
       }
   >;
+  makingOf?: MakingOf;
   location?: string;
   year?: number;
+  photoCredit?: string;
   season?: "spring" | "summer" | "fall" | "winter" | "year-round";
   category?:
     | "Full Renovation"
@@ -598,6 +670,50 @@ export type Project = {
     _key: string;
   }>;
   seo?: Seo;
+};
+
+export type SanityVideoMetadataPlayback = {
+  _type: "sanity.videoMetadata.playback";
+  policy?: string;
+};
+
+export type SanityVideoMetadata = {
+  _type: "sanity.videoMetadata";
+  duration?: number;
+  framerate?: number;
+  aspectRatio?: number;
+  hasAudio?: boolean;
+  codec?: string;
+  bitrate?: number;
+};
+
+export type SanityVideoAsset = {
+  _id: string;
+  _type: "sanity.videoAsset";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  originalFilename?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  altText?: string;
+  creditLine?: string;
+  metadata?: SanityVideoMetadata;
+  sha1hash?: string;
+  extension?: string;
+  mimeType?: string;
+  size?: number;
+  assetId?: string;
+  uploadId?: string;
+  path?: string;
+  url?: string;
+};
+
+export type SanityVideo = {
+  _type: "sanity.video";
+  asset?: unknown;
+  media?: unknown;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -698,12 +814,18 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | Maker
   | Footer
   | Navigation
   | SanityImageAssetReference
   | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | MakingOf
+  | PullQuote
+  | StoryPair
+  | StoryInset
+  | StoryImage
   | CaptionedImage
   | PageHeader
   | ProjectReference
@@ -734,6 +856,10 @@ export type AllSanitySchemaTypes =
   | Testimonial
   | Service
   | Project
+  | SanityVideoMetadataPlayback
+  | SanityVideoMetadata
+  | SanityVideoAsset
+  | SanityVideo
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -1176,7 +1302,7 @@ export type ALL_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: PROJECT_BY_SLUG_QUERY
-// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    location,    year,    season,    category,    excerpt,    featured,    "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    gallery[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  } },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    location,    year,    season,    category,    excerpt,    featured,    headline,    photoCredit,    "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    gallery[] {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },    body[] {   ...,  _type == "image" => {    "asset": asset-> {      _id,      url,      metadata { dimensions { width, height, aspectRatio }, lqip }    }  },  _type == "storyImage" => { "image": image {   "asset": asset.asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  "hotspot": asset.hotspot { x, y },  "crop": asset.crop { top, bottom, left, right },  alt,  caption,  source } },  _type == "storyInset" => { "image": image {   "asset": asset.asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  "hotspot": asset.hotspot { x, y },  "crop": asset.crop { top, bottom, left, right },  alt,  caption,  source } },  _type == "storyPair" => { "images": images[] {   "asset": asset.asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  "hotspot": asset.hotspot { x, y },  "crop": asset.crop { top, bottom, left, right },  alt,  caption,  source } } },    "makingOf": makingOf {      label,      heading,      intro,      notes[] {        _key,        label,        text,        wide,        images[] {   "asset": asset.asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  "hotspot": asset.hotspot { x, y },  "crop": asset.crop { top, bottom, left, right },  alt,  caption,  source }      },      maker {        name,        discipline,        location,        piece,        quote,        url,        portrait {   "asset": asset.asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  "hotspot": asset.hotspot { x, y },  "crop": asset.crop { top, bottom, left, right },  alt,  caption,  source }      }    },    "seo": seo {   title,  description,  "ogImage": ogImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } },  keywords,  noIndex,  noFollow,  robots,  canonicalUrl }  }
 export type PROJECT_BY_SLUG_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -1192,6 +1318,8 @@ export type PROJECT_BY_SLUG_QUERY_RESULT = {
     | null;
   excerpt: string | null;
   featured: boolean | null;
+  headline: string | null;
+  photoCredit: string | null;
   coverImage: {
     asset: {
       _id: string;
@@ -1248,8 +1376,7 @@ export type PROJECT_BY_SLUG_QUERY_RESULT = {
           _type: "span";
           _key: string;
         }>;
-        style?:
-          "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+        style?: "h2" | "lead" | "normal";
         listItem?: "bullet" | "number";
         markDefs?: Array<{
           href?: string;
@@ -1279,7 +1406,181 @@ export type PROJECT_BY_SLUG_QUERY_RESULT = {
         _type: "image";
         _key: string;
       }
+    | {
+        _key: string;
+        _type: "pullQuote";
+        text: string;
+      }
+    | {
+        _key: string;
+        _type: "storyImage";
+        image: {
+          asset: {
+            _id: string;
+            url: string;
+            metadata: {
+              dimensions: {
+                width: number;
+                height: number;
+                aspectRatio: number;
+              } | null;
+              lqip: string | null;
+            } | null;
+          } | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+          alt: string;
+          caption: string | null;
+          source: string | null;
+        };
+        layout?: "column" | "wide";
+      }
+    | {
+        _key: string;
+        _type: "storyInset";
+        text: string;
+        image: {
+          asset: {
+            _id: string;
+            url: string;
+            metadata: {
+              dimensions: {
+                width: number;
+                height: number;
+                aspectRatio: number;
+              } | null;
+              lqip: string | null;
+            } | null;
+          } | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+          alt: string;
+          caption: string | null;
+          source: string | null;
+        };
+        side?: "left" | "right";
+      }
+    | {
+        _key: string;
+        _type: "storyPair";
+        images: Array<{
+          asset: {
+            _id: string;
+            url: string;
+            metadata: {
+              dimensions: {
+                width: number;
+                height: number;
+                aspectRatio: number;
+              } | null;
+              lqip: string | null;
+            } | null;
+          } | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+          alt: string;
+          caption: string | null;
+          source: string | null;
+        }>;
+      }
   > | null;
+  makingOf: {
+    label: string | null;
+    heading: string | null;
+    intro: string | null;
+    notes: Array<{
+      _key: string;
+      label: string | null;
+      text: string | null;
+      wide: boolean | null;
+      images: Array<{
+        asset: {
+          _id: string;
+          url: string;
+          metadata: {
+            dimensions: {
+              width: number;
+              height: number;
+              aspectRatio: number;
+            } | null;
+            lqip: string | null;
+          } | null;
+        } | null;
+        hotspot: {
+          x: number;
+          y: number;
+        } | null;
+        crop: {
+          top: number;
+          bottom: number;
+          left: number;
+          right: number;
+        } | null;
+        alt: string;
+        caption: string | null;
+        source: string | null;
+      }> | null;
+    }> | null;
+    maker: {
+      name: string | null;
+      discipline: string | null;
+      location: string | null;
+      piece: string | null;
+      quote: string | null;
+      url: string | null;
+      portrait: {
+        asset: {
+          _id: string;
+          url: string;
+          metadata: {
+            dimensions: {
+              width: number;
+              height: number;
+              aspectRatio: number;
+            } | null;
+            lqip: string | null;
+          } | null;
+        } | null;
+        hotspot: {
+          x: number;
+          y: number;
+        } | null;
+        crop: {
+          top: number;
+          bottom: number;
+          left: number;
+          right: number;
+        } | null;
+        alt: string;
+        caption: string | null;
+        source: string | null;
+      } | null;
+    } | null;
+  } | null;
   seo: {
     title: string | null;
     description: string | null;
@@ -1314,6 +1615,45 @@ export type PROJECT_BY_SLUG_QUERY_RESULT = {
     canonicalUrl: string | null;
   } | null;
 } | null;
+
+// Source: ../frontend/src/lib/sanity/queries.ts
+// Variable: PROJECT_NAV_QUERY
+// Query: *[_type == "project" && defined(slug.current)] | order(year desc, _id asc) {    _id,    title,    "slug": slug.current,    category,    "coverImage": coverImage {   asset-> {    _id,    url,    metadata {      dimensions { width, height, aspectRatio },      lqip    }  },  hotspot { x, y },  crop { top, bottom, left, right } }  }
+export type PROJECT_NAV_QUERY_RESULT = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+  category:
+    | "Consultation"
+    | "Full Renovation"
+    | "Interior Architecture"
+    | "Styling & Furnishing"
+    | null;
+  coverImage: {
+    asset: {
+      _id: string;
+      url: string;
+      metadata: {
+        dimensions: {
+          width: number;
+          height: number;
+          aspectRatio: number;
+        } | null;
+        lqip: string | null;
+      } | null;
+    } | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+}>;
 
 // Source: ../frontend/src/lib/sanity/queries.ts
 // Variable: ALL_SERVICES_QUERY

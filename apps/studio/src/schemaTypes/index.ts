@@ -33,6 +33,11 @@ import { socialLink } from "./objects/socialLink";
 import { heroCorner } from "./objects/heroCorner";
 import { pageHeader } from "./objects/pageHeader";
 import { captionedImage } from "./objects/captionedImage";
+import { storyImage } from "./objects/storyImage";
+import { storyInset } from "./objects/storyInset";
+import { storyPair } from "./objects/storyPair";
+import { pullQuote } from "./objects/pullQuote";
+import { makingOf } from "./objects/makingOf";
 
 export const schemaTypes = [
   // documents
@@ -61,6 +66,11 @@ export const schemaTypes = [
   heroCorner,
   pageHeader,
   captionedImage,
+  storyImage,
+  storyInset,
+  storyPair,
+  pullQuote,
+  makingOf,
   // admin document types
   siteSettings,
   navigation,
