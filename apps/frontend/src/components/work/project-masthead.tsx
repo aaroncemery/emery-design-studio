@@ -1,5 +1,5 @@
 import { MonoLabel } from "@/components/primitives/mono-label";
-import { ProjectFigure } from "./project-figure";
+import { FULL_WIDTH_SIZES, ProjectFigure } from "./project-figure";
 import { SplitHeadline } from "./split-headline";
 import type { Project } from "@/lib/sanity/types";
 
@@ -54,7 +54,7 @@ export function ProjectMasthead({
                 source: null,
               }}
               ratio={2.1}
-              sizes="100vw"
+              sizes={FULL_WIDTH_SIZES}
               priority
             />
           </div>

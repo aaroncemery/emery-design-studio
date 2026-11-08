@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import { stegaClean } from "next-sanity";
 import { PortableText } from "@portabletext/react";
 import { MonoLabel } from "@/components/primitives/mono-label";
@@ -41,15 +41,7 @@ function ImageBlock({
   if (image?.asset?.url) {
     return (
       <div className="relative w-full overflow-hidden" style={{ aspectRatio }}>
-        <Image
-          src={image.asset.url}
-          alt=""
-          fill
-          className="object-cover"
-          placeholder="blur"
-          blurDataURL={image.asset.metadata?.lqip ?? undefined}
-          sizes={sizes}
-        />
+        <SanityPicture image={image} alt="" sizes={sizes} />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import Link from "next/link";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { CTA } from "@/components/primitives/cta";
@@ -69,16 +69,11 @@ export function NextProject({ next }: { next: ProjectNavItem }) {
           </div>
           {next.coverImage?.asset?.url && (
             <div className="relative aspect-[8/5] w-full overflow-hidden bg-[#ece8df]">
-              <Image
-                src={next.coverImage.asset.url}
+              <SanityPicture
+                image={next.coverImage}
                 alt=""
-                fill
                 className="object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.02]"
-                placeholder={
-                  next.coverImage.asset.metadata?.lqip ? "blur" : "empty"
-                }
-                blurDataURL={next.coverImage.asset.metadata?.lqip ?? undefined}
-                sizes="(min-width: 768px) 50vw, 100vw"
+                sizes="(min-width: 768px) 50vw, calc(100vw - 3rem)"
               />
             </div>
           )}
@@ -91,13 +86,15 @@ export function NextProject({ next }: { next: ProjectNavItem }) {
 export function InquiryBar() {
   return (
     <section className="bg-[#f6f4ef] pb-16 md:pb-24">
-      <div className="mx-auto flex w-full max-w-[1480px] flex-wrap items-center justify-between gap-6 border-t border-[rgba(17,17,17,0.12)] px-6 pt-8 md:px-10 lg:px-14">
-        <p className="font-serif text-[clamp(24px,2.4vw,34px)] font-light italic leading-tight text-[#111111]">
-          Have a project in mind?
-        </p>
-        <CTA href="/#contact" variant="accent">
-          Begin an inquiry
-        </CTA>
+      <div className="mx-auto w-full max-w-[1480px] px-6 md:px-10 lg:px-14">
+        <div className="flex flex-wrap items-center justify-between gap-6 border-t border-[rgba(17,17,17,0.12)] pt-8">
+          <p className="font-serif text-[clamp(24px,2.4vw,34px)] font-light italic leading-tight text-[#111111]">
+            Have a project in mind?
+          </p>
+          <CTA href="/#contact" variant="accent">
+            Begin an inquiry
+          </CTA>
+        </div>
       </div>
     </section>
   );

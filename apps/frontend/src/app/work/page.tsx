@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import Link from "next/link";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
@@ -152,16 +152,11 @@ export default async function WorkPage({ searchParams }: WorkPageProps) {
                     style={{ aspectRatio: 0.75 }}
                   >
                     {project.coverImage?.asset?.url ? (
-                      <Image
-                        src={project.coverImage.asset.url}
+                      <SanityPicture
+                        image={project.coverImage}
                         alt={project.title}
-                        fill
                         className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        placeholder="blur"
-                        blurDataURL={
-                          project.coverImage.asset.metadata?.lqip ?? undefined
-                        }
                       />
                     ) : (
                       <div className="w-full h-full bg-[#e4e0d7]" />

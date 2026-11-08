@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
 import { CTA } from "@/components/primitives/cta";
-import { ProjectFigure } from "./project-figure";
+import { FULL_WIDTH_SIZES, ProjectFigure } from "./project-figure";
 import { SplitHeadline } from "./split-headline";
 import { COLUMN, FRAME } from "./project-story";
 import type { MakingOf } from "@/lib/sanity/types";
@@ -60,7 +60,7 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
               <ProjectFigure
                 key={image.asset?._id ?? image.alt}
                 image={image}
-                sizes="(min-width: 640px) 45vw, 100vw"
+                sizes="(min-width: 640px) 45vw, calc(100vw - 3rem)"
               />
             ))}
           </div>
@@ -83,7 +83,7 @@ function MakingNote({ note, flip }: { note: Note; flip: boolean }) {
           <ProjectFigure
             image={images[0]}
             className="lg:col-span-12"
-            sizes="100vw"
+            sizes={FULL_WIDTH_SIZES}
           />
         </div>
       </div>

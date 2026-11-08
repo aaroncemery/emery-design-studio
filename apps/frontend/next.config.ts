@@ -3,13 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-        pathname: "/images/**",
-      },
-    ],
+    // Sanity's CDN resizes and converts images itself; see the loader.
+    loader: "custom",
+    loaderFile: "./src/lib/sanity/image-loader.ts",
   },
   async headers() {
     return [

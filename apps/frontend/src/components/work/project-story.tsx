@@ -1,6 +1,6 @@
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { cn } from "@/lib/utils";
-import { ProjectFigure } from "./project-figure";
+import { FULL_WIDTH_SIZES, ProjectFigure } from "./project-figure";
 import type { ProjectBodyBlock } from "@/lib/sanity/types";
 
 /** Shared page frame: 12-col grid inside the site's max width. */
@@ -56,7 +56,7 @@ const components: PortableTextComponents = {
           <ProjectFigure
             image={value.image}
             className={COLUMN}
-            sizes="(min-width: 1024px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 50vw, calc(100vw - 3rem)"
           />
         </div>
       ) : (
@@ -64,7 +64,7 @@ const components: PortableTextComponents = {
           <ProjectFigure
             image={value.image}
             className="lg:col-span-12"
-            sizes="100vw"
+            sizes={FULL_WIDTH_SIZES}
           />
         </div>
       ),
@@ -101,7 +101,7 @@ const components: PortableTextComponents = {
               key={image.asset?._id ?? image.alt}
               image={image}
               ratio={4 / 5}
-              sizes="(min-width: 640px) 50vw, 100vw"
+              sizes="(min-width: 640px) 50vw, calc(100vw - 3rem)"
             />
           ))}
         </div>
@@ -121,14 +121,14 @@ const components: PortableTextComponents = {
           <ProjectFigure
             image={{
               asset: value.asset,
-              hotspot: null,
-              crop: null,
+              hotspot: value.hotspot ?? null,
+              crop: value.crop ?? null,
               alt: "",
               caption: null,
               source: null,
             }}
             className={COLUMN}
-            sizes="(min-width: 1024px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 50vw, calc(100vw - 3rem)"
           />
         </div>
       ) : null,

@@ -1,11 +1,19 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { MonoLabel } from "@/components/primitives/mono-label";
-import type { ProjectImage } from "@/lib/sanity/types";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
+import { sanityImageAspect, type SanityImageInput } from "@/lib/sanity/image";
+
+/** `sizes` for an image that spans the page's content width (see FRAME). */
+export const FULL_WIDTH_SIZES =
+  "(min-width: 1480px) 1368px, (min-width: 1024px) calc(100vw - 7rem), (min-width: 768px) calc(100vw - 5rem), calc(100vw - 3rem)";
 
 interface ProjectFigureProps {
-  image: ProjectImage;
-  /** Width / height. Defaults to the image's own aspect ratio. */
+  image: SanityImageInput & {
+    alt: string;
+    caption?: string | null;
+    source?: string | null;
+  };
+  /** Width / height. Defaults to the image's own (post-crop) aspect ratio. */
   ratio?: number;
   sizes: string;
   className?: string;
@@ -22,9 +30,8 @@ export function ProjectFigure({
   priority,
   hideCaption,
 }: ProjectFigureProps) {
-  const asset = image.asset;
-  if (!asset?.url) return null;
-  const aspect = ratio ?? asset.metadata?.dimensions?.aspectRatio ?? 4 / 3;
+  if (!image.asset?.url) return null;
+  const aspect = ratio ?? sanityImageAspect(image) ?? 4 / 3;
   const hasCaption = !hideCaption && (image.caption || image.source);
 
   return (
@@ -33,22 +40,11 @@ export function ProjectFigure({
         className="relative w-full overflow-hidden bg-[#ece8df]"
         style={{ aspectRatio: aspect }}
       >
-        <Image
-          src={asset.url}
+        <SanityPicture
+          image={image}
           alt={image.alt}
-          fill
-          className="object-cover"
-          style={
-            image.hotspot
-              ? {
-                  objectPosition: `${image.hotspot.x * 100}% ${image.hotspot.y * 100}%`,
-                }
-              : undefined
-          }
-          priority={priority}
-          placeholder={asset.metadata?.lqip ? "blur" : "empty"}
-          blurDataURL={asset.metadata?.lqip ?? undefined}
           sizes={sizes}
+          priority={priority}
         />
       </div>
       {hasCaption && (

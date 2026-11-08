@@ -2,7 +2,7 @@
 
 import { cleanText } from "@/lib/sanity/utils";
 import { useRef } from "react";
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import Link from "next/link";
 import {
   motion,
@@ -100,14 +100,10 @@ export function Hero({ data }: Props) {
         style={prefersReduced ? { scale: 1.06 } : { y: imageY, scale: 1.06 }}
       >
         {data?.backgroundImage?.asset?.url ? (
-          <Image
-            src={data.backgroundImage.asset.url}
+          <SanityPicture
+            image={data.backgroundImage}
             alt=""
-            fill
-            className="object-cover"
             priority
-            placeholder="blur"
-            blurDataURL={data.backgroundImage.asset.metadata?.lqip ?? undefined}
             sizes="100vw"
           />
         ) : (

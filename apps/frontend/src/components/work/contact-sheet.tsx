@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -58,7 +58,8 @@ export function ContactSheet({ images }: { images: SheetImage[] }) {
     });
   }, [open]);
 
-  if (count === 0) return null;
+  // A single image has nothing to browse.
+  if (count < 2) return null;
   const current = open === null ? null : images[open];
 
   return (
@@ -85,13 +86,10 @@ export function ContactSheet({ images }: { images: SheetImage[] }) {
                 aria-label={`Open image ${i + 1} of ${count}: ${img.alt}`}
                 className="relative block aspect-square w-full cursor-zoom-in overflow-hidden bg-[#ece8df] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#1b3a5b]"
               >
-                <Image
-                  src={img.url}
+                <SanityPicture
+                  image={img.image}
                   alt=""
-                  fill
                   className="object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] hover:scale-[1.03]"
-                  placeholder={img.lqip ? "blur" : "empty"}
-                  blurDataURL={img.lqip ?? undefined}
                   sizes="(min-width: 1024px) 14vw, (min-width: 640px) 25vw, 33vw"
                 />
               </button>
@@ -135,13 +133,12 @@ export function ContactSheet({ images }: { images: SheetImage[] }) {
               <ArrowButton direction="prev" onClick={() => step(-1)} />
               <div className="relative h-full min-w-0 flex-1">
                 {current && (
-                  <Image
+                  <SanityPicture
                     key={current.id}
-                    src={current.url}
+                    image={current.image}
                     alt={current.alt}
-                    fill
                     className="object-contain"
-                    sizes="100vw"
+                    sizes="(min-width: 640px) calc(100vw - 9rem), calc(100vw - 6rem)"
                   />
                 )}
               </div>
@@ -168,13 +165,7 @@ export function ContactSheet({ images }: { images: SheetImage[] }) {
                         : "opacity-60 hover:opacity-100",
                     )}
                   >
-                    <Image
-                      src={img.url}
-                      alt=""
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
+                    <SanityPicture image={img.image} alt="" sizes="80px" />
                   </button>
                 </li>
               ))}

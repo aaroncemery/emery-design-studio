@@ -1,24 +1,21 @@
-import type { Project, ProjectImage } from "@/lib/sanity/types";
+import type { SanityImageInput } from "@/lib/sanity/image";
+import type { Project } from "@/lib/sanity/types";
 
 export interface SheetImage {
   id: string;
-  url: string;
+  image: SanityImageInput;
   alt: string;
   caption: string | null;
-  lqip: string | null;
-  width: number | null;
-  height: number | null;
 }
 
-type Candidate = Pick<ProjectImage, "asset"> &
-  Partial<Pick<ProjectImage, "alt" | "caption">>;
+type Candidate = SanityImageInput & { alt?: string; caption?: string | null };
 
 /** Every photograph on the page, in reading order, de-duplicated by asset. */
 export function collectProjectImages(project: Project): SheetImage[] {
   const found: Candidate[] = [];
 
   if (project.coverImage) {
-    found.push({ asset: project.coverImage.asset, alt: project.title });
+    found.push({ ...project.coverImage, alt: project.title });
   }
   for (const block of project.body ?? []) {
     if (block._type === "storyImage" || block._type === "storyInset") {
@@ -26,7 +23,11 @@ export function collectProjectImages(project: Project): SheetImage[] {
     } else if (block._type === "storyPair") {
       found.push(...(block.images ?? []));
     } else if (block._type === "image") {
-      found.push({ asset: block.asset });
+      found.push({
+        asset: block.asset,
+        hotspot: block.hotspot,
+        crop: block.crop,
+      });
     }
   }
   for (const note of project.makingOf?.notes ?? []) {
@@ -35,7 +36,7 @@ export function collectProjectImages(project: Project): SheetImage[] {
   if (project.makingOf?.maker?.portrait) {
     found.push(project.makingOf.maker.portrait);
   }
-  for (const img of project.gallery ?? []) found.push({ asset: img.asset });
+  for (const img of project.gallery ?? []) found.push(img);
 
   const seen = new Set<string>();
   const out: SheetImage[] = [];
@@ -45,12 +46,9 @@ export function collectProjectImages(project: Project): SheetImage[] {
     seen.add(asset._id);
     out.push({
       id: asset._id,
-      url: asset.url,
+      image: c,
       alt: c.alt || project.title,
       caption: c.caption ?? null,
-      lqip: asset.metadata?.lqip ?? null,
-      width: asset.metadata?.dimensions?.width ?? null,
-      height: asset.metadata?.dimensions?.height ?? null,
     });
   }
   return out;

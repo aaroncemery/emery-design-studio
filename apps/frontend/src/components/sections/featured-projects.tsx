@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import { cleanText } from "@/lib/sanity/utils";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
@@ -73,14 +73,11 @@ function ProjectCard({
           style={{ aspectRatio: layout.aspectRatio }}
         >
           {project.coverImage?.asset?.url ? (
-            <Image
-              src={project.coverImage.asset.url}
+            <SanityPicture
+              image={project.coverImage}
               alt={project.title}
-              fill
               className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
               sizes="(max-width: 768px) 100vw, 60vw"
-              placeholder="blur"
-              blurDataURL={project.coverImage.asset.metadata?.lqip ?? undefined}
             />
           ) : (
             <Placeholder

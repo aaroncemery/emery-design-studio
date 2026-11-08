@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import Link from "next/link";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Section } from "@/components/primitives/section";
@@ -95,15 +95,10 @@ export default async function JournalPage() {
                       className="relative overflow-hidden mb-5"
                       style={{ aspectRatio: 1.5 }}
                     >
-                      <Image
-                        src={post.coverImage.asset.url}
+                      <SanityPicture
+                        image={post.coverImage}
                         alt={post.title}
-                        fill
                         className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] hover:scale-[1.04]"
-                        placeholder="blur"
-                        blurDataURL={
-                          post.coverImage.asset.metadata?.lqip ?? undefined
-                        }
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     </div>

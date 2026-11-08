@@ -29,6 +29,16 @@ const typed = data as SomeQueryResult; // or a hand-derived type from lib/sanity
 
 Skipping the cast doesn't error at the fetch call — it fails later, confusingly, wherever you first access a field (`Property 'x' does not exist on type '{}'`). If you add a new query, add the cast at the same time.
 
+## Images
+
+Never hand `asset.url` straight to `next/image`. Render Sanity images with `<SanityPicture image={...} sizes="..." />` (`components/primitives/sanity-picture.tsx`), which:
+
+- applies the editor's **crop** (as a `rect` on the URL) and keeps the **hotspot** in frame via `object-position` (`lib/sanity/image.ts`), so crop/hotspot edits in Studio show up with no code change;
+- sizes and converts on Sanity's CDN through the global loader (`images.loaderFile` in `next.config.ts` → `lib/sanity/image-loader.ts`: `w`, `fit=max`, `auto=format`, `q`), not Next's optimizer;
+- uses the LQIP for the blur placeholder.
+
+Rules: query images with `imageFields` (so `asset._id`, `metadata`, `hotspot`, `crop` are present — a captioned image needs the flattening in `captionedImageFields`); always pass an accurate `sizes` (a `100vw` on something narrower triggers Next's console warning — see `FULL_WIDTH_SIZES` in `components/work/project-figure.tsx` for content-width images); the parent must be `relative` with a size or aspect ratio. Open Graph images use `sanityOgImageUrl` (1200×630 JPEG, cropped around the hotspot). The logo in `BrandMark` still uses plain `next/image` because it may be an SVG.
+
 ## Publish → site refresh
 
 Two mechanisms keep the site fresh, and **both are needed**:
