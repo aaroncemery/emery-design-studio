@@ -24,6 +24,40 @@ const bodyFields = `
   }
 `;
 
+// captionedImage wraps an image in its `asset` field; flatten it so it has the
+// same { asset, hotspot, crop } shape as every other image, plus the caption.
+const captionedImageFields = `
+  "asset": asset.asset-> {
+    _id,
+    url,
+    metadata {
+      dimensions { width, height, aspectRatio },
+      lqip
+    }
+  },
+  "hotspot": asset.hotspot { x, y },
+  "crop": asset.crop { top, bottom, left, right },
+  alt,
+  caption,
+  source
+`;
+
+// Project write-ups mix plain blocks with the story object types
+// (storyImage / storyInset / storyPair / pullQuote) and the legacy image.
+const projectBodyFields = `
+  ...,
+  _type == "image" => {
+    "asset": asset-> {
+      _id,
+      url,
+      metadata { dimensions { width, height, aspectRatio }, lqip }
+    }
+  },
+  _type == "storyImage" => { "image": image { ${captionedImageFields} } },
+  _type == "storyInset" => { "image": image { ${captionedImageFields} } },
+  _type == "storyPair" => { "images": images[] { ${captionedImageFields} } }
+`;
+
 const seoFields = `
   title,
   description,
@@ -140,10 +174,44 @@ export const PROJECT_BY_SLUG_QUERY = defineQuery(`
     category,
     excerpt,
     featured,
+    headline,
+    photoCredit,
     "coverImage": coverImage { ${imageFields} },
     gallery[] { ${imageFields} },
-    body[] { ${bodyFields} },
+    body[] { ${projectBodyFields} },
+    "makingOf": makingOf {
+      label,
+      heading,
+      intro,
+      notes[] {
+        _key,
+        label,
+        text,
+        wide,
+        images[] { ${captionedImageFields} }
+      },
+      maker {
+        name,
+        discipline,
+        location,
+        piece,
+        quote,
+        url,
+        portrait { ${captionedImageFields} }
+      }
+    },
     "seo": seo { ${seoFields} }
+  }
+`);
+
+// Slim, ordered list used to find the "next project" (same order as /work).
+export const PROJECT_NAV_QUERY = defineQuery(`
+  *[_type == "project" && defined(slug.current)] | order(year desc, _id asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    category,
+    "coverImage": coverImage { ${imageFields} }
   }
 `);
 

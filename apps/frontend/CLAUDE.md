@@ -29,6 +29,20 @@ const typed = data as SomeQueryResult; // or a hand-derived type from lib/sanity
 
 Skipping the cast doesn't error at the fetch call — it fails later, confusingly, wherever you first access a field (`Property 'x' does not exist on type '{}'`). If you add a new query, add the cast at the same time.
 
+## Images
+
+Never hand `asset.url` straight to `next/image`. Render Sanity images with `<SanityPicture image={...} sizes="..." />` (`components/primitives/sanity-picture.tsx`), which:
+
+- applies the editor's **crop** (as a `rect` on the URL) and keeps the **hotspot** in frame via `object-position` (`lib/sanity/image.ts`), so crop/hotspot edits in Studio show up with no code change;
+- sizes and converts on Sanity's CDN through the global loader (`images.loaderFile` in `next.config.ts` → `lib/sanity/image-loader.ts`: `w`, `fit=max`, `auto=format`, `q`), not Next's optimizer;
+- uses the LQIP for the blur placeholder.
+
+Rules: query images with `imageFields` (so `asset._id`, `metadata`, `hotspot`, `crop` are present — a captioned image needs the flattening in `captionedImageFields`); always pass an accurate `sizes` (a `100vw` on something narrower triggers Next's console warning — see `FULL_WIDTH_SIZES` in `components/work/project-figure.tsx` for content-width images); the parent must be `relative` with a size or aspect ratio. Open Graph images use `sanityOgImageUrl` (1200×630 JPEG, cropped around the hotspot). The logo in `BrandMark` still uses plain `next/image` because it may be an SVG.
+
+## Project page blocks
+
+Story blocks and making-of notes (`components/work/`) share one layout system (see `docs/work-page-blocks-handoff.md`): images are sized by _area_ (`lib/work/layout.ts`: `figWidths`, `sideMode`) so portraits and landscapes weigh the same, capped at 82vh; beside-text blocks (`BesideText`) switch between a margin note and a bottom-aligned spread by text length; lone portraits put their caption beside them (`ColumnImage`). Vertical spacing comes from each block wrapper's `data-block` kind (`text | heading | big | quote | side`) and the adjacent-sibling rules in `globals.css` — never per-block `py-*`. New blocks should set `data-block` and reuse `FRAME`/`COLUMN` (`components/work/frame.ts`) so edges stay on the container or column.
+
 ## Publish → site refresh
 
 Two mechanisms keep the site fresh, and **both are needed**:

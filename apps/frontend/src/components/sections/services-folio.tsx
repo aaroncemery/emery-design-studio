@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -151,19 +151,15 @@ function ServicePhoto({
   service: Service;
   variant: PlaceholderVariant;
 }) {
-  const asset = service.image?.asset?.asset;
+  const image = service.image?.asset;
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-[#111111]">
-      {asset?.url ? (
-        <Image
-          src={asset.url}
+      {image?.asset?.url ? (
+        <SanityPicture
+          image={image}
           alt={service.image?.alt || service.title}
-          fill
-          className="object-cover"
           sizes="(max-width: 1024px) 100vw, 40vw"
-          placeholder={asset.metadata?.lqip ? "blur" : undefined}
-          blurDataURL={asset.metadata?.lqip ?? undefined}
         />
       ) : (
         <>
@@ -175,7 +171,7 @@ function ServicePhoto({
           </div>
         </>
       )}
-      {asset?.url && service.image?.caption && (
+      {image?.asset?.url && service.image?.caption && (
         <div className="absolute bottom-0 inset-x-0 p-5 bg-gradient-to-t from-black/50 to-transparent">
           <MonoLabel className="text-white/80 text-[9px]">
             {service.image.caption}

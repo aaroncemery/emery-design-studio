@@ -54,15 +54,15 @@ export function SiteNav({ navigation, siteSettings }: SiteNavProps) {
   });
 
   // The white/mix-blend-difference header treatment only reads correctly
-  // over a dark photo hero — the homepage and the project/journal detail
-  // pages (when they have a cover image) are the only routes with one.
-  // Every other route (/studio, /services, /work, /journal, /legal/*)
+  // over a dark photo hero — the homepage and journal detail pages (when
+  // they have a cover image) are the only routes with one. Project pages
+  // (/work/[slug]) open on a flat paper masthead with the cover below it.
+  // Every other route (/studio, /services, /work, /work/*, /journal, /legal/*)
   // starts directly on a flat light section, so the header needs its
   // solid, legible "scrolled" treatment from the very first paint there,
   // not just after the user scrolls.
   const pathname = usePathname();
-  const hasMediaHero =
-    pathname === "/" || /^\/(work|journal)\/[^/]+$/.test(pathname);
+  const hasMediaHero = pathname === "/" || /^\/journal\/[^/]+$/.test(pathname);
   const active = scrolled || menuOpen || !hasMediaHero;
 
   const resolvedLinks = navigation?.items?.length

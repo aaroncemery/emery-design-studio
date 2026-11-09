@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Seo, SiteSettings } from "./types";
+import { sanityOgImageUrl } from "./image";
 
 const FALLBACK_SITE_NAME = "Emery Design Studio";
 
@@ -31,8 +32,9 @@ export function buildMetadata({
   // A manually-uploaded Sanity image always wins. Otherwise fall back to a
   // dynamically generated image instead of leaving the share preview blank.
   const ogImageUrl =
-    pageSeo?.ogImage?.asset?.url ??
-    siteSettings?.defaultOgImage?.asset?.url ??
+    (pageSeo?.ogImage && sanityOgImageUrl(pageSeo.ogImage)) ??
+    (siteSettings?.defaultOgImage &&
+      sanityOgImageUrl(siteSettings.defaultOgImage)) ??
     `/og?title=${encodeURIComponent(pageTitle ?? siteName)}`;
 
   const metadata: Metadata = {

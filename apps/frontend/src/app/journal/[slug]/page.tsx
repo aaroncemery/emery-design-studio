@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { SanityPicture } from "@/components/primitives/sanity-picture";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
@@ -86,14 +86,10 @@ export default async function JournalPostPage({
           className="relative w-full overflow-hidden"
           style={{ height: "55vh", minHeight: "360px" }}
         >
-          <Image
-            src={post.coverImage.asset.url}
+          <SanityPicture
+            image={post.coverImage}
             alt={post.title}
-            fill
-            className="object-cover"
             priority
-            placeholder="blur"
-            blurDataURL={post.coverImage.asset.metadata?.lqip ?? undefined}
             sizes="100vw"
           />
         </div>

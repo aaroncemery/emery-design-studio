@@ -23,6 +23,13 @@ export const captionedImage = defineType({
       title: "Caption",
       type: "string",
     }),
+    defineField({
+      name: "source",
+      title: "Source / Credit",
+      type: "string",
+      description:
+        "Optional small line under the caption, e.g. 'Sofa, Brand · Pillows, Brand'.",
+    }),
   ],
   preview: {
     select: { media: "asset", title: "caption", subtitle: "alt" },

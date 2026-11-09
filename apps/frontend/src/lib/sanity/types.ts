@@ -14,6 +14,7 @@ import type {
   WORK_PAGE_QUERY_RESULT,
   JOURNAL_PAGE_QUERY_RESULT,
   LLMS_TXT_QUERY_RESULT,
+  PROJECT_NAV_QUERY_RESULT,
 } from "./sanity.types";
 
 // Everything below is derived from the TypeGen output in ./sanity.types.ts
@@ -32,6 +33,13 @@ export type SanityImageAsset = NonNullable<SanityImage["asset"]>;
 // cards included) — list queries only ever project a subset of these same
 // field names, so the shape still matches at runtime.
 export type Project = NonNullable<PROJECT_BY_SLUG_QUERY_RESULT>;
+export type ProjectBodyBlock = NonNullable<Project["body"]>[number];
+export type ProjectImage = Extract<
+  ProjectBodyBlock,
+  { _type: "storyImage" }
+>["image"];
+export type MakingOf = NonNullable<Project["makingOf"]>;
+export type ProjectNavItem = PROJECT_NAV_QUERY_RESULT[number];
 export type Service = ALL_SERVICES_QUERY_RESULT[number];
 export type Testimonial = ALL_TESTIMONIALS_QUERY_RESULT[number];
 export type PressItem = ALL_PRESS_ITEMS_QUERY_RESULT[number];

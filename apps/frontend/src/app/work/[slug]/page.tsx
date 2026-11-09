@@ -1,21 +1,30 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PortableText } from "@portabletext/react";
-import { Section } from "@/components/primitives/section";
-import { MonoLabel } from "@/components/primitives/mono-label";
+import { ProjectMasthead } from "@/components/work/project-masthead";
+import { ProjectStory } from "@/components/work/project-story";
+import {
+  MakingOfSection,
+  hasMakingOfContent,
+} from "@/components/work/making-of";
+import { ContactSheet } from "@/components/work/contact-sheet";
+import { collectProjectImages } from "@/components/work/collect-images";
+import {
+  InquiryBar,
+  NextProject,
+  ProjectCredits,
+} from "@/components/work/project-footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { client } from "@/lib/sanity/client";
 import { sanityFetch } from "@/lib/sanity/live";
 import {
   PROJECT_BY_SLUG_QUERY,
+  PROJECT_NAV_QUERY,
   SITE_SETTINGS_QUERY,
 } from "@/lib/sanity/queries";
 import { buildMetadata } from "@/lib/sanity/build-metadata";
 import { breadcrumbJsonLd, creativeWorkJsonLd } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/site-url";
-import type { Project, SiteSettings } from "@/lib/sanity/types";
+import type { Project, ProjectNavItem, SiteSettings } from "@/lib/sanity/types";
 
 export const revalidate = false;
 export const dynamicParams = true;
@@ -66,14 +75,33 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data } = await sanityFetch({
-    query: PROJECT_BY_SLUG_QUERY,
-    params: { slug },
-    tags: [`project:${slug}`],
-  });
+  const [{ data }, { data: navData }, { data: siteSettingsData }] =
+    await Promise.all([
+      sanityFetch({
+        query: PROJECT_BY_SLUG_QUERY,
+        params: { slug },
+        tags: [`project:${slug}`],
+      }),
+      sanityFetch({ query: PROJECT_NAV_QUERY, tags: ["project"] }),
+      sanityFetch({ query: SITE_SETTINGS_QUERY, tags: ["siteSettings"] }),
+    ]);
   const project = data as Project | null;
+  const allProjects = (navData ?? []) as ProjectNavItem[];
+  const siteSettings = siteSettingsData as SiteSettings | null;
 
   if (!project) notFound();
+
+  const makingOf = hasMakingOfContent(project.makingOf)
+    ? project.makingOf
+    : null;
+
+  // Next project: the following one in /work order, wrapping to the first.
+  // Hidden when this is the only project.
+  const index = allProjects.findIndex((p) => p.slug === project.slug);
+  const next =
+    allProjects.length > 1 && index >= 0
+      ? allProjects[(index + 1) % allProjects.length]
+      : null;
 
   return (
     <main id="main">
@@ -84,153 +112,16 @@ export default async function ProjectPage({
           { name: project.title, url: `${SITE_URL}/work/${project.slug}` },
         ])}
       />
-      {/* Hero */}
-      {project.coverImage?.asset?.url && (
-        <div
-          className="relative w-full overflow-hidden"
-          style={{ height: "70vh", minHeight: "480px" }}
-        >
-          <Image
-            src={project.coverImage.asset.url}
-            alt={project.title}
-            fill
-            className="object-cover"
-            priority
-            placeholder="blur"
-            blurDataURL={project.coverImage.asset.metadata?.lqip ?? undefined}
-            sizes="100vw"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"
-          />
-          <div className="absolute bottom-10 left-0 right-0 px-8 lg:px-16">
-            <MonoLabel className="text-white/50 block mb-3">
-              {[project.category, project.location, project.year]
-                .filter(Boolean)
-                .join(" · ")}
-            </MonoLabel>
-            <h1
-              className="font-serif text-white leading-[0.92] tracking-tight"
-              style={{ fontSize: "clamp(40px, 5vw, 80px)" }}
-            >
-              <em>{project.title}</em>
-            </h1>
-          </div>
-        </div>
-      )}
-
-      <Section className="bg-[#f6f4ef]" paddingY="xl">
-        {/* Title (when no cover image) */}
-        {!project.coverImage?.asset?.url && (
-          <div className="mb-16">
-            <MonoLabel className="text-[#1b3a5b] block mb-4">
-              {[project.category, project.location, project.year]
-                .filter(Boolean)
-                .join(" · ")}
-            </MonoLabel>
-            <h1
-              className="font-serif text-[#111111] leading-[0.92] tracking-tight"
-              style={{ fontSize: "clamp(40px, 5vw, 80px)" }}
-            >
-              <em>{project.title}</em>
-            </h1>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-16 lg:gap-24">
-          {/* Body */}
-          {project.body && (
-            <div className="font-sans text-[#4a4a44] text-base leading-relaxed space-y-5">
-              <PortableText value={project.body} />
-            </div>
-          )}
-
-          {/* Meta sidebar */}
-          <aside className="space-y-8">
-            {project.excerpt && (
-              <div>
-                <MonoLabel className="text-[#9a968d] block mb-3">
-                  About
-                </MonoLabel>
-                <p className="font-sans text-[#6b6b66] text-sm leading-relaxed">
-                  {project.excerpt}
-                </p>
-              </div>
-            )}
-            <div className="space-y-4">
-              {project.category && (
-                <div>
-                  <MonoLabel className="text-[#9a968d] block mb-1">
-                    Scope
-                  </MonoLabel>
-                  <p className="font-sans text-[#111111] text-sm">
-                    {project.category}
-                  </p>
-                </div>
-              )}
-              {project.location && (
-                <div>
-                  <MonoLabel className="text-[#9a968d] block mb-1">
-                    Location
-                  </MonoLabel>
-                  <p className="font-sans text-[#111111] text-sm">
-                    {project.location}
-                  </p>
-                </div>
-              )}
-              {project.year && (
-                <div>
-                  <MonoLabel className="text-[#9a968d] block mb-1">
-                    Year
-                  </MonoLabel>
-                  <p className="font-sans text-[#111111] text-sm">
-                    {project.year}
-                  </p>
-                </div>
-              )}
-            </div>
-          </aside>
-        </div>
-
-        {/* Gallery */}
-        {project.gallery && project.gallery.length > 0 && (
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {project.gallery.map((img) => {
-              if (!img.asset?.url) return null;
-              const { asset } = img;
-              return (
-                <div
-                  key={asset._id}
-                  className="relative overflow-hidden"
-                  style={{
-                    aspectRatio: asset.metadata?.dimensions?.aspectRatio,
-                  }}
-                >
-                  <Image
-                    src={asset.url}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    placeholder="blur"
-                    blurDataURL={asset.metadata?.lqip ?? undefined}
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="mt-16 pt-10 border-t border-[rgba(17,17,17,0.1)]">
-          <Link
-            href="/work"
-            className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#1b3a5b] hover:opacity-70 transition-opacity duration-300 inline-flex items-center gap-2"
-          >
-            ← All projects
-          </Link>
-        </div>
-      </Section>
+      <ProjectMasthead project={project} hasMakingOf={!!makingOf} />
+      <ProjectStory body={project.body} />
+      {makingOf && <MakingOfSection makingOf={makingOf} />}
+      <ContactSheet images={collectProjectImages(project)} />
+      <ProjectCredits
+        project={project}
+        studioName={siteSettings?.siteName ?? null}
+      />
+      {next && <NextProject next={next} />}
+      <InquiryBar />
     </main>
   );
 }
